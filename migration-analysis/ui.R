@@ -40,8 +40,13 @@ shinyUI(fluidPage(
     )
   ),
   fluidRow(
-    column(width = 12, class="text-right footer well navbar-fixed-bottom",
-           paste(strong(a("Jkunst.com", href="jkunst.com")), format(Sys.time(), "%Y"), "| Shiny Powered")
+    column(width = 12, class="footer well navbar-fixed-bottom",
+      column(width = 6,
+        p("Shiny Powered")
+      ),
+      column(width = 6,
+        p(class="text-right", strong(a("Jkunst.com", href="jkunst.com")), paste(format(Sys.time(), "%Y")))
+      )
     )
   )
 ))
