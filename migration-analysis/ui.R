@@ -15,7 +15,7 @@ shinyUI(fluidPage(
     tags$link(type = "text/javascript", src = "http://www.highcharts.com/js/themes/dark-unica.js"),
     tags$link(type = "text/javascript", src = "custom.js")
   ),
-  titlePanel("Migrations"),
+  titlePanel("Migrations Analysis"),
   sidebarLayout(
     sidebarPanel(
       selectizeInput(
@@ -41,6 +41,7 @@ shinyUI(fluidPage(
   ),
   fluidRow(
     column(width = 12, class="text-right footer well navbar-fixed-bottom",
-           paste("Jkunst.com", format(Sys.time(), "%Y")))
+           "Jkunst.com" + format(Sys.time(), "%Y") + " | Shiny Powered"
+    )
   )
 ))
