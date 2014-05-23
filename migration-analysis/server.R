@@ -1,6 +1,5 @@
 require(shiny)
 require(rCharts)
-require(rMaps)
 require(dplyr)
 
 load("data/master_data.RData")
@@ -59,7 +58,7 @@ shinyServer(function(input, output) {
     daux <- daux %.% group_by(year, cntorg_label) %.% summarise(migvol = sum(na.omit(migvol)))
 
     p <- hPlot(migvol ~ year, data = daux, type = 'area', group = 'cntorg_label', radius = 0)
-    p$chart(backgroundColor = 'rgba(255 , 255, 255, 1)')
+    p$chart(backgroundColor = 'rgba(0 , 0, 0, 0)')
     p$set(width = "100%", height= "100%")
     if(input$plot_type == "area_percent"){
       p$plotOptions(area = list(stacking= 'percent'))
@@ -68,7 +67,7 @@ shinyServer(function(input, output) {
       p$plotOptions(area = list(stacking= 'normal'))
       p$tooltip(pointFormat = '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y})<br/>', shared = 'true')
     } else {
-      p$chart(backgroundColor = 'rgba(255 , 255, 255, 1)', type = input$plot_type)
+      p$chart(backgroundColor = 'rgba(0 , 0, 0, 0)', type = input$plot_type)
     }
     
     return(p)
