@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
     daux <- daux %>% group_by(cntorg) %>% summarise(migvol = sum(na.omit(migvol)))
     
     ncuts <- 100
-    faux <- function(x){ log(x) }
+    faux <- function(x){ x }
     rng <- range(faux(daux$migvol+1))
     sqn <- seq(from=rng[1], to=rng[2], length.out=ncuts)
     
