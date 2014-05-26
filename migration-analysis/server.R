@@ -3,7 +3,10 @@ require(rCharts)
 require(dplyr)
 
 load("data/master_data.RData")
-
+# input <- list()
+# input$destination_selector <- "Chile"
+# input$origin_selector <- c("Peru", "Argentina")
+  
 shinyServer(function(input, output) {
 
   output$table <- renderDataTable({
@@ -18,26 +21,33 @@ shinyServer(function(input, output) {
   )
   
   output$map <- renderChart2({
-    ncuts <- 100
-    
+       
     daux <- subset(data, cntdest_label == as.character(input$destination_selector))
     daux <- daux %>% group_by(cntorg) %>% summarise(migvol = sum(na.omit(migvol)))
-    daux$migvol_cut <- cut(daux$migvol, breaks=unique(quantile(daux$migvol, 1:ncuts/ncuts)), labels=FALSE, include.lowest=TRUE)
     
-    colpal <- colorRampPalette(c("yellow", "red"))(length(unique(daux$migvol_cut)))
+    ncuts <- 100
+    faux <- function(x){ log(x) }
+    rng <- range(faux(daux$migvol+1))
+    sqn <- seq(from=rng[1], to=rng[2], length.out=ncuts)
     
+    daux$migvol_cut <- cut(faux(daux$migvol+1), breaks=sqn, labels=FALSE, include.lowest=TRUE)
+    colpal <- colorRampPalette(c("yellow", "red"))(ncuts)
     daux$migvol_cut_color <- colpal[daux$migvol_cut]
+    
     
     ls <- list()
     for(i in seq(nrow(daux))){  
       ls[[daux[i,"cntorg"]]] <- list(fillKey = daux[i,"migvol_cut_color"], mig = daux[i,"migvol"])
     }
+    ls[[unique(data$cntdest[data$cntdest_label == input$destination_selector])]] <- 
+      list(fillKey = "#3333CC", mig = "")
     
     lc <- list()
     for(i in seq(length(colpal))){  
       lc[[colpal[i]]] <- colpal[i]
     }
     lc[['defaultFill']] <- "858585"
+    lc[['#3333CC']] <- "#3333CC"
     
     m <- rCharts::rCharts$new()
     m$setLib('datamaps')
@@ -47,8 +57,9 @@ shinyServer(function(input, output) {
           fills = lc,
           geographyConfig = list(highlightFillColor = '585858'))
     m
-    return(m)
   })
+  
+  
   
   output$plot <- renderChart2({
     

@@ -9,10 +9,9 @@ load("data/master_data.RData")
 # runApp("../shiny_migration/")
 shinyUI(fluidPage(
   tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "http://bootswatch.com/superhero/bootstrap.min.css"),
+    
+    tags$link(rel = "stylesheet", type = "text/css", href = "http://bootswatch.com/yeti/bootstrap.min.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
-    tags$link(type = "text/javascript", src = "highcharts/js/highcharts.js"),
-    tags$link(type = "text/javascript", src = "http://www.highcharts.com/js/themes/dark-unica.js"),
     tags$link(type = "text/javascript", src = "custom.js")
   ),
   titlePanel("Migrations Analysis"),
@@ -26,7 +25,7 @@ shinyUI(fluidPage(
       ),
       radioButtons(
         inputId = "plot_type", label = "Plot type",
-        choices = list( "Area Stacked" = "area", "Percent Stacked" = "area_percent", "Lines" = "line"), selected = "area"
+        choices = list( "Area Stacked" = "area", "Percent Stacked" = "area_percent"), selected = "area"
       )
     ),
     mainPanel(
@@ -40,12 +39,12 @@ shinyUI(fluidPage(
     )
   ),
   fluidRow(
-    column(width = 12, class="footer well navbar-fixed-bottom",
+    column(width = 12, class="footer well navbar-fixed-bottom", id ="footer",
       column(width = 6,
         p("Shiny Powered")
       ),
       column(width = 6,
-        p(class="text-right", strong(a("Jkunst.com", href="jkunst.com")), paste(format(Sys.time(), "%Y")))
+        p(class="text-right", strong(a("Jkunst.com", href="http://jkunst.com", target = "_blank")), paste(format(Sys.time(), "%Y")))
       )
     )
   )
