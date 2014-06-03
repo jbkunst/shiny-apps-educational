@@ -31,7 +31,7 @@ shinyServer(function(input, output) {
     sqn <- seq(from=rng[1], to=rng[2], length.out=ncuts)
     
     daux$migvol_cut <- cut(faux(daux$migvol+1), breaks=sqn, labels=FALSE, include.lowest=TRUE)
-    colpal <- colorRampPalette(c("yellow", "red"))(ncuts)
+    colpal <- colorRampPalette(c("#2b3e50", "orange"))(ncuts)
     daux$migvol_cut_color <- colpal[daux$migvol_cut]
     
     
@@ -47,7 +47,7 @@ shinyServer(function(input, output) {
       lc[[colpal[i]]] <- colpal[i]
     }
     lc[['defaultFill']] <- "858585"
-    lc[['#3333CC']] <- "#3333CC"
+    lc[['#000']] <- "#000" # selected country
     
     m <- rCharts::rCharts$new()
     m$setLib('datamaps')
@@ -58,8 +58,6 @@ shinyServer(function(input, output) {
           geographyConfig = list(highlightFillColor = '585858'))
     m
   })
-  
-  
   
   output$plot <- renderChart2({
     
