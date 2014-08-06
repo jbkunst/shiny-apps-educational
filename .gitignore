@@ -1,3 +1,6 @@
 .Rproj.user
 .Rhistory
 .RData
+
+rstudio-logs/data_proc/*
+rstudio-logs/data_raw/*
