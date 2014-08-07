@@ -1,5 +1,7 @@
 rm(list=ls())
 library(plyr)
+source("00_parameters.R")
+
 
 folder <- "../data_raw"
 
@@ -12,9 +14,9 @@ days_missing <- setdiff(days_all, tools::file_path_sans_ext(dir(path = folder), 
 years_missing <- as.POSIXlt(days_missing)$year + 1900
 
 urls <- paste0('http://cran-logs.rstudio.com/', years_missing, '/', days_missing, '.csv.gz')
+urls <- if(length(days_missing)!=0) urls else NULL
 
 l_ply(urls, function(url){ # url <- sample(urls, size = 1)
-  message(url)
   try_default(download.file(url, destfile = file.path(folder, basename(url))), 
               message(sprintf("File %s not found", url )))  
 })
