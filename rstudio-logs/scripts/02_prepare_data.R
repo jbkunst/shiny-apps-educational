@@ -25,6 +25,7 @@ f1 <- "2012-11-07"
 f2 <- "2013-11-10"
 head(data)
 str(data)
+dim(data)
 
 system.time(res1 <- dbGetQuery(db, sprintf("select * from rstudio_logs where date >= '%s' and date <= '%s'", f1, f2)))
 system.time(res2 <- subset(data, date >= f1 & date <= f2))
