@@ -12,14 +12,15 @@ shinyUI(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "http://bootswatch.com/superhero/bootstrap.min.css")
       ),
-    titlePanel("Migrations Analysis"),
+    br(),
     sidebarLayout(
       sidebarPanel(
-        selectizeInput(
-          inputId = "destination_selector", label = "Destination", choices = unique(data$cntdest_label), multiple = FALSE, selected = "United States"
+        h1("Migrations Analysis"),
+        selectInput(
+          inputId = "destination_selector", label = "Destination", choices = unique(data$cntdest_label), multiple = FALSE, selected = "United States", width = "100%"
           ),
-        selectizeInput(
-          inputId = "origin_selector", label = "Origin (max. 10)", choices = unique(data$cntorg_label), multiple = TRUE,  options=list(maxItems = 10), selected = c("Mexico", "China", "India")
+        selectInput(
+          inputId = "origin_selector", label = "Origin", choices = unique(data$cntorg_label), multiple = TRUE, selected = c("Mexico", "China", "India"), width = "100%"
           ),
         radioButtons(
           inputId = "plot_type", label = "Plot type",
