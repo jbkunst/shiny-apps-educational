@@ -15,7 +15,7 @@ shinyUI(
     br(),
     sidebarLayout(
       sidebarPanel(
-        h1("Migrations Analysis"),
+        h3("Migrations Analysis"),
         selectInput(
           inputId = "destination_selector", label = "Destination", choices = unique(data$cntdest_label), multiple = FALSE, selected = "United States", width = "100%"
           ),
