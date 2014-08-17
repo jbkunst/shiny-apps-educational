@@ -48,26 +48,12 @@ l_ply(files_compress, function(x){  # x <- sample(files_compress, size = 1)
    
 }, .progress="text")
 
-# test <- dbGetQuery(db, "select *, datetime(timestamp, 'unixepoch', 'localtime') as datetime_timestamp_sqlite, date(timestamp, 'unixepoch', 'localtime') as date_timestamp_sqlite, time(timestamp, 'unixepoch', 'localtime') as time_timestamp_sqlite from rstudio_logs")
-# test$date_time <- format(as.POSIXct(test$timestamp, tz = "", origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
-# test$date <- format(as.POSIXct(test$timestamp, tz = "", origin = "1970-01-01"), "%Y-%m-%d")
-# head(test)
-# str(test)
-# 
-# sum(files_counts$file_n)
-# 
-# test2 <- test[!test$date_time == test$datetime_timestamp_sqlite,]
-# head(test2)
-# 
-# sqlite_count2 <- ddply(test, .(date), summarize, sqlite2_n = length(date))
-# sqlite_count <- dbGetQuery(db, "select date(timestamp, 'unixepoch', 'localtime') as date, count(*) as sqlite_n from rstudio_logs group by date(timestamp, 'unixepoch', 'localtime')")
-# files_counts2 <- ldply(files_compress, function(x){
-#   data.frame(date = file_date <- str_extract(x, "\\d{4}-\\d{2}-\\d{2}"),
-#              files_n2 = nrow(read.table(gzfile(x), nrows =  -1, sep = ",", quote = "\"", header = TRUE)))
-# }, .progress="text")
-# 
-# test_f <- join(sqlite_count, sqlite_count2, type = "full")
-# test_f <- join(test_f, files_counts, type = "full")
-# test_f <- join(test_f, files_counts2, type = "full")
-# test_f <- test_f[order(test_f$date), ]
-# View(test_f)
+
+
+sqlite_counts <- dbGetQuery(db, "select date(timestamp, 'unixepoch', 'localtime') as date, count(*) as sqlite_n from rstudio_logs group by date(timestamp, 'unixepoch', 'localtime')")
+files_counts <- ldply(files_compress, function(x){
+  data.frame(date = str_extract(x, "\\d{4}-\\d{2}-\\d{2}"),
+             files_n = nrow(read.table(gzfile(x), nrows =  -1, sep = ",", quote = "\"", header = TRUE)))
+  }, .progress="text")
+test <- join(sqlite_counts, files_counts, type = "full")
+View(test)
