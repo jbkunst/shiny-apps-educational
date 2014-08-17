@@ -45,10 +45,8 @@ l_ply(files_compress, function(x){  # x <- sample(files_compress, size = 1)
   } else {
     message(sprintf("File %s, rows %s, rows in db %s, NOT uploaded", x, prettyNum(nrow(d), big.mark =  "."), prettyNum(db_nrow, big.mark = "."))) 
   }
-    
+   
 }, .progress="text")
-
-
 
 # test <- dbGetQuery(db, "select *, datetime(timestamp, 'unixepoch', 'localtime') as datetime_timestamp_sqlite, date(timestamp, 'unixepoch', 'localtime') as date_timestamp_sqlite, time(timestamp, 'unixepoch', 'localtime') as time_timestamp_sqlite from rstudio_logs")
 # test$date_time <- format(as.POSIXct(test$timestamp, tz = "", origin = "1970-01-01"), "%Y-%m-%d %H:%M:%S")
