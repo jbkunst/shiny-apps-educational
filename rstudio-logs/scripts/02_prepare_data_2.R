@@ -5,9 +5,11 @@ library(RSQLite)
 options(stringsAsFactors = FALSE)
 source("00_parameters.R")
 
-
+# d$date_revert <- format(as.POSIXct(d$timestamp, tz = "GMT", origin = "1970-01-01"), "%Y-%m-%d")
+# d$time_revert <- format(as.POSIXct(d$timestamp, tz = "GMT", origin = "1970-01-01"), "%H:%M:%S") 
 suppressWarnings(dir.create(pars$folder_data_app))
-
+start <- as.numeric(strptime(paste(file_date, "00:00:00"), "%Y-%m-%d %H:%M:%S"))
+end <- as.numeric(strptime(paste(file_date, "23:59:59"), "%Y-%m-%d %H:%M:%S"))
 
 files_compress <- dir(path = pars$folder_data_raw, full.names = TRUE)
 files_compress <- files_compress[file.info(files_compress)$size != 0]
