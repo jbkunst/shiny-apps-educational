@@ -1,6 +1,4 @@
-rm(list=ls())
-library(plyr)
-source("00_parameters.R")
+source("00_parameters_and_packages.R")
 
 
 suppressWarnings(dir.create(pars$folder_data_raw))
