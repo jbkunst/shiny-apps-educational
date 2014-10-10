@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 
+# Rstudio logs
 rstudio-logs/data_proc/*
 rstudio-logs/data_raw/*
 rstudio-logs/data_app/*
