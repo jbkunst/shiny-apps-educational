@@ -9,7 +9,8 @@ days_all <- as.character(days_all)
 
 
 days_missing <- setdiff(days_all, tools::file_path_sans_ext(dir(path = pars$folder_data_raw), TRUE))
-years_missing <- as.POSIXlt(days_missing)$year + 1900
+years_missing <- year(days_missing)
+
 
 
 urls <- paste0('http://cran-logs.rstudio.com/', years_missing, '/', days_missing, '.csv.gz')
