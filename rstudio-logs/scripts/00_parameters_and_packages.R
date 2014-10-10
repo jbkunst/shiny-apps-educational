@@ -1,5 +1,6 @@
 rm(list=ls())
 library(plyr)
+library(lubridate)
 library(stringr)
 library(RSQLite)
 options(stringsAsFactors = FALSE)
