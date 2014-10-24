@@ -1,0 +1,21 @@
+@import url(http://fonts.googleapis.com/css?family=Covered+By+Your+Grace);
+@import url(http://fonts.googleapis.com/css?family=Shadows+Into+Light);
+
+body {
+    background-image:url("bg_chalk_wall.jpg");
+    /*font-family: "Covered By Your Grace", cursive; */
+    font-family: "Shadows Into Light", cursive;
+    font-weight: normal;
+    color: white;
+    font-size: 2em;
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-left: 20px; 
+}
+select {
+    background-color: black;
+}
+
+p {
+    
+}
