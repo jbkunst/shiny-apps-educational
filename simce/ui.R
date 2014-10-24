@@ -15,8 +15,8 @@ shinyUI(
                           )
              ),
       column(width = 9, id = "menu",
-             chartOutput("plot", "highcharts"),
-             includeScript("www/hc_custom.js")
+             includeScript("www/hc_custom.js"),
+             chartOutput("plot", "highcharts")
              )
       )
     )
