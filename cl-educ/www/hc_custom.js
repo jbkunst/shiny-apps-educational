@@ -1,43 +1,3 @@
-/**
- * Highcharts pattern fill plugin
- */
-(function() {
-    var idCounter = 0,
-        base = Highcharts.Renderer.prototype.color;
-
-    Highcharts.Renderer.prototype.color = function(color, elem, prop) {
-        if (color && color.pattern && prop === 'fill') {
-            // SVG renderer
-            if (this.box.tagName == 'svg') {
-                var id = 'highcharts-pattern-'+ idCounter++;
-                var pattern = this.createElement('pattern')
-                        .attr({
-                            id: id,
-                            patternUnits: 'userSpaceOnUse',
-                            width: color.width,
-                            height: color.height
-                        })
-                        .add(this.defs),
-                    image = this.image(
-                        color.pattern, 0, 0, color.width, color.height
-                    )
-                    .add(pattern);
-                return 'url(' + this.url + '#' + id + ')';
-
-            // VML renderer
-            } else {
-                var markup = ['<', prop, ' type="tile" src="', color.pattern, '" />'];
-                elem.appendChild(
-                    document.createElement(this.prepVML(markup))
-                );                
-            }
-
-        } else {
-            return base.apply(this, arguments);
-        }
-    };    
-})(); 
-  
 Highcharts.theme = {
   chart: {
     backgroundColor:"transparent",
@@ -124,7 +84,7 @@ Highcharts.theme = {
     style: {
       color: "#FFFFFF",
       fontSize: "25px",
-      padding: "10px"
+      padding: "0px"
             
     }
         

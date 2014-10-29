@@ -8,7 +8,7 @@ shinyUI(
       ),
     fluidRow(
       column(width = 3, id = "menu",
-             h2("Analisis Modelos Behavior"),
+             h2("Micolegio"),
              radioButtons(inputId = "g_variable", label = "Group by",
                           choices = list( "Cyl" = "cyl", "VS" = "vs", "AM" = "am", "Gear" = "gear"),
                           selected = "area"

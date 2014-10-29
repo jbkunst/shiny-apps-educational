@@ -1,27 +1,33 @@
+rm(list=ls())
 library(maptools)
 library(ggplot2)
-library(plyr)
+library(raster)
 
-shp <- readShapePoly("../data/division_regional/division_regional.shp")
+polyArg <- getData('GADM', country='ARG',level=0)
+polyBol <- getData('GADM',country='BOL',level=0)
+polyPeru <- getData('GADM',country='PER',level=0)
 
+file.remove("ARG_adm0.RData", "BOL_adm0.RData", "PER_adm0.RData")
 
+polyArg_f <- fortify(polyArg)
+polyBol_f <- fortify(polyBol)
+polyPeru_f <- fortify(polyPeru)
 
-shp@data$id <- rownames(shp@data)
-head(shp@data)
+chi_shp <- readShapePoly("../data/chile_shp/cl_regiones_geo.shp")
 
-shp.points <- fortify(shp)
-head(shp.points)
-
-shp.df <- join(shp.points, shp@data, by="id")
-
-
-
-ggplot(shp.df) + 
-  aes(long,lat,group=group,fill=SHAPE_Area) + 
-  geom_polygon() +
-  geom_path(color="white") +
-  coord_equal() +
-  scale_fill_brewer("Utah Ecoregion")
+chi_f <- fortify(chi_shp)
 
 
-foreign::read.dbf("../data/division_regional/division_regional.dbf", as.is = FALSE)
+ggplot()+ 
+  geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group)) +
+  geom_polygon(data=polyArg_f,aes(long,lat,group=group), fill='white',col='grey')+ 
+  geom_polygon(data=polyBol_f,aes(long,lat,group=group), fill='white',col='grey')+ 
+  geom_polygon(data=polyPeru_f,aes(long,lat,group=group), fill='white',col='grey')+ 
+#   geom_text(aes(-65,-35,label='Argentina',colour=NA,angle=45))+
+#   geom_text(aes(-80,-35,label='Pacific Ocean',colour=NA,angle=90))+
+#   geom_text(aes(-65,-18,label='Bolivia',colour=NA,angle=0))+
+#   geom_text(aes(-73,-13,label='Peru',colour=NA,angle=0))+
+#   geom_text(aes(-72,-56,label='Chile',colour=NA,angle=0))+
+  scale_x_continuous(name=expression(paste("Longitud (",degree,")")), limits=c(-82,-53)) +
+  scale_y_continuous(name=expression(paste("Latitud (",degree,")"))) + 
+  coord_equal()+theme_bw()+theme(legend.position='none')
