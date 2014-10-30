@@ -1,33 +1,49 @@
-require(shiny)
-require(rCharts)
+input <- list(colegio_rbd = 10088, indicador = "simce_mate")
 
-input <- list(g_variable = "cyl")
 shinyServer(function(input, output) {
-
+  
   output$plot <- renderChart2({
     
-    df <- data.frame(name=c(2006:2012), value=c(5,1,8,5,6,4,5))
-  
+    d1 <- d %>%
+      select(rbd, agno, value = get(input$indicador)) %>%
+      group_by(agno) %>%
+      summarize(n = n(),
+                n.val = sum(!is.na(value)),
+                p25 = quantile(value, .25, na.rm = TRUE),
+                p50 = quantile(value, .50, na.rm = TRUE),
+                p75 = quantile(value, .75, na.rm = TRUE))
+    
+    d2 <- d %>%
+      filter(rbd==input$colegio_rbd) %>%
+      select(agno, value = get(input$indicador))
+    
+    d3 <- join(d1, d2, by ="agno")
+
+    # Plot
     p <- Highcharts$new()
     
-    p$series(name = "Colegio", data = df$value, type ="line", lineWidth = 9, color="#FFFFFF")
+    p$series(name = paste(input$indicador), data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
+    p$series(name = "percentil 50", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
+    p$series(name = "percentil 25", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
+    p$series(name = "percentil 75", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
     
-    p$series(name = "Mediana", data = df$value+rnorm(nrow(df),0,1), type = "line",
-             lineWidth = 1, dashStyle="longdash", color="#FCFCFC")
-    p$series(name = "1er quintil superior", data = df$value+5, type = "line",
-             lineWidth = 1, dashStyle="dash", color="#ECECEC")
-    p$series(name = "3er quintil superior", data = df$value-5, type = "line",
-             lineWidth = 1, dashStyle="dash", color="#ECECEC")
+    p$xAxis(categories = d3$agno)
     
+    p$plotOptions(line = list(marker = list(enabled = FALSE)))
     
-    p$xAxis(categories = df$name)
-    p$set(width = "100%", height= "100%")
-
     p
-
-    # html <- p$render()
-    # cat(html)
     
   })
 
+  output$map_chile <- renderPlot({
+    
+    chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
+    chi_f <- fortify(chi_shp)
+    p <- ggplot()+ 
+      geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
+      coord_equal() + reuse::theme_null()
+    p
+    
+  }, bg="transparent")
+  
 })

@@ -44,7 +44,17 @@ head(d)
 str(d)
 
 
+colegios_choices <- colegios$rbd
+names(colegios_choices) <- paste(colegios$rbd, colegios$nombre_establecimiento, "(", colegios$nombre_deprov, ")")
 
+simce_mate
+names(d)
+indicador_choices <- c("SIMCE Matemátcas" = "simce_mate",
+                       "SIMCE Lenguaje" = "simce_leng",
+                       "PSU Matemáticas" = "psu_matematica",
+                      "PSU Lenguaje" = "psu_lenguaje")
+
+save(d, colegios, colegios_choices, indicador_choices, file="../data/colegios.RData")
 
 #### Testing alpha ####
 head(d)

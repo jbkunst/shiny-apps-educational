@@ -17,6 +17,11 @@ chi_shp <- readShapePoly("../data/chile_shp/cl_regiones_geo.shp")
 
 chi_f <- fortify(chi_shp)
 
+ggplot()+ 
+  geom_polygon(data=chi_f,aes(long,lat,color=flag,group=group))+
+  coord_equal() + reuse::theme_null()
+
+
 table(chi_f$id)
 chi_f$flag <- ifelse(chi_f$id=="5", "yep", "nope")
 
