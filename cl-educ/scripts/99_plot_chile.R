@@ -1,17 +1,18 @@
 rm(list=ls())
 library(maptools)
 library(ggplot2)
-library(raster)
 
-polyArg <- getData('GADM', country='ARG',level=0)
-polyBol <- getData('GADM',country='BOL',level=0)
-polyPeru <- getData('GADM',country='PER',level=0)
-
-file.remove("ARG_adm0.RData", "BOL_adm0.RData", "PER_adm0.RData")
-
-polyArg_f <- fortify(polyArg)
-polyBol_f <- fortify(polyBol)
-polyPeru_f <- fortify(polyPeru)
+# library(raster)
+# 
+# polyArg <- getData('GADM', country='ARG',level=0)
+# polyBol <- getData('GADM',country='BOL',level=0)
+# polyPeru <- getData('GADM',country='PER',level=0)
+# 
+# file.remove("ARG_adm0.RData", "BOL_adm0.RData", "PER_adm0.RData")
+# 
+# polyArg_f <- fortify(polyArg)
+# polyBol_f <- fortify(polyBol)
+# polyPeru_f <- fortify(polyPeru)
 
 chi_shp <- readShapePoly("../data/chile_shp/cl_regiones_geo.shp")
 
@@ -42,3 +43,4 @@ ggplot()+
   scale_x_continuous(name=expression(paste("Longitud (",degree,")")), limits=c(-82,-53)) +
   scale_y_continuous(name=expression(paste("Latitud (",degree,")"))) + 
   coord_equal()+theme_bw()+theme(legend.position='none')
+

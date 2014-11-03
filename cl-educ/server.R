@@ -1,4 +1,5 @@
-input <- list(colegio_rbd = 10088, indicador = "simce_mate")
+# input <- list(colegio_rbd = 10088, indicador = "simce_mate")
+load("data/colegios.RData")
 
 shinyServer(function(input, output) {
   
@@ -41,7 +42,7 @@ shinyServer(function(input, output) {
     chi_f <- fortify(chi_shp)
     p <- ggplot()+ 
       geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
-      coord_equal() + reuse::theme_null()
+      coord_equal() + theme_null()
     p
     
   }, bg="transparent")

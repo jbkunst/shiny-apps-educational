@@ -47,7 +47,6 @@ str(d)
 colegios_choices <- colegios$rbd
 names(colegios_choices) <- paste(colegios$rbd, colegios$nombre_establecimiento, "(", colegios$nombre_deprov, ")")
 
-simce_mate
 names(d)
 indicador_choices <- c("SIMCE Matemátcas" = "simce_mate",
                        "SIMCE Lenguaje" = "simce_leng",
