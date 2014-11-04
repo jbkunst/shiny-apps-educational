@@ -2,7 +2,7 @@ Highcharts.theme = {
   chart: {
     backgroundColor:"transparent",
     style: {
-      fontFamily: "Covered By Your Grace",
+      fontFamily: "Shadows Into Light",
       color: "#FCFCFC"
             
     },
@@ -80,11 +80,11 @@ Highcharts.theme = {
         
   },
   tooltip: {
-    backgroundColor: "#000000",
+    backgroundColor: "#333333",
     style: {
       color: "#FFFFFF",
-      fontSize: "25px",
-      padding: "0px"
+      fontSize: "20px",
+      padding: "10px"
             
     }
         

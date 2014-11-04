@@ -3,7 +3,7 @@ load("data/app_data.RData")
 
 shinyServer(function(input, output) {
   
-  output$plot <- renderChart2({
+  output$rank_plot <- renderChart2({
     
     d1 <- d %>%
       select(rbd, agno, value = get(input$indicador)) %>%
@@ -36,15 +36,23 @@ shinyServer(function(input, output) {
     
   })
 
-  output$map_chile <- renderPlot({
+  output$rank_text <- renderUI({
+    str1 <- paste("lalal", "lelele")
+    str2 <- paste("You have selected", input$colegio_rbd)
+    str3 <- paste("Ranks", span(class="bold", 23), "de ", span(class="bold", 140))
     
-    chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
-    chi_f <- fortify(chi_shp)
-    p <- ggplot()+ 
-      geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
-      coord_equal() + theme_null()
-    p
-    
-  }, bg="transparent")
+    HTML(paste(str1, str2, str3))
+  })
+     
+#   output$map_chile <- renderPlot({
+#     
+#     chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
+#     chi_f <- fortify(chi_shp)
+#     p <- ggplot()+ 
+#       geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
+#       coord_equal() + theme_null()
+#     p
+#     
+#   }, bg="transparent")
   
 })

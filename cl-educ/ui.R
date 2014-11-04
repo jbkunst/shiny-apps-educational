@@ -11,20 +11,19 @@ load("data/app_data.RData")
 shinyUI(
   fluidPage(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")
       ),
     fluidRow(
-      column(width = 10, id = "menu",
+      column(width = 6, id = "menu",
              h2("¿Cómo va mi colegio?"),
+             
+             # Controls
              selectInput("colegio_rbd", NULL, colegios_choices, width="100%"),
              selectInput("indicador", NULL, indicador_choices, width="100%"),
-            
-             includeScript("www/hc_custom.js"),
-             chartOutput("plot", "highcharts")
-
-             ),
-      column(width = 2, id = "menu",
-             plotOutput("map_chile")
+             # Content
+             includeScript("www/js/hc_custom.js"),
+             chartOutput("rank_plot", "highcharts"),
+             htmlOutput("rank_text")
              )
       )
     )
