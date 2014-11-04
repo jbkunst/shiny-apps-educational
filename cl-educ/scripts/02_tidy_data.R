@@ -9,8 +9,8 @@ library(rCharts)
 
 
 #### load RData ####
-load("../data/d_psu.RData")
-load("../data/d_sim.RData")
+load("data/d_psu.RData")
+load("data/d_sim.RData")
 # load("../data/d_ren.RData")
 
 d_psu %>% group_by(agno) %>% summarise(n())
@@ -25,7 +25,6 @@ d_sim_res <- d_sim[,setdiff(names(d_sim), vars)]
 colegios <- rbind.fill(d_psu[, c("rbd", vars)], d_sim[, c("rbd", vars)]) %>%
   distinct() %>%
   mutate(rbd = as.numeric(rbd))
-
 
 head(d_psu_res)
 head(d_sim_res)
@@ -45,7 +44,11 @@ str(d)
 
 
 colegios_choices <- colegios$rbd
-names(colegios_choices) <- paste(colegios$rbd, colegios$nombre_establecimiento, "(", colegios$nombre_deprov, ")")
+colegios_choices_names <- paste(colegios$rbd,
+                                "-",
+                                colegios$nombre_establecimiento,
+                                paste0("(", colegios$nombre_deprov, ")"))
+names(colegios_choices) <- colegios_choices_names
 
 names(d)
 indicador_choices <- c("SIMCE Matemátcas" = "simce_mate",
@@ -53,7 +56,7 @@ indicador_choices <- c("SIMCE Matemátcas" = "simce_mate",
                        "PSU Matemáticas" = "psu_matematica",
                       "PSU Lenguaje" = "psu_lenguaje")
 
-save(d, colegios, colegios_choices, indicador_choices, file="../data/colegios.RData")
+save(d, colegios, colegios_choices, indicador_choices, file="data/app_data.RData")
 
 #### Testing alpha ####
 head(d)

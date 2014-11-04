@@ -5,7 +5,7 @@ library(plyr)
 
 
 #### xlsx to RData ####
-files <- dir("../data/", full.names = TRUE, pattern = ".xlsx$")
+files <- dir("data/", full.names = TRUE, pattern = ".xlsx$")
 files
 
 files_psu <- files[grepl("PSU", files)]

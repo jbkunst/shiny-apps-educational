@@ -1,5 +1,5 @@
 # input <- list(colegio_rbd = 10088, indicador = "simce_mate")
-load("data/colegios.RData")
+load("data/app_data.RData")
 
 shinyServer(function(input, output) {
   

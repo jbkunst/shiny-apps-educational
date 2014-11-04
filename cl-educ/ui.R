@@ -6,7 +6,7 @@ library(plyr)
 library(dplyr)
 devtools::source_url("https://raw.githubusercontent.com/jbkunst/reuse/master/R/gg_themes.R")
 
-load("data/colegios.RData")
+load("data/app_data.RData")
 
 shinyUI(
   fluidPage(
@@ -15,7 +15,7 @@ shinyUI(
       ),
     fluidRow(
       column(width = 10, id = "menu",
-             h2("Â¿Äomo va mi colegio?"),
+             h2("¿Cómo va mi colegio?"),
              selectInput("colegio_rbd", NULL, colegios_choices, width="100%"),
              selectInput("indicador", NULL, indicador_choices, width="100%"),
             
