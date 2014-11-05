@@ -4,18 +4,22 @@
 
 body {
   background-image:url("../img/bg_chalk_wall.jpg");
+  
   font-family: "Shadows Into Light", cursive;
   font-weight: normal;
+  font-size: 1.2em;
   color: white;
-  font-size: 1.5em;
+  
+  line-height: 150%;
+  
   padding-top: 20px;
   padding-right: 20px;
   padding-left: 20px; 
 }
 
+
 #title {
-font-family: "Covered By Your Grace", cursive; 
-  font-size: 2em;
+  font-family: "Covered By Your Grace", cursive; 
   font-weight: lighter;
 }
 
@@ -24,17 +28,19 @@ font-family: "Covered By Your Grace", cursive;
 }
 
 .items{
-  font-family: "Shadows Into Light", cursive;
-  font-weight: bold;
+  font-family: "Covered By Your Grace", cursive;
+  font-size: 1em;
 }
 
 a {
-  color: #FFF;
+  font-weight: bold;
   text-decoration: none;
-  padding-right: 90px;
 }
 
 .nav-pills > li > a {
+  color: #FFF;
+  text-decoration: none;
+  padding-right: 90px;
   margin-top: 20px;
   margin-bottom: 30px;
   padding-right: 22px;
@@ -45,10 +51,12 @@ a {
 
 .nav-pills > .active > a, .nav-pills > .active > a:hover {
   background-color: white;
+  background-image:url("../img/pattern_chalk.jpg");
+  background-size: 80% 80%;
   color: #333333;    
 }
 
-.tab-pane .active {
-  height: 100%;
-}
-
+hr {
+  height: 6px;
+  border: 0;
+  box-shadow: inset 0 6px 6px -6px white;

@@ -32,14 +32,19 @@ shinyServer(function(input, output) {
     
     p$plotOptions(line = list(marker = list(enabled = FALSE)))
     
+    p$set(width = "100%" ,height = "100%")
+    
+    # p$params$width <- 700
+    # p$params$height <- 300
+    
     p
     
   })
 
   output$rank_text <- renderUI({
     str1 <- paste("lalal", "lelele")
-    str2 <- paste("You have selected", input$colegio_rbd)
-    str3 <- paste("Ranks", span(class="bold", 23), "de ", span(class="bold", 140))
+    str2 <- paste("You have selectsdf sdfed", input$colegio_rbd, "asd asda sdasda sdasd asda sd")
+    str3 <- paste("Ranks", span(class="bold", 23), "de ", span(class="bold", 140), " asd asda sdasdas dasdasd as")
     
     HTML(paste(str1, str2, str3))
   })
