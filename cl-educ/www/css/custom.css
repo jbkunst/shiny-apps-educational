@@ -1,9 +1,9 @@
 @import url(http://fonts.googleapis.com/css?family=Shadows+Into+Light);
 @import url(http://fonts.googleapis.com/css?family=Covered+By+Your+Grace);
+@import url(http://fonts.googleapis.com/css?family=Permanent+Marker);
 
 body {
   background-image:url("../img/bg_chalk_wall.jpg");
-  /*font-family: "Covered By Your Grace", cursive; */
   font-family: "Shadows Into Light", cursive;
   font-weight: normal;
   color: white;
@@ -13,6 +13,11 @@ body {
   padding-left: 20px; 
 }
 
+#title {
+font-family: "Covered By Your Grace", cursive; 
+  font-size: 2em;
+  font-weight: lighter;
+}
 
 .bold {
   font-weight: bold;
@@ -21,5 +26,29 @@ body {
 .items{
   font-family: "Shadows Into Light", cursive;
   font-weight: bold;
-  font-size: 1.0em;
 }
+
+a {
+  color: #FFF;
+  text-decoration: none;
+  padding-right: 90px;
+}
+
+.nav-pills > li > a {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding-right: 22px;
+  padding-left: 22px;
+  margin-right: 22px;
+  line-height: 24px;
+}
+
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+  background-color: white;
+  color: #333333;    
+}
+
+.tab-pane .active {
+  height: 100%;
+}
+
