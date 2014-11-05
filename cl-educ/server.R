@@ -3,8 +3,10 @@ load("data/app_data.RData")
 
 shinyServer(function(input, output) {
   
-  output$rank_plot <- renderChart2({
+  output$plot_colegio <- renderChart2({
     
+    colegio_nombre <- colegios %>% filter(rbd == input$colegio_rbd) %>% .$nombre_establecimiento
+      
     d1 <- d %>%
       select(rbd, agno, value = get(input$indicador)) %>%
       group_by(agno) %>%
@@ -23,10 +25,10 @@ shinyServer(function(input, output) {
     # Plot
     p <- Highcharts$new()
     
-    p$series(name = paste(input$indicador), data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
-    p$series(name = "percentil 50", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
-    p$series(name = "percentil 25", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
-    p$series(name = "percentil 75", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
+    p$series(name = colegio_nombre, data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
+    p$series(name = "Mediana", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
+    p$series(name = "25% peor", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
+    p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
     
     p$xAxis(categories = d3$agno)
     
@@ -34,19 +36,21 @@ shinyServer(function(input, output) {
     
     p$set(width = "100%" ,height = "100%")
     
-    # p$params$width <- 700
-    # p$params$height <- 300
-    
     p
     
   })
 
-  output$rank_text <- renderUI({
-    str1 <- paste("lalal", "lelele")
-    str2 <- paste("You have selectsdf sdfed", input$colegio_rbd, "asd asda sdasda sdasd asda sd")
-    str3 <- paste("Ranks", span(class="bold", 23), "de ", span(class="bold", 140), " asd asda sdasdas dasdasd as")
+  output$report_colegio <- renderUI({
     
-    HTML(paste(str1, str2, str3))
+    src <- normalizePath("report/report_colegio.Rmd")
+
+    owd <- setwd(tempdir())
+    on.exit(setwd(owd))
+    
+    knitr::opts_knit$set(root.dir = owd)
+    
+    HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE))
+
   })
      
 #   output$map_chile <- renderPlot({

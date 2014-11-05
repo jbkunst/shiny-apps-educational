@@ -7,7 +7,7 @@ body {
   
   font-family: "Shadows Into Light", cursive;
   font-weight: normal;
-  font-size: 1.2em;
+  font-size: 1.5em;
   color: white;
   
   line-height: 150%;
@@ -32,7 +32,8 @@ body {
   font-size: 1em;
 }
 
-a {
+a, a:hover {
+  color: white;
   font-weight: bold;
   text-decoration: none;
 }
@@ -41,19 +42,19 @@ a {
   color: #FFF;
   text-decoration: none;
   padding-right: 90px;
-  margin-top: 20px;
-  margin-bottom: 30px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   padding-right: 22px;
   padding-left: 22px;
   margin-right: 22px;
-  line-height: 24px;
+  line-height: 20px;
 }
 
-.nav-pills > .active > a, .nav-pills > .active > a:hover {
+.nav-pills > li > a:hover,
+.nav-pills > .active > a,
+.nav-pills > .active > a:hover{
   background-color: white;
-  background-image:url("../img/pattern_chalk.jpg");
-  background-size: 80% 80%;
-  color: #333333;    
+  color: #333;
 }
 
 hr {

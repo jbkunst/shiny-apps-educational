@@ -1,0 +1,21 @@
+```{r results, warning=FALSE, echo=FALSE}
+d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
+  
+d1 <- d %>%
+  select(rbd, agno, value = get(input$indicador)) %>%
+  filter(agno %in% max(d[["agno"]]) & !is.na(value)) %>%
+  mutate(ranking = rank(value, ties.method = "first"))
+
+ranking <- d1$ranking[d1$rbd==input$colegio_rbd] %>% prettyNum(big.mark = ".")
+total <- nrow(d1) %>% prettyNum(big.mark = ".")
+  
+
+value <- d1$value[d1$rbd==input$colegio_rbd]
+percentil <- 1-ecdf(d1$value)(value)
+percentil <- round(percentil, 2)*100+1
+
+nombre_indicador <- names(indicador_choices)[which(indicador_choices==input$indicador)]
+```
+
+El estableciemiento **`r d_colegio$nombre_establecimiento`** est&aacute; en el lugar **`r ranking`** de `r total`, lo que equivale al **`r percentil`&#37;** mejor con un puntaje de `r value` en `r nombre_indicador`.
+

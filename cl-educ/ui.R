@@ -1,9 +1,8 @@
 library(shiny)
 library(rCharts)
-library(maptools)
-library(ggplot2)
 library(plyr)
 library(dplyr)
+library(scales)
 # devtools::source_url("https://raw.githubusercontent.com/jbkunst/reuse/master/R/gg_themes.R")
 
 load("data/app_data.RData")
@@ -17,16 +16,16 @@ shinyUI(
       column(width = 12, id = "menu",
              h2(id="title", "Pone Título Aquí"),
              br(),
-             tabsetPanel(type = "pills", selected = "Colegio",
-               tabPanel("País",
-                        h2("plot")
+             tabsetPanel(type = "pills", selected = "COLEGIO",
+               tabPanel("PAÍS",
+                        p("plot asd asdasda sdasdas")
                         ),
-               tabPanel("Región",
-                        h2("bla")
+               tabPanel("REGIÓN",
+                        p("bla asd asdfasd fasdfasdf asdf ")
                         ),
-               tabPanel("Colegio",
+               tabPanel("COLEGIO",
                         column(width = 4,
-                               selectizeInput("colegio_rbd", NULL, colegios_choices, width="90%"),
+                               selectizeInput("colegio_rbd", NULL, colegios_choices, selected = 10726, width="90%"),
                                selectizeInput("indicador", NULL, indicador_choices, width="90%"),
                                hr(),
                                tags$small(paste(
@@ -40,12 +39,13 @@ shinyUI(
                                ),
                         column(width = 8,
                                includeScript("www/js/hc_custom.js"), 
-                               chartOutput("rank_plot", "highcharts"),
-                               htmlOutput("rank_text"),
+                               chartOutput("plot_colegio", "highcharts"),
+                               br(),
+                               uiOutput("report_colegio"),
                                br()
                                )
                         ),
-               tabPanel("Acerca de",
+               tabPanel("ACERCA DE",
                         column(width = 6,
                                includeMarkdown("report/acerca.md")
                                )
