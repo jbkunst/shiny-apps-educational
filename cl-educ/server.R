@@ -49,7 +49,7 @@ shinyServer(function(input, output) {
     
     knitr::opts_knit$set(root.dir = owd)
     
-    HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE))
+    HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE, quiet = TRUE))
 
   })
      
