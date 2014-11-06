@@ -1,12 +1,9 @@
 ### ACERCA DE ESTE SOFTWARE
-Este es un software desarrollado por Joshua Kunst con fines de crear una plataforma para visualizar diferencias entre colegios. so
+Este es un software desarrollado por [Joshua Kunst](http://jkunst.com) con fines de crear una plataforma para visualizar diferencias entre colegios.
 <br/>
 
 ### DATOS
-Los datos fueron obtenidos desde [DatosGob](http://datos.gob.cl/). En particular:
-
-1. [PSU](http://datos.gob.cl/datasets/ver/648)
-2. [SIMCE](http://datos.gob.cl/datasets/ver/700)
+Los datos fueron obtenidos desde [DatosGob](http://datos.gob.cl/). En particular 1) [PSU](http://datos.gob.cl/datasets/ver/648) y 2) [SIMCE](http://datos.gob.cl/datasets/ver/700).
 <br/>
 
 ### CONTACTO

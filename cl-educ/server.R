@@ -1,13 +1,38 @@
-# input <- list(colegio_rbd = 10088, indicador = "simce_mate")
-load("data/app_data.RData")
+# input <- list(colegio_rbd = 8485, indicador = "psu_matematica",
+#               colegio_misma_region = TRUE,
+#               colegio_misma_dependencia = TRUE,
+#               colegio_misma_area = TRUE)
+load("data/consolidate_data_clean_app.RData")
 
 shinyServer(function(input, output) {
   
+  data <- reactive({
+
+    colegios_new <- colegios
+    d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
+    
+    if(input$colegio_misma_region){
+      colegios_new <- colegios_new %>% filter(numero_region %in% d_colegio$numero_region)
+    }
+    if(input$colegio_misma_dependencia){
+      colegios_new <- colegios_new %>% filter(dependencia %in% d_colegio$dependencia)
+    }
+    if(input$colegio_misma_area){
+      colegios_new <- colegios_new %>% filter(area_geografica %in% d_colegio$area_geografica)
+    }
+    
+    data <- d %>% filter(rbd %in% colegios_new$rbd)
+    
+  })
+  
+  
+  
   output$plot_colegio <- renderChart2({
     
+    data <- data()
     colegio_nombre <- colegios %>% filter(rbd == input$colegio_rbd) %>% .$nombre_establecimiento
       
-    d1 <- d %>%
+    d1 <- data %>%
       select(rbd, agno, value = get(input$indicador)) %>%
       group_by(agno) %>%
       summarize(n = n(),
@@ -43,25 +68,15 @@ shinyServer(function(input, output) {
   output$report_colegio <- renderUI({
     
     src <- normalizePath("report/report_colegio.Rmd")
-
     owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    
+    on.exit(setwd(owd))    
     knitr::opts_knit$set(root.dir = owd)
-    
     HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE, quiet = TRUE))
 
   })
+
      
 #   output$map_chile <- renderPlot({
-#     
-#     chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
-#     chi_f <- fortify(chi_shp)
-#     p <- ggplot()+ 
-#       geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
-#       coord_equal() + theme_null()
-#     p
-#     
 #   }, bg="transparent")
   
 })

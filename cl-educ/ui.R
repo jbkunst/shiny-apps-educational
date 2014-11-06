@@ -5,7 +5,7 @@ library(dplyr)
 library(scales)
 # devtools::source_url("https://raw.githubusercontent.com/jbkunst/reuse/master/R/gg_themes.R")
 
-load("data/app_data.RData")
+load("data/consolidate_data_clean_app.RData")
 
 shinyUI(
   fluidPage(
@@ -21,29 +21,31 @@ shinyUI(
                         p("plot asd asdasda sdasdas")
                         ),
                tabPanel("REGIÓN",
-                        p("bla asd asdfasd fasdfasdf asdf ")
+                        selectizeInput("region_numero", NULL, regiones_choices, width = "400")
                         ),
                tabPanel("COLEGIO",
-                        column(width = 4,
+                        column(width = 3,
                                selectizeInput("colegio_rbd", NULL, colegios_choices, selected = 10726, width="90%"),
                                selectizeInput("indicador", NULL, indicador_choices, width="90%"),
                                hr(),
-                               tags$small(paste(
-                                 "Nota: Puedes comparar el colegio seleccionado",
-                                 "considerando los colegios con características similares",
-                                 "tales como region, dependencia, etc."
+                               tags$span(paste(
+                                 "Puedes comparar el colegio seleccionado",
+                                 "considerando los colegios con características similares:"
                                )),
-                               br(), br(),
-                               selectizeInput("otra", NULL, indicador_choices, width="90%"),
-                               selectizeInput("otra1r", NULL, indicador_choices, width="90%")
+                               br(),
+                               checkboxInput("colegio_misma_region", "Misma region", FALSE),
+                               checkboxInput("colegio_misma_dependencia", "Misma dependencia", FALSE),
+                               checkboxInput("colegio_misma_area", "Misma área geográfica", FALSE),
+                               br()
                                ),
-                        column(width = 8,
+                        column(width = 5,
                                includeScript("www/js/hc_custom.js"), 
                                chartOutput("plot_colegio", "highcharts"),
-                               br(),
-                               uiOutput("report_colegio"),
                                br()
-                               )
+                               ),
+                        column(width = 4,
+                               uiOutput("report_colegio")
+                        )
                         ),
                tabPanel("ACERCA DE",
                         column(width = 6,

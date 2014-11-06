@@ -1,5 +1,5 @@
 rm(list=ls())
-load("data/d_app.RData")
+load("data/consolidate_data.RData")
 
 # rpc <- read.table("data/Codigo_unico_territorial_regiones-provincias-comunas.txt", header = TRUE, sep = "\t", encoding = "utf-8")
 
@@ -25,17 +25,16 @@ colegios$nombre_comuna <-  gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",
 colegios$nombre_establecimiento <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",
                                         tolower(colegios$nombre_establecimiento), perl = TRUE)
 
-colegios_choices <- colegios$rbd
-colegios_choices_names <- paste(colegios$rbd,
-                                "-",
-                                colegios$nombre_establecimiento,
-                                paste0("(", colegios$nombre_comuna, ")"))
-names(colegios_choices) <- colegios_choices_names
+x <- colegios$nombre_region
+x <- ifelse(grepl("AYS\\?N", x), "AYSÉN", x)
+x <- ifelse(grepl("CAN\\?A", x), "CANÍA", x)
+x <- ifelse(grepl("R\\?OS$", x), "RÍOS", x)
+x <- ifelse(grepl("TARAPAC\\?$", x), "TARAPACÁ", x)
+x <- ifelse(grepl("BIOB\\?O", x), "BIOBÍO", x)
+x <- ifelse(grepl("VALPARA\\?SO", x), "VALPARAÍSO", x)
+x <- ifelse(grepl("ANT\\?RTICA", x), "ANTÁRTICA", x)
+colegios$nombre_region <- x
+sort(unique(colegios$nombre_region[grepl("\\?", colegios$nombre_region)]))
 
-names(d)
-indicador_choices <- c("SIMCE Matemáticas" = "simce_mate",
-                       "SIMCE Lenguaje" = "simce_leng",
-                       "PSU Matemáticas" = "psu_matematica",
-                       "PSU Lenguaje" = "psu_lenguaje")
 
-save(d, colegios, colegios_choices, indicador_choices, file="data/app_data.RData")
+save(d, colegios, x, file="data/consolidate_data_clean.RData")

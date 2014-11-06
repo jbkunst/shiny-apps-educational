@@ -44,3 +44,11 @@ ggplot()+
   scale_y_continuous(name=expression(paste("Latitud (",degree,")"))) + 
   coord_equal()+theme_bw()+theme(legend.position='none')
 
+
+chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
+chi_f <- fortify(chi_shp)
+p <- ggplot()+ 
+  geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
+  coord_equal() + theme_null()
+p
+

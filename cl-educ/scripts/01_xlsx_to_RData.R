@@ -5,7 +5,7 @@ library(plyr)
 
 
 #### xlsx to RData ####
-files <- dir("data/", full.names = TRUE, pattern = ".xlsx$")
+files <- dir("data/xlsx/", full.names = TRUE, pattern = ".xlsx$")
 files
 
 
