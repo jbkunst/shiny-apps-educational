@@ -36,5 +36,8 @@ x <- ifelse(grepl("ANT\\?RTICA", x), "ANTÁRTICA", x)
 colegios$nombre_region <- x
 sort(unique(colegios$nombre_region[grepl("\\?", colegios$nombre_region)]))
 
+colegios <- colegios %>%
+  mutate(longitud = as.numeric(longitud),
+         latitud = as.numeric(latitud))
 
 save(d, colegios, x, file="data/consolidate_data_clean.RData")

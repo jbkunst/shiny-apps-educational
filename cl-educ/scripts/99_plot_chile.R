@@ -14,13 +14,25 @@ library(ggplot2)
 # polyBol_f <- fortify(polyBol)
 # polyPeru_f <- fortify(polyPeru)
 
-chi_shp <- readShapePoly("../data/chile_shp/cl_regiones_geo.shp")
+chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
 
 chi_f <- fortify(chi_shp)
 
-ggplot()+ 
-  geom_polygon(data=chi_f,aes(long,lat,color=flag,group=group))+
-  coord_equal() + reuse::theme_null()
+
+system.time(ggplot()+ 
+              geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group))+
+              coord_equal() + reuse::theme_null())
+
+
+
+chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
+chi_f <- fortify(chi_shp)
+
+system.time(ggplot()+ 
+  geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group))+
+  coord_equal() + reuse::theme_null())
+
+
 
 
 table(chi_f$id)
