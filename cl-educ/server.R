@@ -1,4 +1,4 @@
-# input <- list(colegio_rbd = 8485, indicador = "psu_matematica",
+# input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE,
 #               colegio_misma_dependencia = TRUE,
 #               colegio_misma_area = TRUE)
@@ -67,7 +67,18 @@ shinyServer(function(input, output) {
 
   output$report_colegio <- renderUI({
     
-    src <- normalizePath("report/report_colegio.Rmd")
+    drow <- data() %>%
+      select(rbd, value = get(input$indicador)) %>%
+      filter(!is.na(value) & rbd == input$colegio_rbd) %>%
+      nrow()
+   
+    if(drow != 0){
+      report_file <- "report_colegio"
+    } else {
+      report_file <- "report_colegio_no_indicator"
+    }
+      
+    src <- normalizePath(sprintf("report/%s.Rmd", report_file))
     owd <- setwd(tempdir())
     on.exit(setwd(owd))    
     knitr::opts_knit$set(root.dir = owd)
