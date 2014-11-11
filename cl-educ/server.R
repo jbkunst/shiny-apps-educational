@@ -1,8 +1,5 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
-#               colegio_misma_region = TRUE,
-#               colegio_misma_dependencia = TRUE,
-#               colegio_misma_area = TRUE)
-load("data/consolidate_data_clean_app.RData")
+#               colegio_misma_region = TRUE, olegio_misma_dependencia = TRUE, colegio_misma_area = TRUE)
 
 shinyServer(function(input, output) {
   

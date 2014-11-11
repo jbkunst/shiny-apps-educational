@@ -1,12 +1,3 @@
-library(shiny)
-library(rCharts)
-library(plyr)
-library(dplyr)
-library(scales)
-# devtools::source_url("https://raw.githubusercontent.com/jbkunst/reuse/master/R/gg_themes.R")
-
-load("data/consolidate_data_clean_app.RData")
-
 shinyUI(
   fluidPage(
     tags$head(
@@ -16,12 +7,13 @@ shinyUI(
       column(width = 12, id = "menu",
              h2(id="title", "Pone Título Aquí"),
              br(),
-             tabsetPanel(type = "pills", selected = "COLEGIO",
+             tabsetPanel(type = "pills", selected = "ACERCA DE",
                tabPanel("PAÍS",
-                        p("plot asd asdasda sdasdas")
+                        p("en construcción")
                         ),
                tabPanel("REGIÓN",
-                        selectizeInput("region_numero", NULL, regiones_choices, width = "400")
+                        selectizeInput("region_numero", NULL, regiones_choices, width = "400"),
+                        p("en construcción")
                         ),
                tabPanel("COLEGIO",
                         column(width = 3,
