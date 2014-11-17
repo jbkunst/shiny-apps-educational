@@ -12,7 +12,7 @@ shinyUI(
                         p("en construccion")
                         ),
                tabPanel("REGION",
-                        selectizeInput("region_numero", NULL, regiones_choices, width = "400"),
+#                         selectizeInput("region_numero", NULL, regiones_choices, width = "400"),
                         p("en construccion")
                         ),
                tabPanel("COLEGIO",
