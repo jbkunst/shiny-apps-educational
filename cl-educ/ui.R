@@ -25,14 +25,14 @@ shinyUI(
                                  "considerando los colegios con caracteristicas similares:"
                                )),
                                br(),
-#                                checkboxInput("colegio_misma_region", "Misma region", FALSE),
-#                                checkboxInput("colegio_misma_dependencia", "Misma dependencia", FALSE),
-#                                checkboxInput("colegio_misma_area", "Misma área geografica", FALSE),
+                               checkboxInput("colegio_misma_region", "Misma region", FALSE),
+                               checkboxInput("colegio_misma_dependencia", "Misma dependencia", FALSE),
+                               checkboxInput("colegio_misma_area", "Misma área geografica", FALSE),
                                br()
                                ),
                         column(width = 5,
                                includeScript("www/js/hc_custom.js"), 
-#                                chartOutput("plot_colegio", "highcharts"),
+                               chartOutput("plot_colegio", "highcharts"),
                                br()
                                ),
                         column(width = 4,
