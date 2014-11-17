@@ -5,20 +5,20 @@ shinyServer(function(input, output) {
   
   data <- reactive({
 
-#     colegios_new <- colegios
-#     d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
-#     
-#     if(input$colegio_misma_region){
-#       colegios_new <- colegios_new %>% filter(numero_region %in% d_colegio$numero_region)
-#     }
-#     if(input$colegio_misma_dependencia){
-#       colegios_new <- colegios_new %>% filter(dependencia %in% d_colegio$dependencia)
-#     }
-#     if(input$colegio_misma_area){
-#       colegios_new <- colegios_new %>% filter(area_geografica %in% d_colegio$area_geografica)
-#     }
-#     
-#     data <- d %>% filter(rbd %in% colegios_new$rbd)
+    colegios_new <- colegios
+    d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
+    
+    if(input$colegio_misma_region){
+      colegios_new <- colegios_new %>% filter(numero_region %in% d_colegio$numero_region)
+    }
+    if(input$colegio_misma_dependencia){
+      colegios_new <- colegios_new %>% filter(dependencia %in% d_colegio$dependencia)
+    }
+    if(input$colegio_misma_area){
+      colegios_new <- colegios_new %>% filter(area_geografica %in% d_colegio$area_geografica)
+    }
+    
+    data <- d %>% filter(rbd %in% colegios_new$rbd)
     
   })
   
