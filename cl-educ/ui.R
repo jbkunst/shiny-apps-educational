@@ -18,7 +18,7 @@ shinyUI(
                tabPanel("COLEGIO",
                         column(width = 3,
 #                                selectizeInput("colegio_rbd", NULL, colegios_choices, selected = 10726, width="90%"),
-#                                selectizeInput("indicador", NULL, indicador_choices, width="90%"),
+                               selectizeInput("indicador", NULL, indicador_choices, width="90%"),
                                hr(),
                                tags$span(paste(
                                  "Puedes comparar el colegio seleccionado",
