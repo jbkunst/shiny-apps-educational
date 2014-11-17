@@ -8,7 +8,8 @@ colegios_choices_names <- paste(colegios$rbd,
                                 colegios$nombre_establecimiento,
                                 paste0("(", colegios$nombre_comuna, ")"))
 names(colegios_choices) <- colegios_choices_names
-
+names(colegios_choices) <- iconv(names(colegios_choices) , to="ASCII//TRANSLIT") 
+names(colegios_choices)
 
 #### Regiones choices ####
 head(colegios)
