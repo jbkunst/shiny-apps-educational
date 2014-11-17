@@ -10,5 +10,5 @@ Los datos fueron obtenidos desde [DatosGob](http://datos.gob.cl/). En particular
 Ante cualquier duda o consulta envíar mail a [jbkunst@gmail.com](mailto:jbkunst@gmail.com).
 <br/>
 
-### TÉCNICO
+### TECNICO
 Este software está desarrollado con [Shiny](shiny.rstudio.com) usando [R](http://www.rstudio.com/) y [RStudio](http://www.rstudio.com/).

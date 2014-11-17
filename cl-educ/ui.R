@@ -5,15 +5,15 @@ shinyUI(
       ),
     fluidRow(
       column(width = 12, id = "menu",
-             h2(id="title", "Pone Título Aquí"),
+             h2(id="title", "Pone Título Aqui"),
              br(),
              tabsetPanel(type = "pills", selected = "ACERCA DE",
-               tabPanel("PAÍS",
-                        p("en construcción")
+               tabPanel("PAIS",
+                        p("en construccion")
                         ),
-               tabPanel("REGIÓN",
+               tabPanel("REGION",
                         selectizeInput("region_numero", NULL, regiones_choices, width = "400"),
-                        p("en construcción")
+                        p("en construccion")
                         ),
                tabPanel("COLEGIO",
                         column(width = 3,
@@ -22,12 +22,12 @@ shinyUI(
                                hr(),
                                tags$span(paste(
                                  "Puedes comparar el colegio seleccionado",
-                                 "considerando los colegios con características similares:"
+                                 "considerando los colegios con caracteristicas similares:"
                                )),
                                br(),
                                checkboxInput("colegio_misma_region", "Misma region", FALSE),
                                checkboxInput("colegio_misma_dependencia", "Misma dependencia", FALSE),
-                               checkboxInput("colegio_misma_area", "Misma área geográfica", FALSE),
+                               checkboxInput("colegio_misma_area", "Misma área geografica", FALSE),
                                br()
                                ),
                         column(width = 5,

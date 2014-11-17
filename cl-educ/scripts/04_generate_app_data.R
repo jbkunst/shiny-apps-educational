@@ -20,9 +20,9 @@ names(regiones_choices) <- regiones$nombre_region
 
 #### Indicadores Choices ####
 names(d)
-indicador_choices <- c("SIMCE Matemáticas" = "simce_mate",
+indicador_choices <- c("SIMCE Matematicas" = "simce_mate",
                        "SIMCE Lenguaje" = "simce_leng",
-                       "PSU Matemáticas" = "psu_matematica",
+                       "PSU Matematicas" = "psu_matematica",
                        "PSU Lenguaje" = "psu_lenguaje")
 
 #### Comparacion ####
