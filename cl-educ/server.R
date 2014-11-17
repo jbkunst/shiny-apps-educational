@@ -1,5 +1,5 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
-#               colegio_misma_region = TRUE, olegio_misma_dependencia = TRUE, colegio_misma_area = TRUE)
+#               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE)
 
 shinyServer(function(input, output) {
   
@@ -76,11 +76,10 @@ shinyServer(function(input, output) {
     }
       
     src <- normalizePath(sprintf("report/%s.Rmd", report_file))
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))    
-    knitr::opts_knit$set(root.dir = owd)
+#     owd <- setwd(tempdir())
+#     on.exit(setwd(owd))    
+#     knitr::opts_knit$set(root.dir = owd)
     HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE, quiet = TRUE))
-
   })
 
      

@@ -26,6 +26,6 @@ El estableciemiento **`r d_colegio$nombre_establecimiento`** esta; en el lugar *
 
 <br>
 
-Region `r d_colegio$nombre_region`, comuna de `r d_colegio$nombre_comuna`, dependencia: `r d_colegio$dependencia` y area geogr&aacute;fica `r d_colegio$area_geografica`.
+Region `r d_colegio$nombre_region`, comuna de `r d_colegio$nombre_comuna`, dependencia: `r d_colegio$dependencia` y area geografica `r d_colegio$area_geografica`.
 
 
