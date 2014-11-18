@@ -4,9 +4,7 @@ library(ggplot2)
 
 
 chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
-
 chi_f <- fortify(chi_shp)
-
 system.time(
   print(
     ggplot()+
@@ -18,9 +16,7 @@ system.time(
 
 
 chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
-
 chi_f <- fortify(chi_shp)
-
 system.time(
   print(
     ggplot()+
@@ -31,17 +27,8 @@ system.time(
 
 
 
+table(chi_f$id)
 chi_f$id <- as.numeric(chi_f$id)+1
-
-
-
-
-names(table(chi_f$id))
-chi_f$flag <- ifelse(chi_f$id==15, "yep", "nope")
-
-ggplot()+ 
-  geom_polygon(data=chi_f,aes(long,lat, fill=flag,group=group))+
-  coord_equal() + reuse::theme_null()
 
 library(plyr)
 graphics.off()
