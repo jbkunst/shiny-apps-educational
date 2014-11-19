@@ -2,6 +2,7 @@ library(shiny)
 library(rCharts)
 library(plyr)
 library(dplyr)
+library(ggplot2)
 library(scales)
 
 load("data/consolidate_data_clean_app.RData")
