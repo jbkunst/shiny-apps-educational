@@ -1,5 +1,6 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
-#               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE)
+#               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
+#               region_numero = "3")
 
 shinyServer(function(input, output) {
   
@@ -21,8 +22,6 @@ shinyServer(function(input, output) {
     data <- d %>% filter(rbd %in% colegios_new$rbd)
     
   })
-  
-  
   
   output$plot_colegio <- renderChart2({
     
@@ -70,20 +69,23 @@ shinyServer(function(input, output) {
       nrow()
    
     if(drow != 0){
-      report_file <- "report_colegio"
+      report_file <- "report/report_colegio.rmd"
     } else {
-      report_file <- "report_colegio_no_indicator"
+      report_file <- "report/report_colegio_no_indicator.rmd"
     }
-      
-    src <- normalizePath(sprintf("report/%s.Rmd", report_file))
-#     owd <- setwd(tempdir())
-#     on.exit(setwd(owd))    
-#     knitr::opts_knit$set(root.dir = owd)
-    HTML(knitr::knit2html(text = readLines(src), fragment.only = TRUE, quiet = TRUE))
+    HTML(knitr::knit2html(text = readLines(report_file), fragment.only = TRUE, quiet = TRUE))
   })
-
-     
-#   output$map_chile <- renderPlot({
-#   }, bg="transparent")
+  
+  output$map_chi_reg <- renderPlot({
+    head(chi_map)
+    
+    chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
+      
+    ggplot(chi_map)+ 
+      geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
+      scale_fill_manual(values = c("transparent", "white"))+
+      coord_equal() + reuse::theme_null()
+    
+  }, bg="transparent")
   
 })

@@ -1,4 +1,6 @@
 rm(list=ls())
+library(plyr)
+library(dplyr)
 load("data/consolidate_data_clean.RData")
 
 #### Colegios choices ####
@@ -28,12 +30,23 @@ indicador_choices <- c("SIMCE Matematicas" = "simce_mate",
                        "PSU Matematicas" = "psu_matematica",
                        "PSU Lenguaje" = "psu_lenguaje")
 
-#### Comparacion ####
-misma_region <- c("Todas las regiones")
+#### chi ####
+chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
+chi_map <- fortify(chi_shp)
+chi_map$id <- as.numeric(chi_map$id)+1
+
+newkey <- data.frame(id=seq(15),newid=c(1,2,3, 4, 5, 6,7,8,9,10,13,14,15,11,12))  
+head(chi_map)
+chi_map <- left_join(chi_map, newkey)
+head(chi_map)
+table(chi_map$newid)
+
+
 
 
 save(d, colegios,
      colegios_choices,
      indicador_choices,
      regiones_choices,
+     chi_map,
      file="data/consolidate_data_clean_app.RData")

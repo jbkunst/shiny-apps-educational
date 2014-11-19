@@ -7,16 +7,23 @@ shinyUI(
       column(width = 12, id = "menu",
              h2(id="title", "Pone Título Aqui"),
              br(),
-             tabsetPanel(type = "pills", selected = "ACERCA DE",
+             tabsetPanel(type = "pills", selected = "REGION",
                tabPanel("PAIS",
                         p("en construccion")
                         ),
                tabPanel("REGION",
-                        selectizeInput("region_numero", NULL, regiones_choices, width = "400"),
-                        p("en construccion")
+                        column(width = 4,
+                               selectizeInput("region_numero", NULL, regiones_choices, width = "400")
+                               ),
+                        column(width = 5,
+                               "hol"
+                        ),
+                        column(width = 3,
+                               plotOutput("map_chi_reg", height = "600px")
+                               )
                         ),
                tabPanel("COLEGIO",
-                        column(width = 3,
+                        column(width = 4,
                                selectizeInput("colegio_rbd", NULL, colegios_choices, selected = 10726, width="90%"),
                                selectizeInput("indicador", NULL, indicador_choices, width="90%"),
                                hr(),
@@ -35,7 +42,7 @@ shinyUI(
                                chartOutput("plot_colegio", "highcharts"),
                                br()
                                ),
-                        column(width = 4,
+                        column(width = 3,
                                uiOutput("report_colegio")
                         )
                         ),

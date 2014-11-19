@@ -38,7 +38,7 @@ llply(sort(unique(chi_f$id)), function(x){ #x <- 2
     geom_polygon(data=chi_f,aes(long,lat, fill=flag,group=group))+
     coord_equal() + reuse::theme_null() + ggtitle(x)
 })
-  
+
 
 
 # library(raster)
