@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
     ggplot(chi_map)+ 
       geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
       scale_fill_manual(values = c("transparent", "white"))+
-      coord_equal() + reuse::theme_null()
+      coord_equal() + theme_null()
     
   }, bg="transparent")
   
