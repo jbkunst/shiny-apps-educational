@@ -9,9 +9,10 @@ library(rCharts)
 
 
 #### load RData ####
-load("data/d_psu.RData")
-load("data/d_sim.RData")
-# load("../data/d_ren.RData")
+load("data/xlsx_data.RData")
+# load("data/d_psu.RData")
+# load("data/d_sim.RData")
+# load("data/d_ren.RData")
 
 d_psu %>% group_by(agno) %>% summarise(n())
 d_sim %>% group_by(agno) %>% summarise(n())

@@ -18,20 +18,6 @@ d_psu <- ldply(files_psu, function(x){ # x <- sample(files_psu, size = 1)
   df
 })
 
-save(d_psu, file = "../data/d_psu.RData")
-
-
-files_ren <- files[grepl("Rendimiento", files)]
-d_ren <- ldply(files_ren, function(x){
-  wb <- XLConnect::loadWorkbook(x)
-  df <- readWorksheet(wb, sheet = "Nivel_Rendimiento", header = TRUE)
-  message(sprintf("File %s, rows: %s, cols: %s", basename(x), nrow(df), ncol(df)))
-  df
-})
-
-save(d_ren, file = "../data/d_ren.RData")
-
-
 files_sim <- files[grepl("Simce4Basico", files)]
 d_sim <- ldply(files_sim, function(x){
   wb <- XLConnect::loadWorkbook(x)
@@ -40,5 +26,18 @@ d_sim <- ldply(files_sim, function(x){
   df
 })
 
-save(d_sim, file = "../data/d_sim.RData")
+save(d_psu, d_sim, file="data/xlsx_data.RData")
 
+
+# save(d_psu, file = "../data/d_psu.RData")
+# save(d_sim, file = "../data/d_sim.RData")
+
+# files_ren <- files[grepl("Rendimiento", files)]
+# d_ren <- ldply(files_ren, function(x){
+#   wb <- XLConnect::loadWorkbook(x)
+#   df <- readWorksheet(wb, sheet = "Nivel_Rendimiento", header = TRUE)
+#   message(sprintf("File %s, rows: %s, cols: %s", basename(x), nrow(df), ncol(df)))
+#   df
+# })
+# 
+# save(d_ren, file = "../data/d_ren.RData")

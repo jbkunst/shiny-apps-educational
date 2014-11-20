@@ -31,6 +31,8 @@ indicador_choices <- c("SIMCE Matematicas" = "simce_mate",
                        "PSU Lenguaje" = "psu_lenguaje")
 
 #### chi ####
+library(maptools)
+library(ggplot2)
 chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
 chi_map <- fortify(chi_shp)
 chi_map$id <- as.numeric(chi_map$id)+1
