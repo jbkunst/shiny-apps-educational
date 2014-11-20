@@ -16,7 +16,7 @@ shinyUI(
                                selectizeInput("region_numero", NULL, regiones_choices, width = "400")
                                ),
                         column(width = 5,
-                               "hol"
+                               div(class="space")
                         ),
                         column(width = 3,
                                plotOutput("map_chi_reg", height = "600px")
@@ -26,16 +26,16 @@ shinyUI(
                         column(width = 4,
                                selectizeInput("colegio_rbd", NULL, colegios_choices, selected = 10726, width="90%"),
                                selectizeInput("indicador", NULL, indicador_choices, width="90%"),
-                               hr(),
+                               div(class="space"),
                                tags$span(paste(
                                  "Puedes comparar el colegio seleccionado",
                                  "considerando los colegios con caracteristicas similares:"
                                )),
-                               br(),
-                               checkboxInput("colegio_misma_region", "Misma region", FALSE),
-                               checkboxInput("colegio_misma_dependencia", "Misma dependencia", FALSE),
-                               checkboxInput("colegio_misma_area", "Misma área geografica", FALSE),
-                               br()
+                               div(class="space"),
+                               checkboxInput("colegio_misma_region", "misma region", FALSE),
+                               checkboxInput("colegio_misma_dependencia", "misma dependencia", FALSE),
+                               checkboxInput("colegio_misma_area", "misma area geografica", FALSE),
+                               div(class="space")
                                ),
                         column(width = 5,
                                includeScript("www/js/hc_custom.js"), 

@@ -43,18 +43,14 @@ shinyServer(function(input, output) {
     
     d3 <- join(d1, d2, by ="agno")
 
-    # Plot
     p <- Highcharts$new()
     
     p$series(name = colegio_nombre, data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
     p$series(name = "Mediana", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
     p$series(name = "25% peor", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
-    p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
-    
+    p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")    
     p$xAxis(categories = d3$agno)
-    
     p$plotOptions(line = list(marker = list(enabled = FALSE)))
-    
     p$set(width = "100%" ,height = "100%")
     
     p
@@ -68,23 +64,33 @@ shinyServer(function(input, output) {
       filter(!is.na(value) & rbd == input$colegio_rbd) %>%
       nrow()
    
-    if(drow != 0){
-      report_file <- "report/report_colegio.rmd"
-    } else {
-      report_file <- "report/report_colegio_no_indicator.rmd"
-    }
-    HTML(knitr::knit2html(text = readLines(report_file), fragment.only = TRUE, quiet = TRUE))
+    report_file <- ifelse(drow != 0, "report_colegio.rmd", "report_colegio_no_indicator.rmd")
+    
+    HTML(knitr::knit2html(text = readLines(sprintf("report/%s", report_file)), fragment.only = TRUE, quiet = TRUE))
+    
   })
   
   output$map_chi_reg <- renderPlot({
-    head(chi_map)
-    
+        
     chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
       
+    ggplot(chi_map) +
+      geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
+      scale_fill_manual(values = c("transparent", "white")) +
+      coord_equal() +
+      theme_null()
+    
+  }, bg="transparent")
+  
+  output$map_reg <- renderPlot({
+    
+    chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
+    
     ggplot(chi_map)+ 
       geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
-      scale_fill_manual(values = c("transparent", "white"))+
-      coord_equal() + theme_null()
+      scale_fill_manual(values = c("transparent", "white")) +
+      coord_equal() +
+      theme_null()
     
   }, bg="transparent")
   
