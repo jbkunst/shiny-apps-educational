@@ -4,6 +4,7 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(scales)
+library(maptools)
 
 load("data/consolidate_data_clean_app.RData")
 
