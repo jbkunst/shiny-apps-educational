@@ -1,6 +1,6 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
-#               region_numero = "5", region_indicator = "area_geografica")
+#               region_numero = "3")
 
 shinyServer(function(input, output) {
   
@@ -84,16 +84,11 @@ shinyServer(function(input, output) {
   
   output$map_reg <- renderPlot({
     
-    region_map <- readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero))
-    region_f <- fortify(region_map)
+    chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
     
-    region_colegios <- colegios %>%
-      filter(numero_region == input$region_numero & !is.na(longitud) & longitud!=0) %>%
-      select(rbd, dependencia, area_geografica, latitud, longitud)
-    
-    ggplot() +
-      geom_polygon(data=region_f, aes(long, lat, group=group), color="white", fill="transparent") +
-      geom_point(data=region_colegios, aes(longitud, latitud, color=dependencia), size = 3, alpha =.5) +
+    ggplot(chi_map)+ 
+      geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
+      scale_fill_manual(values = c("transparent", "white")) +
       coord_equal() +
       theme_null()
     

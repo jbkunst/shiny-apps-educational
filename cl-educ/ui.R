@@ -16,8 +16,6 @@ shinyUI(
                                selectizeInput("region_numero", NULL, regiones_choices, width = "400")
                                ),
                         column(width = 5,
-                               selectizeInput("region_indicador", NULL, region_indicador_choices, width="90%"),
-                               plotOutput("map_reg"),
                                div(class="space")
                         ),
                         column(width = 3,
