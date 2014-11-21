@@ -24,6 +24,10 @@ names(regiones_choices) <- gsub("^ANTARTICA$", "MAGALLANES", names(regiones_choi
 names(regiones_choices)
 
 #### Indicadores Choices ####
+region_indicador_choices <- c("Dependencia" = "dependencia",
+                              "Area geografica", "area_geografica")
+
+#### Indicadores Choices ####
 names(d)
 indicador_choices <- c("SIMCE Matematicas" = "simce_mate",
                        "SIMCE Lenguaje" = "simce_leng",
@@ -50,5 +54,6 @@ save(d, colegios,
      colegios_choices,
      indicador_choices,
      regiones_choices,
+     region_indicador_choices,
      chi_map,
      file="data/consolidate_data_clean_app.RData")
