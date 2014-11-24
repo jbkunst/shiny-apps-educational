@@ -1,0 +1,5 @@
+```{r results, warning=FALSE, echo=FALSE}
+fd <- rnorm(10)
+```
+
+La region de **`r names(which(regiones_choices == input$region_numero))`** posee n colegios (anio 2012).

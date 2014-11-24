@@ -22,7 +22,7 @@ percentil <- ifelse(percentil <= 50, percentil, 100-percentil)
 nombre_indicador <- names(indicador_choices)[which(indicador_choices==input$indicador)]
 ```
 
-El estableciemiento **`r d_colegio$nombre_establecimiento`** esta; en el lugar **`r ranking`** de `r total`, por lo que pertenece al **`r percentil`&#37;** con `r mejor_peor` puntaje en `r nombre_indicador` (anio 2012).
+El estableciemiento **`r d_colegio$nombre_establecimiento`** esta en el lugar **`r ranking`** de `r total`, por lo que pertenece al **`r percentil`&#37;** con `r mejor_peor` puntaje en `r nombre_indicador` (anio 2012).
 
 <br>
 

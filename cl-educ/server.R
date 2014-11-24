@@ -64,7 +64,7 @@ shinyServer(function(input, output) {
       filter(!is.na(value) & rbd == input$colegio_rbd) %>%
       nrow()
    
-    report_file <- ifelse(drow != 0, "report_colegio.rmd", "report_colegio_no_indicator.rmd")
+    report_file <- ifelse(drow != 0, "colegio.rmd", "colegio_no_indicator.rmd")
     
     HTML(knitr::knit2html(text = readLines(sprintf("report/%s", report_file)), fragment.only = TRUE, quiet = TRUE))
     
@@ -81,6 +81,22 @@ shinyServer(function(input, output) {
       theme_null()
     
   }, bg="transparent")
+  
+  output$plot_region <- renderChart2({
+    
+    p <- Highcharts$new()
+    p$series(name = sample(letters, 3), data = rnorm(3)**2, type ="column", lineWidth = 5, color="#F0F0F0")
+    p$set(width = "100%" ,height = "100%")
+    p    
+  })
+  
+  output$report_region <- renderUI({
+    
+    report_file <- "region.rmd"
+    
+    HTML(knitr::knit2html(text = readLines(sprintf("report/%s", report_file)), fragment.only = TRUE, quiet = TRUE))
+    
+  })
   
   output$map_reg <- renderPlot({
     

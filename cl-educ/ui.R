@@ -1,10 +1,10 @@
 shinyUI(
   fluidPage(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css"),
-      includeScript("www/js/hc_custom.js")
+      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")
       ),
     fluidRow(
+      includeScript("www/js/hc_custom.js"),
       column(width = 12, id = "menu",
              h2(id="title", "Pone Título Aqui"),
              br(),
@@ -14,12 +14,14 @@ shinyUI(
                         ),
                tabPanel("REGION",
                         column(width = 4,
-                               selectizeInput("region_numero", NULL, regiones_choices, width = "400")
+                               selectizeInput("region_numero", NULL, regiones_choices, width = "90%"),
+                               selectizeInput("region_indicador", NULL, region_indicador_choices, width="90%"),
+                               chartOutput("plot_region", "highcharts")
                                ),
                         column(width = 5,
-                               selectizeInput("region_indicador", NULL, region_indicador_choices, width="90%"),
-                               plotOutput("map_reg"),
-                               div(class="space")
+                               uiOutput("report_region"),
+                               div(class="space"),
+                               plotOutput("map_reg")
                         ),
                         column(width = 3,
                                plotOutput("map_chi_reg", height = "600px")
