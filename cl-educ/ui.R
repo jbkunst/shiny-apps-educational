@@ -1,7 +1,8 @@
 shinyUI(
   fluidPage(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css"),
+      includeScript("www/js/hc_custom.js")
       ),
     fluidRow(
       column(width = 12, id = "menu",
@@ -40,7 +41,6 @@ shinyUI(
                                div(class="space")
                                ),
                         column(width = 5,
-                               includeScript("www/js/hc_custom.js"), 
                                chartOutput("plot_colegio", "highcharts"),
                                br()
                                ),
