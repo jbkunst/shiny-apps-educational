@@ -53,7 +53,11 @@ shinyUI(
                tabPanel("ACERCA DE",
                         column(width = 6,
                                includeMarkdown("report/acerca.md")
-                               )
+                               ),
+                        column(width = 6,
+                               div(class="space"),
+                               tags$img(src="img/escolares.jpg", width = "100%")
+                        )
                         )
                )
              )
