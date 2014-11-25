@@ -83,9 +83,19 @@ shinyServer(function(input, output) {
   }, bg="transparent")
   
   output$plot_region <- renderChart2({    
-    a <- input$region_numero
-    p <- Highcharts$new()
-    p$series(name = sample(letters, 3), data = rnorm(3)**2, type ="column", lineWidth = 5, color="#F0F0F0")
+    df <-  colegios %>%
+      filter(max_agno ==  max_agno & numero_region == input$region_numero) %>%
+      group_by(dependencia, area_geografica) %>%
+      summarise(n=n())
+    
+    p <- rCharts:::Highcharts$new()
+    p$chart(type = "column")
+    p$plotOptions(column = list(stacking = "normal"))
+    p$xAxis(categories = df$area_geografica)
+    
+    p$series(name = "Municipal", data = c(179, 274), stack = "Municipal")
+    p$series(name = "Particular Pagado", data = c(81, 0), stack = "Municipal")
+    p$series(name = "Particular Subvencionado", data = c(14, 20), stack = "Municipal")
     p$set(width = "100%", height = "50%")
     p    
   })

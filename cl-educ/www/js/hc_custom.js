@@ -1,10 +1,11 @@
 Highcharts.theme = {
+  colors: ["#FAFAFA", "#DEDEDE","#FFFFFF"],
   chart: {
     backgroundColor:"transparent",
     style: {
       fontFamily: "Shadows Into Light",
       color: "#FCFCFC"
-            
+    
     },
         
   },
@@ -16,9 +17,6 @@ Highcharts.theme = {
       }
             
     },
-    column: {
-      color: "#FCFCFC"
-    }
         
   },
   title: {

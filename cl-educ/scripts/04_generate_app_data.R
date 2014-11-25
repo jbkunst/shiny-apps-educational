@@ -43,7 +43,7 @@ chi_map$id <- as.numeric(chi_map$id)+1
 
 newkey <- data.frame(id=seq(15),newid=c(1,2,3, 4, 5, 6,7,8,9,10,13,14,15,11,12))  
 head(chi_map)
-chi_map <- left_join(chi_map, newkey)
+chi_map <- left_join(chi_map, newkey, by = "id")
 head(chi_map)
 table(chi_map$newid)
 

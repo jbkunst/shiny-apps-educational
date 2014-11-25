@@ -1,5 +1,14 @@
 ```{r results, warning=FALSE, echo=FALSE}
-fd <- rnorm(10)
+max_agno <- max(colegios$max_agno)
+colegios_reg <- colegios %>% 
+  filter(max_agno ==  max_agno & numero_region == input$region_numero)
+
+n_colegios_region <- colegios_reg %>%
+  nrow() %>%
+  prettyNum(big.mark = ".")
+
 ```
 
-La region de **`r names(which(regiones_choices == input$region_numero))`** posee n colegios (anio 2012).
+La region de **`r names(which(regiones_choices == input$region_numero))`** posee `r n_colegios_region`, para el anio `r max`. 
+
+
