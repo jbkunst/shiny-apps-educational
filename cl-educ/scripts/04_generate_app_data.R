@@ -25,7 +25,7 @@ names(regiones_choices)
 
 #### Indicadores Choices ####
 region_indicador_choices <- c("Dependencia" = "dependencia",
-                              "Area geografica", "area_geografica")
+                              "Area geografica" = "area_geografica")
 
 #### Indicadores Choices ####
 names(d)

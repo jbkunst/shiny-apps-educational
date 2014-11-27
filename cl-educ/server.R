@@ -1,6 +1,6 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
-#               region_numero = "5", region_indicator = "area_geografica")
+#               region_numero = "5", region_indicador = "area_geografica")
 
 shinyServer(function(input, output) {
   
@@ -21,6 +21,21 @@ shinyServer(function(input, output) {
     
     data <- d %>% filter(rbd %in% colegios_new$rbd)
     
+  })
+  
+  data_reg <- reactive({
+    max_agno <- max(colegios$max_agno)
+    data_reg <- colegios %>% filter(max_agno ==  max_agno & numero_region == input$region_numero)      
+    if(input$region_indicador=="dependencia"){
+      data_reg <- data_reg %>% select(max_agno, numero_region, value=dependencia)
+    } else {
+      data_reg <- data_reg %>% select(max_agno, numero_region, value=area_geografica)
+    }
+    data_reg <-  data_reg %>%
+      group_by(value) %>%
+      summarise(n=n()) %>%
+      arrange(-n)
+
   })
   
   output$plot_colegio <- renderChart2({
@@ -83,24 +98,16 @@ shinyServer(function(input, output) {
   }, bg="transparent")
   
   output$plot_region <- renderChart2({    
-    df <-  colegios %>%
-      filter(max_agno ==  max_agno & numero_region == input$region_numero) %>%
-      group_by(dependencia, area_geografica) %>%
-      summarise(n=n())
-    
+    df <- data_reg()
     p <- rCharts:::Highcharts$new()
     p$chart(type = "column")
     p$plotOptions(column = list(stacking = "normal"))
-    p$xAxis(categories = df$area_geografica)
-    
-    p$series(name = "Municipal", data = c(179, 274), stack = "Municipal")
-    p$series(name = "Particular Pagado", data = c(81, 0), stack = "Municipal")
-    p$series(name = "Particular Subvencionado", data = c(14, 20), stack = "Municipal")
-    p$set(width = "100%", height = "50%")
-    p    
+    p$xAxis(categories = df$value)
+    p$series(name = "Cantidad", data = df$n)
+    p$set(width = "100%", height = "100%")
+    p
   })
-
-  
+ 
   output$report_region <- renderUI({
     HTML(knitr::knit2html(text = readLines(sprintf("report/%s", "region.rmd"), warn = FALSE), fragment.only = TRUE, quiet = TRUE))
   })
