@@ -1,5 +1,6 @@
 ```{r results, warning=FALSE, echo=FALSE}
 df <- data_reg()
+max_agno <- max(colegios$max_agno)
 ```
 
 La region de **`r names(which(regiones_choices == input$region_numero))`** posee `r prettyNum(sum(df$n), big.mark = ".")`, de los cuales `r prettyNum(df$n[1], big.mark=".")` son `r names(which(region_indicador_choices == input$region_indicator))` `r df$value[1]` (`r percent(df$n[1]/sum(df$n))` (anio `r max_agno`). 
