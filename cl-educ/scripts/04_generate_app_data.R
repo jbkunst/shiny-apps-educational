@@ -24,15 +24,17 @@ names(regiones_choices) <- gsub("^ANTARTICA$", "MAGALLANES", names(regiones_choi
 names(regiones_choices)
 
 #### Indicadores Choices ####
-region_indicador_choices <- c("Dependencia" = "dependencia",
-                              "Area geografica" = "area_geografica")
-
-#### Indicadores Choices ####
 names(d)
 indicador_choices <- c("SIMCE Matematicas" = "simce_mate",
                        "SIMCE Lenguaje" = "simce_leng",
                        "PSU Matematicas" = "psu_matematica",
                        "PSU Lenguaje" = "psu_lenguaje")
+
+#### Indicadores Choices ####
+region_indicador_choices <- c("Dependencia" = "dependencia",
+                              "Area geografica" = "area_geografica",
+                              indicador_choices)
+
 
 #### chi ####
 library(maptools)

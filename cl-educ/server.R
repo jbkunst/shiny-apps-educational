@@ -1,6 +1,6 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
-#               region_numero = "5", region_indicador = "area_geografica")
+#               region_numero = "5", region_indicador = "simce_leng")
 
 shinyServer(function(input, output) {
   
@@ -24,17 +24,34 @@ shinyServer(function(input, output) {
   })
   
   data_reg <- reactive({
+    
     max_agno <- max(colegios$max_agno)
-    data_reg <- colegios %>% filter(max_agno ==  max_agno & numero_region == input$region_numero)      
+    data_reg <- colegios %>% filter(max_agno ==  max_agno & numero_region == input$region_numero)
+    d_reg <- d %>%
+      filter(agno == max_agno & rbd %in% data_reg$rbd) %>%
+      mutate(simce_leng_cat = cut(simce_leng, c(100,250,270,300)),
+             simce_mate_cat = cut(simce_mate, c(100,250,270,300)),
+             psu_lenguaje_cat = cut(psu_lenguaje, c(200,400,500,600,850)),
+             psu_matematica_cat = cut(psu_matematica, c(200,400,500,600,850)),
+             max_agno=as.character(agno))
+    
+    data_reg <- left_join(data_reg, d_reg, by = c("rbd", "max_agno"))
+    
     if(input$region_indicador=="dependencia"){
-      data_reg <- data_reg %>% select(max_agno, numero_region, value=dependencia)
-    } else {
-      data_reg <- data_reg %>% select(max_agno, numero_region, value=area_geografica)
-    }
-    data_reg <-  data_reg %>%
-      group_by(value) %>%
-      summarise(n=n()) %>%
-      arrange(-n)
+      data_reg <- data_reg %>% mutate(value=dependencia)
+    } else if(input$region_indicador=="area_geografica") {
+      data_reg <- data_reg %>% mutate(value=area_geografica)
+    } else if(input$region_indicador=="simce_mate"){
+      data_reg <- data_reg %>% mutate(value=simce_mate_cat)
+    } else if(input$region_indicador=="simce_leng"){
+      data_reg <- data_reg %>% mutate(value=simce_leng_cat)
+    } else if(input$region_indicador=="psu_matematica"){
+      data_reg <- data_reg %>% mutate(value=psu_lenguaje_cat)
+    } else if(input$region_indicador=="psu_lenguaje"){
+      data_reg <- data_reg %>% mutate(value=psu_lenguaje_cat)
+    } 
+    
+    data_reg
 
   })
   
@@ -97,8 +114,15 @@ shinyServer(function(input, output) {
     
   }, bg="transparent")
   
-  output$plot_region <- renderChart2({    
+  output$plot_region <- renderChart2({  
+    
     df <- data_reg()
+    
+    df <-  df %>%
+      filter(!is.na(value)) %>%
+      group_by(value) %>%
+      summarise(n=n()) 
+      
     p <- rCharts:::Highcharts$new()
     p$chart(type = "column")
     p$plotOptions(column = list(stacking = "normal"))
@@ -107,7 +131,7 @@ shinyServer(function(input, output) {
     p$set(width = "100%", height = "100%")
     p
   })
- 
+  
   output$report_region <- renderUI({
     HTML(knitr::knit2html(text = readLines(sprintf("report/%s", "region.rmd"), warn = FALSE), fragment.only = TRUE, quiet = TRUE))
   })
@@ -117,13 +141,12 @@ shinyServer(function(input, output) {
     region_map <- readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero))
     region_f <- fortify(region_map)
     
-    region_colegios <- colegios %>%
-      filter(numero_region == input$region_numero & !is.na(longitud) & longitud!=0) %>%
-      select(rbd, dependencia, area_geografica, latitud, longitud)
+    region_colegios <- data_reg() %>%
+      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0 )
     
     ggplot() +
       geom_polygon(data=region_f, aes(long, lat, group=group), color="white", fill="transparent") +
-      geom_point(data=region_colegios, aes(longitud, latitud, color=dependencia), size = 3, alpha =.5) +
+      geom_point(data=region_colegios, aes(longitud, latitud, color=value), size = 3, alpha =.5) +
       coord_equal() +
       theme_null()
     
