@@ -21,7 +21,12 @@ shinyUI(
                         column(width = 5,
                                uiOutput("report_region"),
                                div(class="space"),
-                               plotOutput("map_reg")
+                               
+                               plotOutput("map_reg"),
+                               
+                               div(style="display:inline-block",sliderInput("region_map_size", "Tamanio", 1, 10, 3)),
+                               div(style="display:inline-block",sliderInput("region_map_alpha", "Transparencia", 0, 1, 0.3))
+                               
                         ),
                         column(width = 3,
                                plotOutput("map_chi_reg", height = "600px")

@@ -1,6 +1,7 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
-#               region_numero = "5", region_indicador = "simce_leng")
+#               region_numero = "5", region_indicador = "simce_leng",
+#               region_map_size = 3, region_map_alpha = .5)
 
 shinyServer(function(input, output) {
   
@@ -116,8 +117,7 @@ shinyServer(function(input, output) {
   
   output$plot_region <- renderChart2({  
     
-    df <- data_reg()
-    
+    df <- data_reg()    
     df <-  df %>%
       filter(!is.na(value)) %>%
       group_by(value) %>%
@@ -138,17 +138,32 @@ shinyServer(function(input, output) {
   
   output$map_reg <- renderPlot({
     
-    region_map <- readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero))
-    region_f <- fortify(region_map)
+    region_f <- fortify(readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero)))
     
-    region_colegios <- data_reg() %>%
-      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0 )
+    region_colegios <- data_reg()
+    region_colegios <- region_colegios %>%
+      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0)
     
-    ggplot() +
+    if(grepl("simce|psu",input$region_indicador)){
+      region_colegios$value <- region_colegios[[input$region_indicador]]
+    }
+    
+    title_legend <- names(which(region_indicador_choices == input$region_indicador))
+    
+    p <- ggplot() +
       geom_polygon(data=region_f, aes(long, lat, group=group), color="white", fill="transparent") +
-      geom_point(data=region_colegios, aes(longitud, latitud, color=value), size = 3, alpha =.5) +
+      geom_point(data=region_colegios, aes(longitud, latitud, color=value),
+                 size = input$region_map_size, alpha = input$region_map_alpha)
+    if(is.numeric(region_colegios$value)){
+      p <- p + scale_colour_gradient(title_legend,low="darkred", high="green")
+    } else {
+      p <- p + scale_colour_discrete(title_legend)
+    }
+    p <- p +
       coord_equal() +
-      theme_null()
+      theme_null() +
+      theme_legend()
+    p
     
   }, bg="transparent")
   
