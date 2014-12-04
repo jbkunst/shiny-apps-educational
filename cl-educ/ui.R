@@ -25,9 +25,9 @@ shinyUI(
                                   div(style="display:inline-block",sliderInput("region_map_alpha", "Transparencia", 0, 1, 0.3))
                                   ),
                            column(width = 3,
-                                  plotOutput("map_chi_reg", height = "580px")
-                                  ),
-                           div(class="space")
+                                  plotOutput("map_chi_reg", height = "580px"),
+                                  div(class="space")
+                                  )
                            ),
                   tabPanel("COLEGIO",
                            column(width = 4,

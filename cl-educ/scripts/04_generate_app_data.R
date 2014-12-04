@@ -19,8 +19,15 @@ regiones <- colegios %>% select(nombre_region, numero_region) %>% distinct()
 regiones_choices <- regiones$numero_region
 names(regiones_choices) <- regiones$nombre_region
 names(regiones_choices) <- iconv(names(regiones_choices) , to="ASCII//TRANSLIT") 
+names(regiones_choices) <- gsub("^CANIA$", "DE LA ARAUCANIA", names(regiones_choices))
+names(regiones_choices) <- gsub("^BIOBIO$", "DEL BIOBIO", names(regiones_choices))
 names(regiones_choices) <- gsub("^CANIA$", "ARAUCANIA", names(regiones_choices))
 names(regiones_choices) <- gsub("^ANTARTICA$", "MAGALLANES", names(regiones_choices))
+names(regiones_choices) <- ifelse(!grepl("^DE", names(regiones_choices)),
+                                  paste("DE", names(regiones_choices)),
+                                  names(regiones_choices))
+names(regiones_choices) <- ifelse(grepl("METROPOLITANA", names(regiones_choices)),
+                                  "METROPOLITANA", names(regiones_choices))
 names(regiones_choices)
 
 #### Indicadores Choices ####

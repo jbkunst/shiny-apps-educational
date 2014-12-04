@@ -7,8 +7,19 @@ df <-  df1 %>%
 
 idmax <- which.max(df$n)
 
+if(grepl("simce|psu",input$region_indicador)){
+  limits <- unlist(strsplit(gsub("\\(|\\)|\\[|\\]","",as.character(df$value[idmax])), ","))
+  context <- sprintf("estan entre un puntaje de %s y %s en la prueba %s",
+                     limits[1],
+                     limits[2],
+                     names(which(region_indicador_choices == input$region_indicador)))
+} else {
+  context <- sprintf("son de %s %s",
+                 names(which(region_indicador_choices == input$region_indicador)),
+                 as.character(df$value[idmax]))
+}
 ```
 
-La region de **`r names(which(regiones_choices == input$region_numero))`** posee `r prettyNum(nrow(df1), big.mark = ".")`, de los cuales `r prettyNum(df$n[idmax], big.mark=".")` son `r names(which(region_indicador_choices == input$region_indicator))` `r df$value[idmax]`, `r percent(df$n[idmax]/sum(df$n))` (de los casos validos correspondientes al anio `r max_agno`). 
+La region **`r names(which(regiones_choices == input$region_numero))`** posee `r prettyNum(nrow(df1), big.mark = ".")` colegios, de los cuales `r prettyNum(df$n[idmax], big.mark=".")` `r context`, lo que equivale al `r percent(df$n[idmax]/sum(df$n))` (de los casos validos correspondientes al anio 2012). 
 
 

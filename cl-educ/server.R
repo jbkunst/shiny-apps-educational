@@ -149,10 +149,8 @@ shinyServer(function(input, output) {
     } else {
       p <- p + scale_colour_manual(title_legend, values = rainbow(length(unique(region_colegios$value))))
     }
-    p <- p +
-      coord_equal() +
-      theme_null() +
-      theme_legend()
+    p <- p + coord_equal() + theme_null() + theme_legend()
+    
     p
     
   }, bg="transparent")
