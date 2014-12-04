@@ -103,18 +103,6 @@ shinyServer(function(input, output) {
     
   })
   
-  output$map_chi_reg <- renderPlot({
-        
-    chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
-      
-    ggplot(chi_map) +
-      geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
-      scale_fill_manual(values = c("transparent", "white")) +
-      coord_equal() +
-      theme_null()
-    
-  }, bg="transparent")
-  
   output$plot_region <- renderChart2({  
     
     df <- data_reg()    
@@ -166,5 +154,17 @@ shinyServer(function(input, output) {
     p
     
   }, bg="transparent")
+  
+  output$map_chi_reg <- renderPlot({
+    
+    chi_map <- chi_map %>% mutate(flag=ifelse(newid==as.numeric(input$region_numero),"1","0"))
+    
+    ggplot(chi_map) +
+      geom_polygon(aes(long,lat, fill=flag,group=group), color="white") +
+      scale_fill_manual(values = c("transparent", "white")) +
+      coord_equal() +
+      theme_null()
+    
+  }, bg="transparent")  
   
 })
