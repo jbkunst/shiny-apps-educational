@@ -13,12 +13,21 @@ sigma <- diag(10, nrow = 2)
 
 
 data <- data.frame(x = rnorm(n, mean = m1, 2), y = rnorm(n, m2, 2))  %>%
-  mutate(z= cbind(x,y) %>% dmvnorm(mu, sigma))
+  mutate(z= cbind(x,y) %>% dmvnorm(mu, sigma)) %>%
+  mutate(w= cut_number(z, n = 4))
 
+head(data)
 
 ggplot(data) +
   geom_point(aes(x,y, color=z), size = 10, alpha =.1) +
-  scale_colour_gradientn(colours = rainbow(3)) + reuse::theme_null()
+  scale_colour_gradientn(colours = rainbow(3)) +
+  reuse::theme_null()
+
+ggplot(data) +
+  geom_point(aes(x,y, color=w), size = 10, alpha =.1) +
+  scale_colour_manual(values = rainbow(length(levels(data$w)))) +
+  reuse::theme_null()
+
 
 
 # library(reuse)

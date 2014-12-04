@@ -1,6 +1,6 @@
 # input <- list(colegio_rbd = 1, indicador = "psu_matematica",
 #               colegio_misma_region = TRUE, colegio_misma_dependencia = TRUE, colegio_misma_area = TRUE,
-#               region_numero = "5", region_indicador = "simce_leng",
+#               region_numero = "5", region_indicador = "simce_mate",
 #               region_map_size = 3, region_map_alpha = .5)
 
 shinyServer(function(input, output) {
@@ -113,7 +113,6 @@ shinyServer(function(input, output) {
       
     p <- rCharts:::Highcharts$new()
     p$chart(type = "column")
-    p$plotOptions(column = list(stacking = "normal"))
     p$xAxis(categories = df$value)
     p$series(name = "Cantidad", data = df$n)
     p$set(width = "100%", height = "100%")
@@ -126,15 +125,17 @@ shinyServer(function(input, output) {
   
   output$map_reg <- renderPlot({
     
-    region_f <- fortify(readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero)))
+    region_f <- suppressMessages(fortify(readShapePoly(sprintf("data/regiones_shp/r%s.shp", input$region_numero))))
     
     region_colegios <- data_reg()
-    region_colegios <- region_colegios %>%
-      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0)
     
     if(grepl("simce|psu",input$region_indicador)){
       region_colegios$value <- region_colegios[[input$region_indicador]]
     }
+    
+    region_colegios <- region_colegios %>%
+      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0) %>%
+      filter(!is.na(value))
     
     title_legend <- names(which(region_indicador_choices == input$region_indicador))
     
@@ -142,10 +143,11 @@ shinyServer(function(input, output) {
       geom_polygon(data=region_f, aes(long, lat, group=group), color="white", fill="transparent") +
       geom_point(data=region_colegios, aes(longitud, latitud, color=value),
                  size = input$region_map_size, alpha = input$region_map_alpha)
+    
     if(is.numeric(region_colegios$value)){
-      p <- p + scale_colour_gradient(title_legend,low="darkred", high="green")
+      p <- p + scale_colour_gradientn(title_legend, colours = c("darkred", "yellow", "darkblue"))
     } else {
-      p <- p + scale_colour_discrete(title_legend)
+      p <- p + scale_colour_manual(title_legend, values = rainbow(length(unique(region_colegios$value))))
     }
     p <- p +
       coord_equal() +

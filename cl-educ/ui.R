@@ -14,18 +14,20 @@ shinyUI(
                            column(width = 4,
                                   selectizeInput("region_numero", NULL, regiones_choices, width = "90%"),
                                   selectizeInput("region_indicador", NULL, region_indicador_choices, width="90%"),
+                                  div(class="space"),
                                   chartOutput("plot_region", "highcharts")
                                   ),
                            column(width = 5,
                                   uiOutput("report_region"),
                                   div(class="space"),
-                                  plotOutput("map_reg"),
+                                  plotOutput("map_reg", height = "350px"),
                                   div(style="display:inline-block",sliderInput("region_map_size", "Tamanio", 1, 10, 3)),
                                   div(style="display:inline-block",sliderInput("region_map_alpha", "Transparencia", 0, 1, 0.3))
                                   ),
                            column(width = 3,
-                                  plotOutput("map_chi_reg", height = "600px")
-                                  )
+                                  plotOutput("map_chi_reg", height = "580px")
+                                  ),
+                           div(class="space")
                            ),
                   tabPanel("COLEGIO",
                            column(width = 4,
