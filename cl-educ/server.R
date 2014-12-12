@@ -142,7 +142,7 @@ shinyServer(function(input, output) {
     p <- ggplot() +
       geom_polygon(data=region_f, aes(long, lat, group=group), color="white", fill="transparent") +
       geom_point(data=region_colegios, aes(longitud, latitud, color=value),
-                 size = input$region_map_size, alpha = input$region_map_alpha)
+                 size = input$region_map_size, alpha = 1-input$region_map_alpha)
     
     if(is.numeric(region_colegios$value)){
       p <- p + scale_colour_gradientn(title_legend, colours = c("darkred", "yellow", "darkblue"))

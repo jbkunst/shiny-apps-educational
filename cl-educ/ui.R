@@ -6,7 +6,7 @@ shinyUI(
     fluidRow(
       includeScript("www/js/hc_custom.js"),
       h2(id="title", "Pone Título Aqui"),
-      tabsetPanel(type = "pills", selected = "REGION",
+      tabsetPanel(type = "pills", selected = "PAIS",
                   tabPanel("PAIS",
                            p("en construccion")
                            ),
