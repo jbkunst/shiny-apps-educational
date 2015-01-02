@@ -14,7 +14,6 @@ system.time(
   )
 
 
-
 chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
 chi_f <- fortify(chi_shp)
 system.time(
@@ -71,10 +70,36 @@ ggplot()+
   coord_equal()+theme_bw()+theme(legend.position='none')
 
 
-chi_shp <- readShapePoly("data/chile_shp/cl_regiones_geo.shp")
+
+
+
+
+chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
 chi_f <- fortify(chi_shp)
-p <- ggplot()+ 
-  geom_polygon(data=chi_f,aes(long,lat,color=id,group=group, fill="white", alpha = 0.1))+
-  coord_equal() + theme_null()
-p
+
+
+
+# devtools::install_github("ropensci/plotly")
+library(plotly)
+set_credentials_file("jbkunst", "oc613rj2ky")
+py <- plotly()
+gg <- ggplot()+
+  geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group)) +
+  coord_equal() + reuse::theme_null() + ggtitle("a")
+gg
+py$ggplotly(gg)
+
+
+# devtools::install_github("rstudio/ggvis", build_vignettes = FALSE)
+library(ggvis)
+chi_f %>%
+  group_by(group) %>%
+  ggvis(~long, ~lat) %>%
+  layer_paths() %>%
+  hide_legend("fill") %>%
+  hide_axis("x") %>% hide_axis("y")
+  set_options(width=200, height=1000, keep_aspect=TRUE)
+
+
+  
 
