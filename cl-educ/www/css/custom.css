@@ -32,12 +32,6 @@ body {
   font-size: 1em;
 }
 
-a, a:hover {
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-}
-
 .nav-pills > li > a {
   color: #FFF;
   text-decoration: none;
@@ -52,9 +46,16 @@ a, a:hover {
 
 .nav-pills > li > a:hover,
 .nav-pills > .active > a,
-.nav-pills > .active > a:hover{
+.nav-pills > .active > a:hover, 
+.nav-pills > .active > a:focus {
   background-color: white;
   color: #333333;
+}
+
+a, a:hover {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 hr {

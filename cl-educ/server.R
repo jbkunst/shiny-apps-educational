@@ -165,6 +165,21 @@ shinyServer(function(input, output) {
       coord_equal() +
       theme_null()
     
+  }, bg="transparent")
+  
+  
+  output$map_chi_reg_main <- renderPlot({
+    
+    d_colegios <- colegios %>% select(latitud, longitud) %>%
+      filter(!is.na(longitud) & longitud!=0 & !is.na(latitud) & latitud!=0)
+    
+    ggplot(chi_map) +
+      geom_polygon(aes(long,lat, group=group), color="white") +
+      scale_fill_manual(values = c("transparent", "white")) +
+      coord_equal() +
+      theme_null() +
+      geom_point(data=d_colegios, aes(longitud, latitud), color = "white", alpha = 0.1, size = 1)
+    
   }, bg="transparent")  
   
 })

@@ -8,7 +8,16 @@ shinyUI(
       h2(id="title", "Pone Título Aqui"),
       tabsetPanel(type = "pills", selected = "PAIS",
                   tabPanel("PAIS",
-                           p("en construccion")
+                           column(width = 4,
+                                  div(class="space")
+                                  ),
+                           column(width = 5,
+                                  div(class="space")
+                           ),
+                           column(width = 3,
+                                  plotOutput("map_chi_reg_main", height = "580px"),
+                                  div(class="space")
+                                  )
                            ),
                   tabPanel("REGION",
                            column(width = 4,
