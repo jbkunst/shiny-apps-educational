@@ -1,7 +1,21 @@
 ```{r results, warning=FALSE, echo=FALSE}
+# length(unique(colegios$rbd))
+# length(unique(d$rbd))
+# 
+# colegios %>%
+#   mutate(cap = numero_region==13) %>%
+#   group_by(cap, area_geografica) %>%
+#   summarize(n=n()) %>%
+#   arrange(n)
 
 ```
 
-En Chile existen mas de  30.000 mil colegios. Cada uno 
+En Chile:
 
+<div class="space"></div>
 
+- Existen más de 10.000 mil colegios entre considerando enseñanza básica y media.
+
+<div class="space"></div>
+
+- Cerca del 35% de los establecimientos en localidades urbanas se encuentran en la Región Metropolitana

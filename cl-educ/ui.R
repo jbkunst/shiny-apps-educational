@@ -5,15 +5,13 @@ shinyUI(
       ),
     fluidRow(
       includeScript("www/js/hc_custom.js"),
-      h2(id="title", "Pone Título Aqui"),
+      h2(id="title", "Indicadores de Educación en Chile"),
+      div(class="space"),
       tabsetPanel(type = "pills", selected = "PAIS",
                   tabPanel("PAIS",
-                           column(width = 4,
+                           column(width = 9, class="report_pais",
                                   uiOutput("report_pais")
                                   ),
-                           column(width = 5,
-                                  div(class="space")
-                           ),
                            column(width = 3,
                                   plotOutput("map_chi_reg_main", height = "580px"),
                                   div(class="space")
