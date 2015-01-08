@@ -180,6 +180,12 @@ shinyServer(function(input, output) {
       theme_null() +
       geom_point(data=d_colegios, aes(longitud, latitud), color = "white", alpha = 0.1, size = 1)
     
-  }, bg="transparent")  
+  }, bg="transparent")
+  
+  output$report_pais <- renderUI({
+    
+    HTML(knitr::knit2html(text = readLines(sprintf("report/%s", "pais.rmd"), warn = FALSE), fragment.only = TRUE, quiet = TRUE))
+    
+  })
   
 })

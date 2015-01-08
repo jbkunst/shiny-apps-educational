@@ -1,0 +1,7 @@
+```{r results, warning=FALSE, echo=FALSE}
+
+```
+
+En Chile existen mas de  30.000 mil colegios. Cada uno 
+
+

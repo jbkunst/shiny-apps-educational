@@ -9,7 +9,7 @@ shinyUI(
       tabsetPanel(type = "pills", selected = "PAIS",
                   tabPanel("PAIS",
                            column(width = 4,
-                                  div(class="space")
+                                  uiOutput("report_pais")
                                   ),
                            column(width = 5,
                                   div(class="space")
