@@ -1,0 +1,14 @@
+body {
+  background-color: #f1f1f1;
+}
+
+[class*='col-'] {
+  padding: 15px;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 5px solid white;
+  margin: 1em 0; padding: 0; }
