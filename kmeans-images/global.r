@@ -1,5 +1,6 @@
 library(shiny)
 library(dplyr)
+library(markdown)
 library(jpeg)
 library(reshape)
 library(ggplot2)
