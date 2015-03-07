@@ -111,8 +111,8 @@ shinyServer(function(input, output) {
       group_by(rbgApp) %>%
       summarise(n=n()) %>%
       arrange(n) %>%
-      mutate(proportion = n/nrow(rgbImage)) %>% 
-      cbind(col2rgb(.$rbgApp) %>% t)
+      mutate(proportion = n/nrow(rgbImage))
+    rgbImage_aux <- cbind(rgbImage_aux, col2rgb(rgbImage_aux$rbgApp) %>% t)
     
     scatterplot3js(rgbImage_aux[,c("red", "green", "blue")], size = log(rgbImage_aux$proportion*1000),
                    color=rgbImage_aux$rbgApp, renderer="canvas")
