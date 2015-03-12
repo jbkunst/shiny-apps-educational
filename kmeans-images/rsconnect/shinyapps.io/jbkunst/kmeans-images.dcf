@@ -1,5 +1,5 @@
 name: kmeans-images
 account: jbkunst
 server: shinyapps.io
-bundleId: 142965
+bundleId: 143020
 url: http://jbkunst.shinyapps.io/kmeans-images
