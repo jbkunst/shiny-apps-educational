@@ -10,9 +10,34 @@ html, body {
   height: 100%;
 }
 
-#map {
-      height:100%;
-      width:100%;
-      padding:0px;
-      margin:0px;
+#controls {
+  padding: 10px;
+  top: 10px;
+  left: 50px;
+  bottom: auto;
+
+  max-width: 800px;
+  min-width: 350px;
+
+  height: auto;
+  width: auto;
+  
+  opacity: 0.45;
+  transition: opacity 500ms 1s;
+}
+
+#controls:hover {
+  /* Fade in while hovering */
+  opacity: 1;
+  transition-delay: 0;
+}
+
+a, a:hover {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}
+
+table {
+  font-size: 0.83em;
 }

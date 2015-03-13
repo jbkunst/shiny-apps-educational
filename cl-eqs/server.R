@@ -13,4 +13,15 @@ shinyServer(function(input, output){
     m
     
   })
+  
+  output$table <- renderDataTable({
+    
+    if(input$showmoretable){
+      data
+    } else {
+      data[, c("Fecha Local", "Referencia Geográfica", "Magnitud")]  
+    }
+    
+  }, options = list(pageLength = 5, lengthChange = FALSE))
+  
 })
