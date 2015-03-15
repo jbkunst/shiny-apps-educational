@@ -16,8 +16,7 @@ html, body {
   left: 50px;
   bottom: auto;
 
-  max-width: 800px;
-  min-width: 350px;
+  min-width: 500px;
 
   height: auto;
   width: auto;
@@ -28,7 +27,7 @@ html, body {
 
 #controls:hover {
   /* Fade in while hovering */
-  opacity: 1;
+  opacity: 0.9;
   transition-delay: 0;
 }
 
@@ -40,4 +39,11 @@ a, a:hover {
 
 table {
   font-size: 0.83em;
+  padding: 5px;
+  width: 90%;
+}
+
+
+.irs-min, .irs-max {
+  background: none;
 }

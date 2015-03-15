@@ -10,8 +10,13 @@ library(tidyr)
 # 
 # data <- html(url_info) %>% 
 #   html_node("table") %>%
-#   html_table()
-# 
+#   html_table() %>% 
+#   setNames(c("Fecha_Local", "Fecha_UTC", "Latitud", "Longitud",
+#              "Profundidad", "Magnitud", "Agencia", "Referencia_Geográfica")) %>% 
+#   mutate(Magnitud = extract_numeric(Magnitud)) %>% 
+#   separate(Fecha_Local, into = paste(c("Fecha", "Hora"), "Local", sep = "_"), sep = " ") %>% 
+#   separate(Fecha_UTC, into = paste(c("Fecha", "Hora"), "UTC", sep = "_"), sep = " ")
+
 # dir.create("data")
 # save(data, file = "data/data.RData")
 
