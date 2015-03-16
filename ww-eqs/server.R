@@ -3,8 +3,9 @@ shinyServer(function(input, output){
   data <- reactive({
     
     data <- data_url %>% 
-      filter(between(Magnitud, input$fmagnitud[1], input$fmagnitud[2])) %>% 
-      filter(between(Profundidad, input$fproundidad[1], input$fproundidad[2]))
+      filter(between(mag, input$fmag[1], input$fmag[2])) %>% 
+      filter(between(depthkm, input$fdepth[1], input$fdepth[2])) %>% 
+      filter(region %in% input$fregion)
     
     data
     
@@ -14,14 +15,14 @@ shinyServer(function(input, output){
 
     data <- data()
     
-    data <- data %>%  mutate(size = (Magnitud^2)*10000)
+    data <- data %>%  mutate(size = (mag^2)*10000)
     
     m <- leaflet(data) %>% addTiles()
     
     if(nrow(data)>0){
       m <- m %>% 
-        addCircles(lng = ~Longitud, lat = ~Latitud, radius = ~ size, fillOpacity = 0.2, opacity = 0) %>%
-        addMarkers(lng = ~Longitud, lat = ~Latitud, popup = ~ popup_info)
+        addCircles(lng = ~lon, lat = ~lat, radius = ~ size, fillOpacity = 0.2, opacity = 0) %>%
+        addMarkers(lng = ~lon, lat = ~lat, popup = ~ popup_info)
     }
       
     m
