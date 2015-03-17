@@ -27,21 +27,7 @@ library(stringr)
 #   
 #   data_aux <- cbind.data.frame(x, data_aux)
 #   
-#   data_aux <- adply(data_aux, 1, function(x){ # x <- sample_n(data_aux, 1)
-#     
-#     x$popup_info <- tags$dl(class = "dl-horizontal",
-#                             tags$dt("Date"), tags$dd(x$date),
-#                             tags$dt("Time"), tags$dd(x$time),
-#                             tags$dt("Magnitude"), tags$dd(x$mag, "Ml"),
-#                             tags$dt("Depth"), tags$dd(x$depthkm, "Km"),
-#                             tags$dt("Location"), tags$dd(x$location_map)) %>%
-#       paste()
-#     
-#     x
-#     
-#   })
-#   
-# })
+# }, .progress="text")
 # 
 # names(data_url) <- tolower(names(data_url))
 # names(data_url) <- gsub("\\(.*\\)", "", names(data_url))
@@ -53,12 +39,29 @@ library(stringr)
 #   mutate(date2 = as.Date(date, format = "%d-%B-%Y"),
 #          region = str_trim(region))
 # 
-# data_url <- data_url %>% tbl_df()
 # 
-# save(data_url, file = "data/data.RData")
+# data_url <- adply(data_url, 1, function(x){ # x <- sample_n(data_url, 1)
+#   
+#   x$popup_info <- tags$dl(class = "dl-horizontal",
+#                           tags$dt("Date"), tags$dd(x$date2),
+#                           tags$dt("Time"), tags$dd(x$time),
+#                           tags$dt("Magnitude"), tags$dd(x$mag, "Ml"),
+#                           tags$dt("Depth"), tags$dd(x$depthkm, "Km"),
+#                           tags$dt("Location"), tags$dd(x$location_map)) %>%
+#     paste()
+#   
+#   x
+#   
+# }, .progress="text")
+# 
+# 
+# data_url <- data_url %>% tbl_df()
 
-
+##### SAVE DATA ####
+save(data_url, file = "data/data.RData")
 load("data/data.RData")
+
+##### GENERATING IU PARAMETERS ####
 choices_region <- unique(data_url$region)
 mag_max <- max(data_url$mag, na.rm = TRUE)
 depth_max <- max(data_url$depthkm, na.rm = TRUE)

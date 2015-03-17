@@ -15,7 +15,7 @@ shinyUI(
                                 label = "Show control panel",
                                 value = FALSE),
                   conditionalPanel(condition = "input.showpanel == true",
-                                   selectizeInput("fregion", "Region", choices_region, multiple  = TRUE),
+                                   selectizeInput("fregion", "Region", choices_region, multiple  = FALSE),
                                    sliderInput("fmag", "Magnitud (Ml)",
                                                min = 0, max = mag_max, value = c(0, mag_max), ticks=FALSE),
                                    sliderInput("fdepth", "Proundidad (KM)",
@@ -27,7 +27,12 @@ shinyUI(
                                                     dataTableOutput("table")
                                                     )
                                    ),
-                  p("Information by", a(href="http://ds.iris.edu/ds/", "IRIS", target="_blank"))
+                  hr(),
+                  p(class="pull-right",
+                    "Information by", a(href="http://ds.iris.edu/ds/", "IRIS", target="_blank"), " | ",
+                    "Code by ", a(href="http://jkunst.com", "Joshua Kunst", target="_blank"), " | ",
+                    "Code here ", a(href="https://github.com/jbkunst/shiny-apps/tree/master/ww-eqs", icon("github"))
+                    )
                   )
-    )
   )
+)
