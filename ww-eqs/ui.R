@@ -28,17 +28,11 @@ shinyUI(
                                    ),
                   hr(),
                   p(class="pull-right",
-                    "Information by", a(href="http://ds.iris.edu/seismon/eventlist/index.phtml",
-                                        "IRIS",
-                                        target="_blank"),
+                    "Information by", a(href="http://ds.iris.edu/seismon/eventlist/index.phtml", "IRIS", target="_blank"),
                     " | ",
-                    "Code by ", a(href="http://jkunst.com",
-                                  "Joshua Kunst",
-                                  target="_blank"),
+                    "Code by ", a(href="http://jkunst.com", "Joshua Kunst", target="_blank"),
                     " | ",
-                    "Code here ", a(href="https://github.com/jbkunst/shiny-apps/tree/master/ww-eqs",
-                                    icon("github"),
-                                    target="_blank")
+                    "Code here ", a(href="https://github.com/jbkunst/shiny-apps/tree/master/ww-eqs", icon("github"), target="_blank")
                     )
                   )
   )
