@@ -4,5 +4,4 @@ The idea behind this app is taken from [dsparks' kmeans palette](https://gist.gi
 
 Packages used: shiny, dplyr, jpeg, reshape, ggplot2, scales, threejs.
 
-Code by [Joshua Kunst](http://jkunst.com).
-
+Code by [Joshua Kunst](http://jkunst.com) | Repo [here](https://github.com/jbkunst/shiny-apps/tree/master/kmeans-images).
