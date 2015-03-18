@@ -2,7 +2,13 @@ shinyServer(function(input, output, clientData, session){
   
   data <- reactive({
     
-    data <- download_data()
+    load("data/data.RData")
+    
+    if(as.numeric(difftime(Sys.time(), now, units = "mins"))>5){
+      data <- download_data()
+      now <- Sys.time()
+      save(data, now, file = "data/data.RData")  
+    }
     
     updateSliderInput(session, "fmag", max = max(data$magnitude))
     updateSliderInput(session, "fdepth", max = max(data$depth))

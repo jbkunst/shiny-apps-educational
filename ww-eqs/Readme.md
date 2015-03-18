@@ -1,6 +1,6 @@
 ## The Latest Earthquakes Worldwide
 
-This shiny app is an example on how you can easily scrap info from an url and then show it you need/want.
+This shiny app is an example on how you can easily scrap info from an url and then show it how you need/want.
 
 ### References:
   - [Superzip Example](http://shiny.rstudio.com/gallery/superzip-example.html). It's nice show a fullscreen map and a draggable panel.

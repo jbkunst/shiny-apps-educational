@@ -32,7 +32,7 @@ shinyUI(
                     " | ",
                     "Code by ", a(href="http://jkunst.com", "Joshua Kunst", target="_blank"),
                     " | ",
-                    "Code here ", a(href="https://github.com/jbkunst/shiny-apps/tree/master/ww-eqs", icon("github"), target="_blank")
+                    "Repo here ", a(href="https://github.com/jbkunst/shiny-apps/tree/master/ww-eqs", icon("github"), target="_blank")
                     )
                   )
   )
