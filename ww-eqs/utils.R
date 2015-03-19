@@ -1,5 +1,7 @@
 download_data <- function(){
   
+  message(sprintf("%s: %s", Sys.time(), "Downloading data"))
+  
   url <- "http://ds.iris.edu/seismon/eventlist/index.phtml"
   
   data <- html(url) %>% 
