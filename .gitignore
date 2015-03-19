@@ -1,3 +1,4 @@
 *.Rhistory
 *.dcf
+*.Rproj.user
 .Rproj.user
