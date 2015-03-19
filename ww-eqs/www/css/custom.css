@@ -43,3 +43,14 @@ table {
 .irs-min, .irs-max {
   background: none;
 }
+
+/* for leafet popups */
+/*.dl-horizontal dt{
+    text-align: left;
+    padding-right: 1em;
+}
+
+.dl-horizontal dd{
+    margin-left: 0;
+    margin-bottom: 0.5em;
+}*()
