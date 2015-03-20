@@ -1,7 +1,9 @@
 rm(list=ls())
 library("rvest")
 library("plyr")
+library("dplyr")
 library("stringr")
+
 
 str_clean <- . %>% str_trim() %>% str_replace("\\s+", " ")
 
@@ -29,12 +31,30 @@ data_diputados <- ldply(html_diputados, function(x){ # x <- sample(html_diputado
   comunas <- y %>% html_nodes(".summary") %>% .[[1]] %>% html_nodes("p") %>% .[[1]] %>% html_text() %>% str_clean
   comite <- y %>% html_nodes(".summary") %>% .[[3]] %>% html_nodes("p") %>% .[[1]] %>% html_text %>% str_clean
   
-  data.frame(nombre, email, partido, region, distrito, url_foto, url_dip,
+  data_frame(nombre, email, partido, region, distrito, url_foto, url_dip,
              fecha_nac, profesion, comunas, comite)  
   
 }, .progress="text")
 
+str(data_diputados)
 
+colors <- data_frame(partido = c("UDI", "DC", "PS", "PPD", "RN",
+                                 "IND", "PC", "PRSD", "PL"),
+                     color = c("#002d71", "#2262aa", "#b70002", "#e9e234", "#743f55",
+                               "#eeeeee", "#db2001", "#1da23a", "#ffd700"))
+
+wp <- data_diputados %>%
+  group_by(comite, partido) %>% 
+  summarise(n=n()) %>% 
+  ungroup() %>% 
+  left_join(colors, by = "partido") %>% 
+  arrange(desc(n)) %>% 
+  {waffle(setNames(.$n, .$comite), colors = .$color, rows = 5)} +
+  theme(legend.position = "bottom")
+
+  
+class(wp)
+ggthemes::theme_hc
 
 save(data_diputados, file = "data/data.RData")
 
