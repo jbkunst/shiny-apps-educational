@@ -25,15 +25,14 @@ shinyServer(function(input, output, clientData, session){
 
     data <- data()
     
-    data <- data %>%  mutate(size = (magnitude^2)*10000)
-    
-    m <- leaflet(data) %>% addTiles()
+    m <- data %>% leaflet() %>% addTiles()
     
     if(nrow(data)>0){
-      m <- m %>% 
+      m <- m %>%
         addCircles(lng = ~longitude, lat = ~latitude, radius = ~ size,
-                   fillOpacity = 0.2, opacity = 0.25,
-                   color = "#FFF", fillColor = "#000", popup = ~ popup_info)
+                   fillOpacity = 0.1, opacity = 0.25, weight = 0,
+                   color = "#FFF", fillColor = "#000",
+                   popup = ~ popup_info)
     }
       
     m
@@ -44,7 +43,7 @@ shinyServer(function(input, output, clientData, session){
     
     data <- data()
     
-    data %>% select(-popup_info)
+    data %>% select(-popup_info, -size)
     
   }, escape = FALSE,
   options = list(pageLength = 5, lengthChange = FALSE, searching = FALSE,

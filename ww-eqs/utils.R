@@ -22,7 +22,8 @@ download_data <- function(){
            longitude = lon,
            location = location_map,
            event = event_id) %>%
-    mutate(location = stri_trans_totitle(location))
+    mutate(location = stri_trans_totitle(location),
+           size = (magnitude^2)*7500) # this need some justifactions)
   
   template_pop_up <-  tags$dl(class = "dl-horizontal",
                               tags$dt("Date"), tags$dd("%s"),
@@ -40,7 +41,6 @@ download_data <- function(){
                                          "%s"), "%s", target="_blank") %>% paste()
   
   event_info <- sprintf(template_event, data[["event"]], data[["event"]])
-  
   
   data <- data %>%
     mutate(popup_info = popup_info,

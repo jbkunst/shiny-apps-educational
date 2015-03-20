@@ -6,7 +6,7 @@ shinyUI(
               tags$script(src="js/script.js")
               ),
             leafletOutput("map", width = "100%", height = "100%"),
-            absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = TRUE,
+            absolutePanel(id = "controls", class = "panel panel-default small", fixed = TRUE, draggable = FALSE,
                           h4("The Latest Earthquakes Worldwide"),
                           h5("Magnitude > 4"),
                           hr(),
@@ -21,7 +21,7 @@ shinyUI(
                                            checkboxInput(inputId = "showdata",
                                                          label = "Show data",
                                                          value = FALSE),
-                                           conditionalPanel(condition = "input.showdata == true", class="small", 
+                                           conditionalPanel(condition = "input.showdata == true",
                                                             dataTableOutput("table")
                                                             )
                                            ),
