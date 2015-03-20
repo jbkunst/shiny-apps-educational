@@ -6,7 +6,7 @@ shinyUI(
               tags$script(src="js/script.js")
               ),
             leafletOutput("map", width = "100%", height = "100%"),
-            absolutePanel(id = "controls", class = "panel panel-default small", fixed = TRUE, draggable = TRUE,
+            absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE, draggable = TRUE,
                           h4("The Latest Earthquakes Worldwide"),
                           h5("Magnitude > 4"),
                           hr(),
@@ -15,13 +15,13 @@ shinyUI(
                                         value = FALSE),
                           conditionalPanel(condition = "input.showpanel == true",
                                            sliderInput("fmag", "Magnitude",
-                                                       min = 0, max = 1000, value = c(5,6), ticks=FALSE),
+                                                       min = 0, max = 1000, value = c(0, 1000), ticks=FALSE),
                                            sliderInput("fdepth", "Depth",
                                                        min = 0, max = 1000, value = c(0, 1000), ticks=FALSE),
                                            checkboxInput(inputId = "showdata",
                                                          label = "Show data",
                                                          value = FALSE),
-                                           conditionalPanel(condition = "input.showdata == true",
+                                           conditionalPanel(condition = "input.showdata == true", class="small", 
                                                             dataTableOutput("table")
                                                             )
                                            ),

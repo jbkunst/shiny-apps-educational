@@ -45,12 +45,10 @@ table {
 }
 
 /* for leafet popups */
-/*.dl-horizontal dt{
-    text-align: left;
-    padding-right: 1em;
+.dl-horizontal dt {
+  width: auto;
 }
 
-.dl-horizontal dd{
-    margin-left: 0;
-    margin-bottom: 0.5em;
-}*()
+.dl-horizontal dd {
+  margin-left: 80px;
+}
