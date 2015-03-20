@@ -1,1 +1,51 @@
-download_data()
+download_data <- function(){
+  
+  message(sprintf("%s: %s", Sys.time(), "Downloading data"))
+  
+  url <- "http://ds.iris.edu/seismon/eventlist/index.phtml"
+  
+  data <- html(url) %>% 
+    html_node("table") %>% 
+    html_table(fill = TRUE)
+  
+  names(data) <- tolower(names(data))
+  names(data) <- gsub("\\(.*\\)", "", names(data))
+  names(data) <- gsub("^\\s+|\\s+$", "", names(data))
+  names(data) <- gsub("\\s+", "_", names(data))
+  
+  data <- data %>% 
+    separate(date_and_time, into = c("date", "time"), sep = " ") %>% 
+    mutate(date = as.Date(date, format = "%d-%B-%Y")) %>%
+    rename(depth = depthkm,
+           magnitude = mag,
+           latitude = lat,
+           longitude = lon,
+           location = location_map,
+           event = event_id) %>%
+    mutate(location = stri_trans_totitle(location))
+  
+  template_pop_up <-  tags$dl(class = "dl-horizontal",
+                              tags$dt("Date"), tags$dd("%s"),
+                              tags$dt("Time"), tags$dd("%s"),
+                              tags$dt("Magnitude"), tags$dd("%s"),
+                              tags$dt("Depth"), tags$dd("%s"),
+                              tags$dt("Location"), tags$dd("%s")) %>% paste()
+  
+  popup_info <- sprintf(template_pop_up,
+                        data[["date"]], data[["time"]],
+                        data[["magnitude"]], data[["depth"]],
+                        data[["location"]])
+  
+  template_event <-  tags$a(href=sprintf("http://ds.iris.edu/ds/nodes/dmc/tools/event/%s",
+                                         "%s"), "%s", target="_blank") %>% paste()
+  
+  event_info <- sprintf(template_event, data[["event"]], data[["event"]])
+  
+  
+  data <- data %>%
+    mutate(popup_info = popup_info,
+           event = event_info)
+  
+  data
+  
+}
