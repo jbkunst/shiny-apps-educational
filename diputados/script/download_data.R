@@ -43,18 +43,12 @@ colors <- data_frame(partido = c("UDI", "DC", "PS", "PPD", "RN",
                      color = c("#002d71", "#2262aa", "#b70002", "#e9e234", "#743f55",
                                "#eeeeee", "#db2001", "#1da23a", "#ffd700"))
 
-wp <- data_diputados %>%
+data_diputados %>%
   group_by(comite, partido) %>% 
   summarise(n=n()) %>% 
   ungroup() %>% 
   left_join(colors, by = "partido") %>% 
-  arrange(desc(n)) %>% 
-  {waffle(setNames(.$n, .$comite), colors = .$color, rows = 5)} +
-  theme(legend.position = "bottom")
-
-  
-class(wp)
-ggthemes::theme_hc
+  arrange(desc(n))
 
 save(data_diputados, file = "data/data.RData")
 
