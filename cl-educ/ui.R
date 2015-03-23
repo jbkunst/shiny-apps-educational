@@ -28,8 +28,10 @@ shinyUI(
                                   uiOutput("report_region"),
                                   div(class="space"),
                                   plotOutput("map_reg", height = "350px"),
-                                  div(style="display:inline-block",sliderInput("region_map_size", "Tamanio", 1, 10, 3)),
-                                  div(style="display:inline-block",sliderInput("region_map_alpha", "Transparencia", 0, 1, 0.3))
+                                  fluidRow(
+                                    column(width = 6, sliderInput("region_map_size", "Tamanio", 1, 10, 3)),
+                                    column(width = 6, sliderInput("region_map_alpha", "Transparencia", 0, 1, 0.3))
+                                    )
                                   ),
                            column(width = 3,
                                   plotOutput("map_chi_reg", height = "580px"),

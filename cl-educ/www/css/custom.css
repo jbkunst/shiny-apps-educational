@@ -6,7 +6,7 @@ body {
   background-image:url("../img/bg_chalk_wall.jpg");
   font-family: "Shadows Into Light", cursive;
   font-weight: normal;
-  font-size: 1.3em;
+  font-size: 2em;
   color: white;
   line-height: 150%;
   padding-top: 20px;
@@ -16,6 +16,7 @@ body {
 
 .control-label {
   font-size: 0.8em;
+  font-weight: lighter;
 }
 
 #title {
@@ -52,6 +53,11 @@ body {
   color: #333333;
 }
 
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+  color: #333;
+  background-color: #fff;
+}
+
 a, a:hover {
   color: white;
   font-weight: bold;
@@ -73,6 +79,17 @@ label, input {
   padding-bottom: 10px;
 }
 
-#report_pais {
+.irs-from, .irs-to, .irs-single {
+  background: transparent;
+  color: white
+}
+.irs-bar {
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+  background: white;
+}
 
+.irs-bar-edge {
+  border: 1px solid white;
+  background: white;
 }

@@ -167,7 +167,6 @@ shinyServer(function(input, output) {
     
   }, bg="transparent")
   
-  
   output$map_chi_reg_main <- renderPlot({
     
     d_colegios <- colegios %>% select(latitud, longitud) %>%
