@@ -1,23 +1,37 @@
+library("shiny")
+library("threejs")
 
-# This is the server logic for a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-
-library(shiny)
+input <- list(N=100)
 
 shinyServer(function(input, output) {
 
-  output$distPlot <- renderPlot({
-
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+  v <- reactive({
+    h <- 100
+    data(world.cities, package="maps")
+    
+    cities <- world.cities[order(world.cities$pop,decreasing=TRUE)[1:input$N],]
+    
+    value <- h * cities$pop / max(cities$pop)
+    
+    # THREE.Color only accepts RGB form, drop the A value:
+    col <- sapply(heat.colors(10), function(x) substr(x,1,7))
+    names(col) <- c()
+    # Extend palette to data values
+    col <- col[floor(length(col)*(h-value)/h) + 1]
+    v <- list(value=value, color=col, cities=cities)
   })
 
+  output$globe <- renderGlobe({
+    
+    v <- v()
+    
+    earth_dark <- system.file("images/world.jpg",package="threejs")
+    
+    atmo <- TRUE
+    
+    args = c(col[[input$map]] , list(lat=v$cities$lat, long=v$cities$long, value=v$value, color=v$color, atmosphere=atmo))
+    
+    do.call(globejs, args=args)
+  })
+  
 })
