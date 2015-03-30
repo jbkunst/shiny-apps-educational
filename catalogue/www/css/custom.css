@@ -1,54 +1,73 @@
-html, body {
-   height: 100%;
-}
-
-#main {
-  padding: 0px;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  height: 100%;
-}
-
-#controls {
-  padding: 10px;
-  top: 10px;
-  left: 50px;
-  bottom: auto;
-
-  height: auto;
-  width: auto;
-  
-  opacity: 0.45;
-  transition: opacity 500ms 1s;
-}
-
-#controls:hover {
-  /* Fade in while hovering */
-  opacity: 0.9;
-  transition-delay: 0;
-}
-
-a, a:hover {
+a {
   text-decoration: none;
-  font-weight: bold;
-  color: black;
 }
 
-table {
-  padding: 5px;
-  width: 90%;
+#main{
+  padding-bottom: 10px;
 }
 
-.irs-min, .irs-max {
-  background: none;
+#header {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: white;
 }
 
-/* for leafet popups */
-.dl-horizontal dt {
-  width: auto;
+#footer {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: white;
 }
 
-.dl-horizontal dd {
-  margin-left: 80px;
+#tabset > li > a {
+  padding-left: 40px;
+  padding-right: 40px;
+  font-size: 1.2em;
 }
+
+
+.panel-footer{
+  background-color: transparent;
+  border-top: 1px solid transparent;
+}
+
+.prodbox {
+  padding-bottom: 50px;
+}
+
+.prodbox:hover {
+  background-color: #F4F4F4;
+}
+
+.prodboxinner {
+ padding: 5px; 
+}
+
+
+/* Theme */
+a {
+  color: #428BCA;
+}
+
+.irs-from, .irs-to, .irs-single {
+  background: #428BCA;
+}
+
+.irs-bar {
+  border-top: 1px solid #428BCA;
+  border-bottom: 1px solid #428BCA;
+  background: #428BCA;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+  background-color: #428BCA;
+}
+
+#footer, #header {
+  background: #428BCA;
+}
+
+.prodbox:hover {
+  background-color: #EFEFEF;
+  box-shadow: 0px -3px 0px #428BCA inset;
+}
+
