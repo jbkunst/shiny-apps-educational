@@ -7,32 +7,22 @@ shinyServer(function(input, output, session) {
   values <- reactiveValues()
   values$clicked <- FALSE
   values$prod_id <- NULL
-  values$viewas <- NULL
   
   observe({
     if (!is.null(input$clicked) && input$clicked == TRUE) {
       values$prod_id <- input$prod_id
       message(sprintf("viewing %s", values$prod_id))
-      updateTabsetPanel(session, "tabset", selected = "Detail")
+      updateTabsetPanel(session, "tabset", selected = "tabdetail")
     }
-    
-    if(!is.null(input$viewas)){
-      values$viewas <- input$viewas
-    } else {
-      values$viewas <- "grid"
-    }
-    
-        
   })
 
+#### Reactive Datas ####
   data_category <- reactive({
     
     data_category <- data %>% filter(category == input$category)
     
     updateSliderInput(session, "price_range", min = 0, max = max(data_category$price))
-    
-    updateTabsetPanel(session, "tabset", selected = "Category")
-
+    updateTabsetPanel(session, "tabset", selected = "tabcategory")
     data_category
 
     })
@@ -47,6 +37,15 @@ shinyServer(function(input, output, session) {
 
   })
   
+  data_product <- reactive({
+    
+    prod_id <- str_extract(values$prod_id ,"\\d+") %>% as.numeric
+    
+    product <- data %>% filter(id == prod_id)
+  
+  })
+  
+#### Tab panels ####
   output$category <- renderUI({
     
     products <- data_price()
@@ -54,17 +53,15 @@ shinyServer(function(input, output, session) {
     if(nrow(products)==0){
       output <- p("There's no products")
     } else {     
-     
-      
-      message(values$viewas)
-      if(values$viewas == "grid" ){
+    
+      if(input$viewas == "Grid"){
         output <- llply(seq(nrow(products)), function(x){
           product_template_grid(products[x,])
-        })  
+        })
       } else {
         output <- llply(seq(nrow(products)), function(x){
           product_template_list(products[x,])
-        })  
+        })
       }
       
       output <- do.call(function(...){ div(class="row-fluid", ...)}, output)
@@ -76,18 +73,23 @@ shinyServer(function(input, output, session) {
   
   output$product <- renderUI({
     
-    prod_id <- str_extract(values$prod_id ,"\\d+") %>% as.numeric
-  
-    product <- data %>% filter(id == prod_id)
+    product <- data_product()
     
     product_detail_template(product)
     
   })
   
-  output$cart <- renderUI({
-    
-    h1("cart")
-    
+#### Titles tabpanel ####
+
+  output$tabcategorytitle <- renderUI({
+    h4(input$category, tags$small("(", nrow(data_price()),")"))
+    })
+  
+  output$detailtabtitle <- renderUI({
+  })
+  
+  output$carttabtitle <- renderUI({
+    h4("Cart", tags$i(class="fa fa-cart"), tags$small("(", 2, ")"))
   })
 
 })

@@ -32,12 +32,6 @@ $(function() {
       Shiny.onInputChange('clicked', false);
     });
   
-  $("#viewas").click(function(){
-    
-    console.log("I'm viewass btn! you click me! ah?");
-    console.log($("#viewas .active > input").attr("value"));    
-    Shiny.onInputChange("viewas", $("#viewas .active > input").attr("value"));
-    
-  });
+
   
 });
