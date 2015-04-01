@@ -31,17 +31,22 @@ a {
 }
 
 .prodbox {
-  padding-bottom: 50px;
+  padding-bottom: 20px;
+  padding-top: 20px;
 }
 
 .prodbox:hover {
-  background-color: #F4F4F4;
+  background-color: #F7F7F7;
 }
 
 .prodboxinner {
  padding: 5px; 
 }
 
+/* detail product */
+.imgthumb {
+ padding: 2px; 
+}
 
 /* Theme */
 a {

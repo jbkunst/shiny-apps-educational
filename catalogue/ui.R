@@ -2,6 +2,7 @@ shinyUI(
   fluidPage(
     tags$link(rel = "stylesheet", type = "text/css", href = "css/bootstrap.cosmo.min.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/selectize_custom.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"),
     tags$script(src = "js/custom.js"),
     fluidRow(
@@ -18,11 +19,13 @@ shinyUI(
         hr(),
         radioButtons("category", "Category", choices = unique(data$category)),
         hr(),
-        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre="$"),
+        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre="$", sep = "."),
         actionLink("price_reset", "reset prices", class = "small pull-right"),
         br(),
         hr(),
-        radioButtons("viewas", "View as", choices = c("Grid", "List"))
+        selectInput("sortby", "Sort", choices = c("Time: newly listed" = "tr", "Price: lowest first" = "pl", "Price: highest first" = "ph")),
+        hr(),
+        radioButtons("viewas", "View", choices = c("Grid", "List"), inline = TRUE)
         ),
       column(
         width = 9, id = "contentbar",
