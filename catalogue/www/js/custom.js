@@ -10,28 +10,27 @@ $(function() {
     
     slider.update({ from: 0, to: slider.options.max });
     
+  });
+  
+  $("body").on("click", ".prodbox", function() {
+    
+    console.log("I'm product! you click me! ah?");
+    
+    console.log($(this).attr("id"));
+    
+    Shiny.onInputChange("clicked", true);
+    Shiny.onInputChange("prod_id", $(this).attr("id"));
+    $(window).scrollTop(0);
     
   });
   
-  
-   $('body').on('click', '.prodbox', function() {
-      
-      console.log("I'm product! you click me! ah?");
-      
-      console.log($(this).attr("id"));
-      
-      Shiny.onInputChange("clicked", true);
-      Shiny.onInputChange("prod_id", $(this).attr("id"));
-      $(window).scrollTop(0);
-      
-    });
+  $("#addtocart").click(function(){
     
-    // Reset click input value when user changes tab.
-    // This makes Shiny observer to observe for changes more "eagerly".
-    $('body').on('click', '#tabset li', function() {
-      Shiny.onInputChange('clicked', false);
-    });
-  
+    console.log("I'm addtocart button! you click me! ah?");
+    
+    console.log($(this))
+    
+  });
 
   
 });

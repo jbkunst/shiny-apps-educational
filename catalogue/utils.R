@@ -103,10 +103,22 @@ product_detail_template <- function(x){
                         tags$button(class="btn btn-success", price_format(x$price))
                         ),
                  column(6,
-                        actionButton("addtocart", class="pull-right btn-success",
+                        actionButton("addtocart", class="pull-right btn-success", prodid = x$id,
                                      tags$i(class="fa fa-cart-plus"), "Add to cart ")
                         )
                  )
              )
       )
+}
+
+product_cart_tr_template <- function(x){
+  
+  # x <- sample_n(dcart, 1)
+
+  tags$tr(
+    tags$td(x$product),
+    tags$td(x$price),
+    tags$td(x$amount),
+    tags$td(x$subtotal_format)
+    )
 }

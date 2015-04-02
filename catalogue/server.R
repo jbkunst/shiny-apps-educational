@@ -1,5 +1,5 @@
 input <- list(category = "drinks", price_range = c(0, 100), sortby = "pl")
-values <- list(prod_id = "prod_34")
+values <- list(prod_id = "prod_34", cart = c(1, 4, 5, 6, 6 ,6))
 
 shinyServer(function(input, output, session) {
   
@@ -9,6 +9,7 @@ shinyServer(function(input, output, session) {
   values <- reactiveValues()
   values$clicked <- FALSE
   values$prod_id <- NULL
+  values$cart  <- c()
   
   observe({
     if (!is.null(input$clicked) && input$clicked == TRUE) {
@@ -18,9 +19,9 @@ shinyServer(function(input, output, session) {
   })
   
   observe({    
-    if(!is.null(values$prod_id) & !is.null(input$addtocart)){
-      session$cart  <- c(session$cart, values$prod_id)
-      print(session$cart)  
+    if(!is.null(input$addtocart) && input$addtocart > 0){
+      session$cart  <- c(session$cart, isolate(str_extract(input$prod_id, "\\d+")))
+      values$cart <- session$cart
     }
   })
 
@@ -123,6 +124,51 @@ shinyServer(function(input, output, session) {
   output$cart <- renderUI({
     
     
+    if(length(values$cart)==0){
+      output <- h3("There's no products in your shopping cart")
+    } else {     
+      dcart <- data_frame(id = as.numeric(values$cart)) %>%
+        group_by(id) %>%
+        summarize(amount = n()) %>%
+        left_join(data, by = "id") %>%
+        mutate(subtotal = price*amount,
+               subtotal_format = price_format(subtotal),
+               product = name,
+               price = price_format(price))
+      
+      cart_total <- dcart$subtotal %>% sum() %>% price_format()
+        
+      output <- llply(seq(nrow(dcart)), function(x){
+        product_cart_tr_template(dcart[x,])
+      })
+      
+      output <- do.call(function(...){ tags$tbody(...)},  output)
+      
+      output <- div(class="row-fluid table-responsive",
+                    tags$table(class="table table-hover",
+                      tags$thead(
+                        tags$tr(
+                          tags$th("Product"),
+                          tags$th("Price"),
+                          tags$th("Amount"),
+                          tags$th("Subtotal")
+                          )
+                        ),
+                      tags$tfoot(
+                        tags$tr(
+                          tags$th(),
+                          tags$th(),
+                          tags$th("Total"),
+                          tags$th(cart_total)
+                          )
+                        ),
+                      output
+                      )
+                    )
+    }
+    
+    output
+
   
 
   })
