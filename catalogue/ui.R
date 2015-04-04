@@ -19,7 +19,7 @@ shinyUI(
         hr(),
         radioButtons("category", "Category", choices = unique(data$category)),
         hr(),
-        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre="$", sep = "."),
+        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre="$", sep = ".", width = "100%"),
         actionLink("price_reset", "reset prices", class = "small pull-right"),
         br(),
         hr(),
@@ -41,7 +41,7 @@ shinyUI(
     fluidRow(
       id = "footer",
       column(
-        6, offset = 5, class = "text-right",
+        6, offset = 6, class = "text-right",
         h5(tags$i(class="fa fa-facebook"), "myfacebook"),
         h5(tags$i(class="fa fa-twitter"), "mytwitter"),
         h5(tags$i(class="fa fa-send"), "myemail@mydomain.my"),
