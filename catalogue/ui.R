@@ -9,7 +9,7 @@ shinyUI(
       id = "header",
       column(
         6,
-        h4("MyMarkterWE")
+        h3("MyMarkterWE", tags$small("Subtitle"))
         )
       ),
     fluidRow(
