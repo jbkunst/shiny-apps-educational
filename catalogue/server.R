@@ -62,6 +62,18 @@ shinyServer(function(input, output, session) {
   
   })
   
+  data_cart <- reactive({
+    data_cart <- data_frame(id = as.numeric((values$cart))) %>%
+      group_by(id) %>%
+      summarize(amount = n()) %>%
+      left_join(data, by = "id") %>%
+      mutate(subtotal = price*amount,
+             subtotal_format = price_format(subtotal),
+             product = name,
+             price = price_format(price))
+    data_cart
+  })
+  
 
 #### Titles tabpanel ####
 
@@ -88,7 +100,7 @@ shinyServer(function(input, output, session) {
     products <- data_price()
     
     if(nrow(products)==0){
-      output <- h3("There's no products")
+      output <- simple_text_template("There's no products")
     } else {     
       
       if(input$viewas == "Grid"){
@@ -114,7 +126,7 @@ shinyServer(function(input, output, session) {
       product <- data_product()
       output <- product_detail_template(product)
     } else {
-      output <- h3("Select a product")
+      output <- simple_text_template("Select a product first")
     }
     
     output
@@ -123,54 +135,14 @@ shinyServer(function(input, output, session) {
 
   output$cart <- renderUI({
     
-    
     if(length(values$cart)==0){
-      output <- h3("There's no products in your shopping cart")
+      output <- simple_text_template("There's no products in your shopping cart")
     } else {     
-      dcart <- data_frame(id = as.numeric(values$cart)) %>%
-        group_by(id) %>%
-        summarize(amount = n()) %>%
-        left_join(data, by = "id") %>%
-        mutate(subtotal = price*amount,
-               subtotal_format = price_format(subtotal),
-               product = name,
-               price = price_format(price))
-      
-      cart_total <- dcart$subtotal %>% sum() %>% price_format()
-        
-      output <- llply(seq(nrow(dcart)), function(x){
-        product_cart_tr_template(dcart[x,])
-      })
-      
-      output <- do.call(function(...){ tags$tbody(...)},  output)
-      
-      output <- div(class="row-fluid table-responsive",
-                    tags$table(class="table table-hover",
-                      tags$thead(
-                        tags$tr(
-                          tags$th("Product"),
-                          tags$th("Price"),
-                          tags$th("Amount"),
-                          tags$th("Subtotal")
-                          )
-                        ),
-                      tags$tfoot(
-                        tags$tr(
-                          tags$th(),
-                          tags$th(),
-                          tags$th("Total"),
-                          tags$th(cart_total)
-                          )
-                        ),
-                      output
-                      )
-                    )
+      dcart <- data_cart()
+      output <- cart_template(dcart)
     }
     
     output
-
-  
-
   })
 
 })

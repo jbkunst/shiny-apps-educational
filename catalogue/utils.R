@@ -111,14 +111,48 @@ product_detail_template <- function(x){
       )
 }
 
-product_cart_tr_template <- function(x){
+cart_template <- function(dcart){
   
-  # x <- sample_n(dcart, 1)
-
-  tags$tr(
-    tags$td(x$product),
-    tags$td(x$price),
-    tags$td(x$amount),
-    tags$td(x$subtotal_format)
+  cart_total <- dcart$subtotal %>% sum %>% price_format
+  
+  products_template_tr <- llply(seq(nrow(dcart)), function(y){
+    x <- dcart[y,]
+    tags$tr(
+      tags$td(img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/40/40/food/1/%s/", x$name))),
+      tags$td(x$product),
+      tags$td(x$price),
+      tags$td(x$amount),
+      tags$td(x$subtotal_format)
     )
+  })
+  
+  products_template_tr <- do.call(function(...){ tags$tbody(...)},  products_template_tr)
+  
+ div(class="row-fluid table-responsive",
+     tags$table(class="table table-hover",
+                tags$thead(
+                  tags$tr(
+                    tags$th(),
+                    tags$th("Product"),
+                    tags$th("Price"),
+                    tags$th("Amount"),
+                    tags$th("Subtotal")
+                    )
+                  ),
+                products_template_tr,
+                tags$tfoot(
+                  tags$tr(
+                    tags$th(),
+                    tags$th(),
+                    tags$th(),
+                    tags$th("Total"),
+                    tags$th(cart_total)
+                    )
+                  )
+                )
+     )
+}
+
+simple_text_template <- function(x){
+  h3(x)
 }

@@ -24,6 +24,10 @@ a {
   font-size: 1.2em;
 }
 
+h4 small, h3 small {
+  color: #B0B0B0;
+}
+
 
 .panel-footer{
   background-color: transparent;
@@ -41,6 +45,11 @@ a {
 
 .prodboxinner {
  padding: 5px; 
+}
+
+/* Cart */
+.table tbody > tr > td{
+    vertical-align: middle;
 }
 
 /* detail product */
