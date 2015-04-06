@@ -38,7 +38,7 @@ product_template_grid <- function(x){
   column(3, class="prodbox", id = sprintf("prod_%s", x$id),
          div(class="prodboxinner",
              img(class="imgthumb img-responsive center-block",
-                 src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))
+                 src=sprintf("http://placehold.it/200x200&text=%s", x$name))
              ),
          div(class="prodboxinner",
              h5(x$name)
@@ -61,7 +61,7 @@ product_template_list <- function(x){
          fluidRow(
             column(4,
                    img(class="imgthumb img-responsive center-block",
-                       src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))
+                       src=sprintf("http://placehold.it/200x200&text=%s", x$name))
                    ),
             column(4,
                    h5(x$name)
@@ -82,12 +82,12 @@ product_detail_template <- function(x){
   div(class="row-fluid",
       column(4,
              div(class="row-fluid",
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))),
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))),
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))),
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))),
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name))),
-                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/200/200/food/1/%s/", x$name)))
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name))),
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name))),
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name))),
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name))),
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name))),
+                 column(6, img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/200x200&text=%s", x$name)))
                  )
              ),
       column(8,
@@ -119,7 +119,7 @@ cart_template <- function(dcart){
     x <- dcart[y,]
     tags$tr(
       tags$td(class="text-center",
-              img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/40/40/food/1/%s/", x$name))),
+              img(class="imgthumb img-responsive", src=sprintf("http://placehold.it/40x40&text=%s", x$name))),
       tags$td(x$product),
       tags$td(class="text-right", x$price),
       tags$td(class="text-right", x$amount),
