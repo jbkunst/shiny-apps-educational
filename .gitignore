@@ -1,4 +1,4 @@
-*.Rhistory
-*.dcf
-*.Rproj.user
 .Rproj.user
+.Rhistory
+.RData
+.httr-oauth
