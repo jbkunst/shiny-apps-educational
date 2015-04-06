@@ -1,16 +1,14 @@
 shinyUI(
   fluidPage(
     # Site
-    tags$link(rel = "stylesheet", type = "text/css", href = "css/bootstrap.cosmo.min.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/bootstrap.cosmo.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css"),
     tags$script(src = "js/custom.js"),
-    # Selectize boostrap
     tags$link(rel = "stylesheet", type = "text/css", href = "css/selectize_custom.css"),
-    # Font Awesome
     tags$link(rel = "stylesheet", type = "text/css", href = "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"),
-    # Sweet Alert
-    tags$link(rel = "stylesheet", type = "text/css", href = "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.css"),
-    tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.min.js"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/sweet-alert.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/sweet-alert_custom.css"),
+    tags$script(src = "js/sweet-alert.js"),
     fluidRow(
       id = "header",
       column(

@@ -3,12 +3,12 @@ values <- list(prod_id = "prod_34", cart = c(1, 4, 5, 6, 6 ,6))
 
 shinyServer(function(input, output, session) {
   
-  # Create a reactiveValues object, to let us use settable reactive values
   session$cart <- c()
-  
+  # Create a reactiveValues object, to let us use settable reactive values
   values <- reactiveValues()
   values$clicked <- FALSE
   values$prod_id <- NULL
+  values$makeorder <- FALSE
   values$cart  <- c()
   
   observe({
@@ -24,6 +24,13 @@ shinyServer(function(input, output, session) {
       values$cart <- session$cart
     }
   })
+  
+  observe({
+    values$makeorder <- input$makeorder
+    if(!is.null(input$makeorder) && values$makeorder){
+      message("processing order")
+    }
+  })
 
 #### Reactive Datas ####
   data_category <- reactive({
@@ -33,8 +40,7 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, "price_range", min = 0, max = max(data_category$price))
     
     updateTabsetPanel(session, "tabset", selected = "tabcategory")
-  
-    
+
     data_category
 
     })
@@ -44,9 +50,9 @@ shinyServer(function(input, output, session) {
     data_sort <- data_category()
     
     if(input$sortby == "pl"){
-      data_sort <- data_sort  %>% arrange(desc(price))
-    } else if (input$sortby == "ph"){
       data_sort <- data_sort  %>% arrange(price)
+    } else if (input$sortby == "ph"){
+      data_sort <- data_sort  %>% arrange(desc(price))
     }
     
     data_sort
@@ -82,7 +88,6 @@ shinyServer(function(input, output, session) {
              price = price_format(price))
     data_cart
   })
-  
 
 #### Titles tabpanel ####
 
@@ -100,6 +105,7 @@ shinyServer(function(input, output, session) {
   
   output$carttabtitle <- renderUI({
     input$addtocart
+    session$cart
     h4("Cart", tags$i(class="fa fa-cart"), tags$small("(", length(session$cart), ")"))
   })
 

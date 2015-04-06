@@ -30,7 +30,16 @@ $(function() {
      }
      if (email) {
        if (validateEmail(email)) {
-         swal("Nice!", "Your awesome order was created.", "success");
+         console.log("Yay! make the order!")
+         Shiny.onInputChange("makeorder", true);
+         swal({
+           title: "Nice!",
+           text: "Your awesome order was created. Thanks for choose us!",
+           type: "success"},
+           function(ok){
+             location.reload();
+           }
+         );
        } else {
           swal.showInputError("Mmm. Is it your email an email?");
           return false;
