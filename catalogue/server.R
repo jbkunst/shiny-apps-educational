@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   observe({
     values$makeorder <- input$makeorder
     if(!is.null(input$makeorder) && values$makeorder){
-      message("processing order")
+      message("processing order put your logic here, the session will be restarted")
     }
   })
 
@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
     
     data_sort
     
-  })
+
   
   data_price <- reactive({
     
