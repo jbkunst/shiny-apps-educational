@@ -2,3 +2,5 @@
 *\.Rhistory
 *\.httr-oauth
 .httr-oauth
+
+*\shinyapps\*
