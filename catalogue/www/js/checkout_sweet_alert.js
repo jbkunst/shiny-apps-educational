@@ -24,16 +24,16 @@ $(function() {
      closeOnConfirm: false,
      closeOnCancel: false
    }, function(email){
-     console.log(email);
-     console.log(email.length);
-     console.log(1);
+     if (email === "") {
+       swal.showInputError("You need to type an email to checkout!");
+       return false;
+     }
      if (email) {
        if (validateEmail(email)) {
-         console.log(3);
          swal("Nice!", "Your awesome order was created.", "success");
        } else {
-         console.log(4);
-         swal("Mmm!", "Your emails don't seems like an email.", "warning");
+          swal.showInputError("Mmm. Is it your email an email?");
+          return false;
        }
      } else {
        swal("Ok!", "Keep looking our products :)", "info");

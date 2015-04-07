@@ -109,7 +109,7 @@ shinyServer(function(input, output, session) {
     products <- data_price()
     
     if(nrow(products)==0){
-      output <- simple_text_template("There's no products")
+      output <- simple_text_template("Mmm. There are no products with these characteristics.")
     } else {     
       
       if(input$viewas == "Grid"){
@@ -135,7 +135,7 @@ shinyServer(function(input, output, session) {
       product <- data_product()
       output <- product_detail_template(product)
     } else {
-      output <- simple_text_template("Select a product first")
+      output <- simple_text_template("Select a product first please!")
     }
     
     output
@@ -145,7 +145,7 @@ shinyServer(function(input, output, session) {
   output$cart <- renderUI({
     
     if(length(values$cart)==0){
-      output <- simple_text_template("There's no products in your shopping cart")
+      output <- simple_text_template("Your cart is empty! So we don´t show nothing ;)!")
     } else {     
       dcart <- data_cart()
       output <- cart_template(dcart)
