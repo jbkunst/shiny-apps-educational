@@ -33,20 +33,29 @@ shinyServer(function(input, output, session) {
     updateSliderInput(session, "price_range", min = 0, max = max(data_category$price))
     
     updateTabsetPanel(session, "tabset", selected = "tabcategory")
-    
-    if(input$sortby == "pl"){
-      data_category <- data_category  %>% arrange(desc(price))
-    } else if (input$sortby == "ph"){
-      data_category <- data_category  %>% arrange(price)
-    }
+  
     
     data_category
 
     })
   
+  data_sort <- reactive({
+    
+    data_sort <- data_category()
+    
+    if(input$sortby == "pl"){
+      data_sort <- data_sort  %>% arrange(desc(price))
+    } else if (input$sortby == "ph"){
+      data_sort <- data_sort  %>% arrange(price)
+    }
+    
+    data_sort
+    
+  })
+  
   data_price <- reactive({
     
-    data_price <- data_category()
+    data_price <- data_sort()
     
     data_price <- data_price %>% filter(price %>% between(input$price_range[1], input$price_range[2]))
     

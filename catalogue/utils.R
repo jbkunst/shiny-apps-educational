@@ -100,11 +100,11 @@ product_detail_template <- function(x){
              hr(),
              div(class="row-fluid",
                  column(6,
-                        tags$button(class="btn btn-success", price_format(x$price))
+                        tags$button(class="btn btn-success btn-lg", price_format(x$price))
                         ),
                  column(6,
-                        actionButton("addtocart", class="pull-right btn-success", prodid = x$id,
-                                     tags$i(class="fa fa-cart-plus"), "Add to cart ")
+                        actionButton("addtocart", class="pull-right btn-success btn-lg", prodid = x$id,
+                                     "  Add to cart", tags$i(class="fa fa-cart-plus"))
                         )
                  )
              )
@@ -151,7 +151,9 @@ cart_template <- function(dcart){
                     )
                   )
                 ),
-     actionButton("checkout", "Check out", class="pull-right")
+     actionButton("checkout", class="pull-right btn-success btn-lg",
+                  "  Check out", tags$i(class="fa fa-money")),
+     tags$script(src = "js/checkout_sweet_alert.js")
      )
 }
 

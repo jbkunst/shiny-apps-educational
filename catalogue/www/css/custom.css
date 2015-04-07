@@ -57,6 +57,11 @@ h4 small, h3 small {
  padding: 2px; 
 }
 
+/* remove hover effect when a buttons is clicked */
+.btn:hover {
+  background-position: 0px;
+}
+
 /* Theme */
 a {
   color: #428BCA;
