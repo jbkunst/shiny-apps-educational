@@ -24,18 +24,11 @@ text_sample <- function(){
   "Bitters Helvetica whatever tousled, fanny pack roof party master cleanse paleo freegan iPhone sriracha. Williamsburg forage freegan narwhal leggings trust fund. Meditation freegan tote bag viral. Farm-to-table keytar biodiesel Schlitz paleo readymade, roof party retro lo-fi mumblecore Intelligentsia Banksy"
 }
 
-get_data <- function(){
-  key <- KEY_GSS
-  ss <- register_ss(key)
-  data <- ss %>%  get_via_csv() 
-  data
-}
-
 product_template_grid <- function(x){
   
   # x <- sample_n(data, 1)
   
-  column(3, class="prodbox", id = sprintf("prod_%s", x$id),
+  column(3, class="prodbox hvr-reveal", id = sprintf("prod_%s", x$id),
          div(class="prodboxinner",
              img(class="imgthumb img-responsive center-block",
                  src=sprintf("http://placehold.it/200x200&text=%s", x$name))
@@ -103,7 +96,7 @@ product_detail_template <- function(x){
                         tags$button(class="btn btn-success btn-lg", price_format(x$price))
                         ),
                  column(6,
-                        actionButton("addtocart", class="pull-right btn-success btn-lg", prodid = x$id,
+                        actionButton("addtocart", class="pull-right btn-success btn-lg hvr-buzz-out", prodid = x$id,
                                      "  Add to cart", tags$i(class="fa fa-cart-plus"))
                         )
                  )
@@ -129,32 +122,34 @@ cart_template <- function(dcart){
   
   products_template_tr <- do.call(function(...){ tags$tbody(...)},  products_template_tr)
   
- div(class="row-fluid table-responsive",
-     tags$table(class="table table-hover",
-                tags$thead(
-                  tags$tr(
-                    tags$th(),
-                    tags$th("Product"),
-                    tags$th(class="text-right", "Price"),
-                    tags$th(class="text-right", "Amount"),
-                    tags$th(class="text-right", "Subtotal")
-                    )
-                  ),
-                products_template_tr,
-                tags$tfoot(
-                  tags$tr(
-                    tags$th(),
-                    tags$th(),
-                    tags$th(),
-                    tags$th(class="text-right", "Total"),
-                    tags$th(class="text-right", cart_total)
-                    )
-                  )
-                ),
-     actionButton("checkout", class="pull-right btn-success btn-lg",
-                  "  Check out", tags$i(class="fa fa-money")),
-     tags$script(src = "js/checkout_sweet_alert.js")
-     )
+  div(class="row-fluid",
+      div(class="table-responsive",
+          tags$table(class="table table-hover",
+                     tags$thead(
+                       tags$tr(
+                         tags$th(),
+                         tags$th("Product"),
+                         tags$th(class="text-right", "Price"),
+                         tags$th(class="text-right", "Amount"),
+                         tags$th(class="text-right", "Subtotal")
+                         )
+                       ),
+                     products_template_tr,
+                     tags$tfoot(
+                       tags$tr(
+                         tags$th(),
+                         tags$th(),
+                         tags$th(),
+                         tags$th(class="text-right", "Total"),
+                         tags$th(class="text-right", cart_total)
+                         )
+                       )
+                     )
+          ),
+      actionButton("checkout", class="pull-right btn-success btn-lg hvr-buzz-out",
+                   "  Check out", tags$i(class="fa fa-money")),
+      tags$script(src = "js/checkout_sweet_alert.js")
+      )
 }
 
 simple_text_template <- function(x){

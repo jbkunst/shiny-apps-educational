@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   observe({
     values$makeorder <- input$makeorder
     if(!is.null(input$makeorder) && values$makeorder){
-      message("processing order put your logic here, the session will be restarted")
+      message("Logic here!")
       print(data_cart())
     }
   })

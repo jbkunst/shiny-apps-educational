@@ -3,12 +3,13 @@ shinyUI(
     # Site
     tags$link(rel = "stylesheet", type = "text/css", href = "css/bootstrap.cosmo.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/hover.css"),
     tags$script(src = "js/custom.js"),
     tags$link(rel = "stylesheet", type = "text/css", href = "css/selectize_custom.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"),
-    tags$link(rel = "stylesheet", type = "text/css", href = "css/sweet-alert.css"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.css"),
     tags$link(rel = "stylesheet", type = "text/css", href = "css/sweet-alert_custom.css"),
-    tags$script(src = "js/sweet-alert.js"),
+    tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/0.5.0/sweet-alert.min.js"),
     fluidRow(
       id = "header",
       column(
