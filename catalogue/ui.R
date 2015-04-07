@@ -18,6 +18,10 @@ shinyUI(
         )
       ),
     fluidRow(
+      id = "breadcrumb",
+      uiOutput("breadcrumb")
+      ),
+    fluidRow(
       id = "main",
       column(
         width = 3, id = "sidebar",

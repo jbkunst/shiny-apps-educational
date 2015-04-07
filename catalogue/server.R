@@ -4,6 +4,7 @@
 shinyServer(function(input, output, session) {
   
   session$cart <- c()
+  
   values <- reactiveValues(cart = c())
 
   observeEvent(input$prod_id, {
@@ -80,6 +81,20 @@ shinyServer(function(input, output, session) {
   })
 
 #### Titles tabpanel ####
+
+  output$breadcrumb <- renderUI({
+    
+    url_search <- list(category="Drinks", prod= "Water")
+    
+    if(!is.null(url_search$category)) updateRadioButtons(session, "category", selected=url_search$category)
+       
+    names(url_search) <- NULL
+    output <- lapply(url_search, tags$li)
+    output <- do.call(function(...){ tags$ol(class="breadcrumb pull-right", ...)}, output)
+    
+    output
+  
+  })
 
   output$tabcategorytitle <- renderUI({
     h4(input$category, tags$small("(", nrow(data_price()),")"))
