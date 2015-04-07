@@ -1,38 +1,27 @@
-input <- list(category = "drinks", price_range = c(0, 100), sortby = "pl")
-values <- list(prod_id = "prod_34", cart = c(1, 4, 5, 6, 6 ,6))
+# input <- list(category = "drinks", price_range = c(0, 100), sortby = "pl")
+# values <- list(prod_id = "prod_34", cart = c(1, 4, 5, 6, 6 ,6))
 
 shinyServer(function(input, output, session) {
   
   session$cart <- c()
-  # Create a reactiveValues object, to let us use settable reactive values
-  values <- reactiveValues()
-  values$clicked <- FALSE
-  values$prod_id <- NULL
-  values$makeorder <- FALSE
-  values$cart  <- c()
-  
-  observe({
-    if (!is.null(input$clicked) && input$clicked == TRUE) {
-      values$prod_id <- input$prod_id
-      updateTabsetPanel(session, "tabset", selected = "tabdetail")
-    }
-  })
-  
-  observe({    
-    if(!is.null(input$addtocart) && input$addtocart > 0){
-      session$cart  <- c(session$cart, isolate(str_extract(input$prod_id, "\\d+")))
-      values$cart <- session$cart
-    }
-  })
-  
-  observe({
-    values$makeorder <- input$makeorder
-    if(!is.null(input$makeorder) && values$makeorder){
-      message("Logic here!")
-      print(data_cart())
-    }
+  values <- reactiveValues(cart = c())
+
+  observeEvent(input$prod_id, {
+    values$prod_id <- input$prod_id
+    updateTabsetPanel(session, "tabset", selected = "tabdetail")
   })
 
+  observeEvent(input$addtocart, {
+    session$cart  <- c(session$cart, isolate(str_extract(input$prod_id, "\\d+")))
+    values$cart <- session$cart
+  })
+
+  observeEvent(input$makeorder, {
+    message("Logic here!")
+    print(data_cart())
+  })
+  
+  
 #### Reactive Datas ####
   data_category <- reactive({
     
