@@ -118,11 +118,12 @@ cart_template <- function(dcart){
   products_template_tr <- llply(seq(nrow(dcart)), function(y){
     x <- dcart[y,]
     tags$tr(
-      tags$td(img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/40/40/food/1/%s/", x$name))),
+      tags$td(class="text-center",
+              img(class="imgthumb img-responsive", src=sprintf("http://lorempixel.com/40/40/food/1/%s/", x$name))),
       tags$td(x$product),
-      tags$td(x$price),
-      tags$td(x$amount),
-      tags$td(x$subtotal_format)
+      tags$td(class="text-right", x$price),
+      tags$td(class="text-right", x$amount),
+      tags$td(class="text-right", x$subtotal_format)
     )
   })
   
@@ -134,9 +135,9 @@ cart_template <- function(dcart){
                   tags$tr(
                     tags$th(),
                     tags$th("Product"),
-                    tags$th("Price"),
-                    tags$th("Amount"),
-                    tags$th("Subtotal")
+                    tags$th(class="text-right", "Price"),
+                    tags$th(class="text-right", "Amount"),
+                    tags$th(class="text-right", "Subtotal")
                     )
                   ),
                 products_template_tr,
@@ -145,11 +146,12 @@ cart_template <- function(dcart){
                     tags$th(),
                     tags$th(),
                     tags$th(),
-                    tags$th("Total"),
-                    tags$th(cart_total)
+                    tags$th(class="text-right", "Total"),
+                    tags$th(class="text-right", cart_total)
                     )
                   )
-                )
+                ),
+     actionButton("checkout", "Check out", class="pull-right")
      )
 }
 
