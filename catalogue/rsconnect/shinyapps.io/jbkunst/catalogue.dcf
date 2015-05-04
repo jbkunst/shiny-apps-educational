@@ -1,8 +1,8 @@
 name: catalogue
 account: jbkunst
 server: shinyapps.io
-bundleId: 180902
+bundleId: 180904
 url: http://jbkunst.shinyapps.io/catalogue
-when: 1430752818.14867
+when: 1430753036.78244
 asMultiple: FALSE
 asStatic: FALSE

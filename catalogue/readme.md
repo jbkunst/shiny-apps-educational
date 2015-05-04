@@ -4,5 +4,6 @@ I know ;), maybe R is not the best way (the right way) to do a eccomerce page bu
 
 ## References
 
-- https://github.com/jennybc/r-graph-catalog/tree/master/r-graph-catalog
-- https://gist.github.com/amackey/6841cf03e54d021175f0
+- Repo: https://github.com/jbkunst/shiny-apps/tree/master/catalogue
+- Demo: https://jbkunst.shinyapps.io/catalogue/
+- Original Idea: https://github.com/jennybc/r-graph-catalog/tree/master/r-graph-catalog
