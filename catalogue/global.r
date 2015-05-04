@@ -3,6 +3,7 @@ library("plyr")
 library("dplyr")
 library("stringr")
 library("stringi")
+library("markdown")
 
 source("utils.R")
 
