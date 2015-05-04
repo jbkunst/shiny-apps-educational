@@ -18,17 +18,13 @@ shinyUI(
         )
       ),
     fluidRow(
-      id = "breadcrumb",
-      uiOutput("breadcrumb")
-      ),
-    fluidRow(
       id = "main",
       column(
         width = 3, id = "sidebar",
         hr(),
         radioButtons("category", "Category", choices = unique(data$category)),
         hr(),
-        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre="$", sep = ".", width = "100%"),
+        sliderInput("price_range", "Prices",  min = 0, max = 1e9, value = c(0, 1e9), pre = "$", sep = ".", width = "100%"),
         actionLink("price_reset", "reset prices", class = "small pull-right"),
         br(),
         hr(),
@@ -42,10 +38,11 @@ shinyUI(
         width = 9, id = "contentbar",
         hr(),
         tabsetPanel(
-          id="tabset", type = "pills",
+          id = "tabset", type = "pills",
           tabPanel(uiOutput("tabcategorytitle"), value = "tabcategory", hr(), uiOutput("category")),
           tabPanel(uiOutput("detailtabtitle"), value = "tabdetail", hr(), uiOutput("product")),
-          tabPanel(uiOutput("carttabtitle"), value = "tabcart",  hr(), uiOutput("cart"))
+          tabPanel(uiOutput("carttabtitle"), value = "tabcart",  hr(), uiOutput("cart")),
+          tabPanel(h4("Read Me"), value = "tabcart",  hr(), includeMarkdown("readme.md"))
           )
         )
       ),

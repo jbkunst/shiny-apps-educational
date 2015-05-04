@@ -82,20 +82,6 @@ shinyServer(function(input, output, session) {
 
 #### Titles tabpanel ####
 
-  output$breadcrumb <- renderUI({
-    
-    url_search <- list(category="Drinks", prod= "Water")
-    
-    if(!is.null(url_search$category)) updateRadioButtons(session, "category", selected=url_search$category)
-       
-    names(url_search) <- NULL
-    output <- lapply(url_search, tags$li)
-    output <- do.call(function(...){ tags$ol(class="breadcrumb pull-right", ...)}, output)
-    
-    output
-  
-  })
-
   output$tabcategorytitle <- renderUI({
     h4(input$category, tags$small("(", nrow(data_price()),")"))
     })
@@ -111,7 +97,7 @@ shinyServer(function(input, output, session) {
   output$carttabtitle <- renderUI({
     input$addtocart
     session$cart
-    h4("Cart", tags$i(class="fa fa-cart"), tags$small("(", length(session$cart), ")"))
+    h4("Cart", tags$i(class = "fa fa-cart"), tags$small("(", length(session$cart), ")"))
   })
 
 #### Tab panels ####
@@ -119,21 +105,21 @@ shinyServer(function(input, output, session) {
     
     products <- data_price()
     
-    if(nrow(products)==0){
+    if (nrow(products) == 0) {
       output <- simple_text_template("Mmm. There are no products with these characteristics.")
     } else {     
       
-      if(input$viewas == "Grid"){
+      if (input$viewas == "Grid") {
         output <- llply(seq(nrow(products)), function(x){
-          product_template_grid(products[x,])
+          product_template_grid(products[x, ])
         })
       } else {
         output <- llply(seq(nrow(products)), function(x){
-          product_template_list(products[x,])
+          product_template_list(products[x, ])
         })
       }
       
-      output <- do.call(function(...){ div(class="row-fluid", ...)}, output)
+      output <- do.call(function(...){ div(class = "row-fluid", ...)}, output)
     }
     
     output
@@ -142,7 +128,7 @@ shinyServer(function(input, output, session) {
   
   output$product <- renderUI({
     
-    if(!is.null(values$prod_id)){
+    if (!is.null(values$prod_id)) {
       product <- data_product()
       output <- product_detail_template(product)
     } else {
@@ -155,7 +141,7 @@ shinyServer(function(input, output, session) {
 
   output$cart <- renderUI({
     
-    if(length(values$cart)==0){
+    if(length(values$cart) == 0){
       output <- simple_text_template("Your cart is empty! So we don´t show nothing ;)!")
     } else {     
       dcart <- data_cart()

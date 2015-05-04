@@ -1,7 +1,7 @@
 title <- function(...) stri_trans_totitle(...)
 
 price_format <- function(x){
-  paste("$", prettyNum(x, big.mark = "."))
+  paste("$", prettyNum(x, big.mark = ".", decimal.mark = ","))
 }
 
 get_data_sample <- function(){
