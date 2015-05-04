@@ -1,6 +1,7 @@
 *\.Rproj.user
 *\.Rhistory
 *\.httr-oauth
+*\.dcf
 .httr-oauth
 
 *\shinyapps\*
