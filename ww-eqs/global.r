@@ -7,3 +7,5 @@ library(tidyr)
 library(stringi)
 
 source("utils.R")
+
+stringi::stri_replace
