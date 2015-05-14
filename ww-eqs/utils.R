@@ -6,15 +6,15 @@ download_data <- function(){
   
   data <- html(url) %>% 
     html_node("table") %>% 
-    html_table(fill = TRUE)
+    html_table(fill = TRUE) %>% 
+    tbl_df()
   
   names(data) <- tolower(names(data))
   names(data) <- gsub("\\(.*\\)", "", names(data))
-  names(data) <- gsub("^\\s+|\\s+$", "", names(data))
-  names(data) <- gsub("\\s+", "_", names(data))
+  names(data) <- stri_trim(names(data))
+  names(data) <- gsub(" ", "_", names(data))
   
   data <- data %>% 
-    separate(date_and_time, into = c("date", "time"), sep = " ") %>% 
     mutate(date = as.Date(date, format = "%d-%B-%Y")) %>%
     rename(depth = depthkm,
            magnitude = mag,
