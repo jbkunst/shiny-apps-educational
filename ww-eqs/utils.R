@@ -15,6 +15,7 @@ download_data <- function(){
   names(data) <- gsub(" ", "_", names(data))
   
   data <- data %>% 
+    separate(date_and_time, into = c("date", "time"), sep = " ") %>% 
     mutate(date = as.Date(date, format = "%d-%B-%Y")) %>%
     rename(depth = depthkm,
            magnitude = mag,
