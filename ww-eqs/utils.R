@@ -12,7 +12,8 @@ download_data <- function(){
   names(data) <- tolower(names(data))
   names(data) <- gsub("\\(.*\\)", "", names(data))
   names(data) <- stri_trim(names(data))
-  names(data)[7] <- "event_id" # idl
+  names(data) <- str_replace_all(names(data), "\\s+", "_")
+  names(data)[7] <- "event_id"
   
   data <- data %>% 
     separate(date_and_time, into = c("date", "time"), sep = " ") %>% 
