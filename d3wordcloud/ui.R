@@ -21,7 +21,6 @@ shinyUI(
                                      "Arial", "Arial Black", "Tahoma", "Verdana", "Courier New",
                                      "Georgia", "Times New Roman", "Andale Mono")),
              sliderInput("padding", label = "Padding:", min = 0, max = 5, value = 1, step = 1),
-             sliderInput("scale", label = "Scale:", min = 0, max = 5, value = 1, step = 1),
              sliderInput("rotate", label = "Rotate:", min = -90, max = 90, value = c(0, 45), step = 5)
       ),
       column(width = 8,
