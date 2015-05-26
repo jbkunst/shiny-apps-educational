@@ -33,7 +33,7 @@ shinyServer(function(input, output, clientData, session){
       m <- m %>%
         addCircles(lng = ~longitude, lat = ~latitude, radius = ~size,
                    fillOpacity = 0.3, opacity = 0.35, weight = 0,
-                   color = "#FFF", fillColor = "#FFF",
+                   color = "#F0F0F0", fillColor = "#FFF",
                    popup = ~popup_info)
     }
       
