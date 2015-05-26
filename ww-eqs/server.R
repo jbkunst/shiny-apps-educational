@@ -8,11 +8,16 @@ shinyServer(function(input, output, clientData, session){
       data <- download_data()
       now <- Sys.time()
       save(data, now, file = "data/data.RData")  
+      
     }
     
-    updateSliderInput(session, "fmag", max = max(data$magnitude))
-    updateSliderInput(session, "fdepth", max = max(data$depth))
+    updateSliderInput(session, "fmag",
+                      min = min(data$magnitude), max = max(data$magnitude))
     
+    updateSliderInput(session, "fdepth",
+                      min = min(data$depth), max = max(data$depth))
+    
+   
     data <- data %>% 
       filter(between(magnitude, input$fmag[1], input$fmag[2])) %>% 
       filter(between(depth, input$fdepth[1], input$fdepth[2]))

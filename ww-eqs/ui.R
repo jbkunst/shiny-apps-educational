@@ -6,7 +6,7 @@ shinyUI(
               tags$script(src = "js/script.js")
               ),
             leafletOutput("map", width = "100%", height = "100%"),
-            absolutePanel(id = "controls", class = "panel panel-default small", fixed = TRUE, draggable = FALSE,
+            absolutePanel(id = "controls", class = "panel panel-default small", fixed = FALSE, draggable = TRUE,
                           h4("The Latest Earthquakes Worldwide"),
                           h5("Magnitude > 4"),
                           hr(),

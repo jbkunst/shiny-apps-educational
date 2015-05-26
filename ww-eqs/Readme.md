@@ -5,7 +5,7 @@ This shiny app is an example on how you can easily scrap info from an url and th
 ### References:
   - [Superzip Example](http://shiny.rstudio.com/gallery/superzip-example.html). It's nice show a fullscreen map and a draggable panel.
   - [Mexican Earthquakes](http://www.showmeshiny.com/mexican-earthquakes/). Nice, buy why only a country? :D 
-
+  - [Adding tiles](http://zevross.com/blog/2015/05/19/scrape-website-data-with-the-new-r-package-rvest/?utm_campaign=Data%2BElixir&utm_medium=email&utm_source=Data_Elixir_36)
 
 ### Session
 
