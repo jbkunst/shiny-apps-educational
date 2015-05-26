@@ -1,24 +1,8 @@
 shinyServer(function(input, output) {
-  
-  url_data <- reactive({
-    
-    url_data <- html(input$url) %>%
-      html_nodes("p, li, h1, h2, h3, h4, h5, h6") %>%
-      html_text()
-    
-    url_data
-    
-  })
-  
+
   output$d3wc <- renderD3wordcloud({
     
-    url_data <- url_data()
-    
-    corpus <- Corpus(VectorSource(url_data))
-    
-    corpus <- corpus %>%
-      tm_map(removePunctuation) %>%
-      tm_map(function(x){ removeWords(x, stopwords()) })
+    corpus <- corpus_data[[input$url]]
     
     d <- TermDocumentMatrix(corpus) %>%
       as.matrix() %>%
