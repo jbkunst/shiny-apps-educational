@@ -24,7 +24,8 @@ download_data <- function(){
            longitude = lon,
            location = location_map,
            event = event_id) %>%
-    mutate(location = stri_trans_totitle(location),
+    mutate(event = str_trim(event),
+           location = stri_trans_totitle(location),
            size = (magnitude^2)*7500) # this need some justifactions)
   
   template_pop_up <-  tags$dl(class = "dl-horizontal",
