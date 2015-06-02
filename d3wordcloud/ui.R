@@ -1,6 +1,6 @@
 library("shiny")
-library("d3wordcloud")
 library("htmlwidgets")
+library("d3wordcloud")
 library("dplyr")
 library("rvest")
 library("tm")
