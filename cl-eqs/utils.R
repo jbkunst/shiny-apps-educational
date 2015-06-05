@@ -10,7 +10,7 @@ download_data <- function(){
     html_nodes("a") %>%
     html_attr("href") %>% 
     sprintf("http://www.sismologia.cl%s", .) %>% 
-    llply(function(x){ tags$a(href = x, "detalle") %>% as.character()}) %>% 
+    llply(function(x){ tags$a(href = x, "detalle", target = "_blank") %>% as.character()}) %>% 
     unlist()
   
   names(data_url) <- names(data_url) %>% 
