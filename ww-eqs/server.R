@@ -1,24 +1,15 @@
 shinyServer(function(input, output, clientData, session){
   
+  
+  data_url <- download_data()
+  
+  updateSliderInput(session, "fmag", min = min(data_url$magnitude), max = max(data_url$magnitude))
+  
+  updateSliderInput(session, "fdepth", min = min(data_url$depth), max = max(data_url$depth))
+  
   data <- reactive({
     
-    load("data/data.RData")
-    
-    if (as.numeric(difftime(Sys.time(), now, units = "mins")) > 5) {
-      data <- download_data()
-      now <- Sys.time()
-      save(data, now, file = "data/data.RData")  
-      
-    }
-    
-    updateSliderInput(session, "fmag",
-                      min = min(data$magnitude), max = max(data$magnitude))
-    
-    updateSliderInput(session, "fdepth",
-                      min = min(data$depth), max = max(data$depth))
-    
-   
-    data <- data %>% 
+    data <- data_url %>% 
       filter(between(magnitude, input$fmag[1], input$fmag[2])) %>% 
       filter(between(depth, input$fdepth[1], input$fdepth[2]))
     
@@ -50,12 +41,12 @@ shinyServer(function(input, output, clientData, session){
     
     data <- data()
     
-    data <- data %>% select(-popup_info, -size)
+    d <- data %>% select(-popup_info, -size)
     
     opts <- list(pageLength = 5, lengthChange = FALSE, searching = FALSE,
                  info = FALSE,  pagingType = "full")
 
-    DT::datatable(data, escape = FALSE, rownames = FALSE, options = opts)
+    DT::datatable(d, escape = FALSE, rownames = FALSE, options = opts)
     
   })
   
