@@ -12,10 +12,12 @@ shinyUI(
     tags$link(rel = "stylesheet", type = "text/css", href = "https://bootswatch.com/paper/bootstrap.css"),
     tags$br(),
     fluidRow(
-      column(width = 4, class = "well",
+      column(width = 3, class = "well",
              selectInput("url", label = "URL:",
                          choices = names(corpus_data)),
-             sliderInput("n_words", label = "Number of words:", min = 10, max = 500, step = 10, value = 200),
+             sliderInput("n_words", label = "Number of words:", min = 10, max = 500, step = 10, value = 160),
+             selectInput("scale", label = "Scale:", choices = c("linear", "log", "sqrt")),
+             selectInput("spiral", label = "Spiral:", choices = c("archimedean", "rectangular")),
              selectInput("font", label = "Font:",
                          choices = c("Impact", "Comic Sans MS (No plz!)" = "Comic Sans MS",
                                      "Arial", "Arial Black", "Tahoma", "Verdana", "Courier New",
@@ -29,7 +31,7 @@ shinyUI(
                a(href = "https://github.com/jbkunst/shiny-apps/tree/master/d3wordcloud", icon("github"), target = "_blank")
              )
       ),
-      column(width = 8,
+      column(width = 9,
              d3wordcloudOutput("d3wc")
       )
     )

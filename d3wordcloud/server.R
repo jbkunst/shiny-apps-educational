@@ -13,9 +13,9 @@ shinyServer(function(input, output) {
       arrange(desc(freq)) %>%
       head(input$n_words)
     
-    d3wordcloud(d$word, d$freq, font = input$font, 
-                padding = input$padding,
-                rotate.min = input$rotate[1],
-                rotate.max = input$rotate[2])
+    d3wordcloud(d$word, d$freq, font = input$font,
+                scale = input$scale, padding = input$padding,
+                spiral = input$spiral,
+                rotate.min = input$rotate[1], rotate.max = input$rotate[2])
   })
 })
