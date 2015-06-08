@@ -1,16 +1,18 @@
-library("shiny")
-library("threejs")
-
-shinyUI(fluidPage(
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("N", "Number of cities to plot", value=1000, min = 100, max = 10000, step = 100),
-      hr(),
-      p("Use the mouse zoom to zoom in/out."),
-      p("Click and drag to rotate.")
+shinyUI(
+  fluidPage(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")
     ),
-    mainPanel(
-      globeOutput("globe")
+    fluidRow(id = "maindiv", 
+      column(3, id = "inputscontainer",
+             h1("inputs"),
+             numericInput("zoom", "Zoom", min = 0, max = 500, value = 17)
+             ),
+      column(9, id = "mapcontainer",
+             leafletOutput("map", width = "100%", height = "100%")
+             )
+      )
     )
   )
-))
+    
+    
