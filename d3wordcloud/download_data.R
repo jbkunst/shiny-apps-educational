@@ -2,10 +2,11 @@ library("tm")
 library("rvest")
 library("plyr")
 
-urls <- c("http://en.wikipedia.org/wiki/R_(programming_language)",
-          "http://www.htmlwidgets.org/develop_intro.html",
+urls <- c("http://www.htmlwidgets.org/develop_intro.html",
           "http://r-pkgs.had.co.nz/intro.html",
-          "http://rstudio.github.io/shiny-server/latest/")
+          "http://adv-r.had.co.nz/Introduction.html",
+          "http://rstudio.github.io/shiny-server/latest/",
+          "https://github.com/")
 
 corpus_data <- llply(urls, function(url){
   
@@ -22,6 +23,6 @@ corpus_data <- llply(urls, function(url){
   corpus
 }, .progress = "text")
 
-names(corpus_data) <- urls
+names(corpus_data) <- gsub("http://", "", urls)
 
 save(corpus_data, file = "data.RData")
