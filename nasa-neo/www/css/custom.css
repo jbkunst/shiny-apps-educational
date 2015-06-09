@@ -1,11 +1,10 @@
-html, body, .container-fluid {
+html, body, .container-fluid, {
    height: 100%;
 }
 
-#mapcontainer, #inputscontainer, #maindiv{
-  padding: 0;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  height: 100%;
+content{
+  top:50px;
+  bottom:50px;
+  width:100%;
+  background:black;
 }
