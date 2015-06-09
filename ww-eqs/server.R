@@ -31,9 +31,18 @@ shinyServer(function(input, output, clientData, session){
                    fillOpacity = 0.3, opacity = 0.35, weight = 0,
                    color = "#F0F0F0", fillColor = "#FFF",
                    popup = ~popup_info)
+    
     }
+  
+    if (input$showplates) {
       
-    m
+      for(g in unique(data_plates$group)){
+
+        m <- m %>% addPolygons(lng = ~long, lat = ~lat,
+                               fill = FALSE, color = "#FFF", weight = 2, opacity = 0.2,
+                               data = data_plates %>% filter(group == g))
+      }
+    }
     
   })
   

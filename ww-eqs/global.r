@@ -6,10 +6,10 @@ library("tidyr")
 library("stringi")
 library("stringr")
 library("DT")
+library("maptools")
+library("ggplot2")
 
 download_data <- function(){
-  
-  message(sprintf("%s: %s", Sys.time(), "Downloading data"))
   
   url <- "http://ds.iris.edu/seismon/eventlist/index.phtml"
   
@@ -35,7 +35,7 @@ download_data <- function(){
            event = event_id) %>%
     mutate(event = str_trim(event),
            location = stri_trans_totitle(location),
-           size = (magnitude^2)*7500) # this need some justifactions)
+           size = (magnitude ^ 2)*7500) # this need some justifactions)
   
   template_pop_up <-  tags$dl(class = "dl-horizontal",
                               tags$dt("Date"), tags$dd("%s"),
@@ -49,8 +49,8 @@ download_data <- function(){
                         data[["magnitude"]], data[["depth"]],
                         data[["location"]])
   
-  template_event <-  tags$a(href=sprintf("http://ds.iris.edu/ds/nodes/dmc/tools/event/%s",
-                                         "%s"), "%s", target="_blank") %>% paste()
+  template_event <-  tags$a(href = sprintf("http://ds.iris.edu/ds/nodes/dmc/tools/event/%s",
+                                           "%s"), "%s", target = "_blank") %>% paste()
   
   event_info <- sprintf(template_event, data[["event"]], data[["event"]])
   
@@ -61,4 +61,8 @@ download_data <- function(){
   data
   
 }
+
+data_plates <- readShapePoly("data/PB2002_plates.shp") %>% fortify() %>%  tbl_df()
+
+
 
