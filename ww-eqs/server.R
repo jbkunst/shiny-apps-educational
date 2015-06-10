@@ -44,6 +44,8 @@ shinyServer(function(input, output, clientData, session){
       }
     }
     
+    m
+    
   })
   
   output$table <- DT::renderDataTable({

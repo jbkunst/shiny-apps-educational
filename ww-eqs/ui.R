@@ -19,7 +19,7 @@ shinyUI(
                                            sliderInput("fdepth", "Depth",
                                                        min = 0, max = 1000, value = c(0, 1000), ticks = FALSE),
                                            checkboxInput(inputId = "showplates",
-                                                         label = "Show plates",
+                                                         label = "Show plates boundaries",
                                                          value = FALSE),
                                            checkboxInput(inputId = "showdata",
                                                          label = "Show data",
