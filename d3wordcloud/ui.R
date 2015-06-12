@@ -18,6 +18,7 @@ shinyUI(
              selectInput("scale", label = "Scale:", choices = c("linear", "log", "sqrt"), , selectize = FALSE),
              selectInput("spiral", label = "Spiral:", choices = c("archimedean", "rectangular"), selectize = FALSE),
              selectInput("font", label = "Font:", choices = choices_font, , selectize = FALSE),
+             sliderInput("font_weight", label = "Font Weight:", min = 100, max = 900, value = 400, step = 100),
              sliderInput("padding", label = "Padding:", min = 0, max = 5, value = 0, step = 1),
              sliderInput("rotate", label = "Rotate:", min = -90, max = 90, value = c(-30, 30), step = 10)
       ),
