@@ -1,6 +1,8 @@
-library("rvest")
-library("plyr")
+library("shiny")
+library("htmlwidgets")
+library("d3wordcloud")
 library("tm")
+library("dplyr")
 
 load("data.RData")
 

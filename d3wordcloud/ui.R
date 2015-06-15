@@ -1,12 +1,3 @@
-library("shiny")
-library("htmlwidgets")
-library("d3wordcloud")
-library("dplyr")
-library("rvest")
-library("tm")
-
-load("data.RData")
-
 shinyUI(
   fluidPage(
     tags$link(rel = "stylesheet", type = "text/css", href = "https://bootswatch.com/paper/bootstrap.css"),
