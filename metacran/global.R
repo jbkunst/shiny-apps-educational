@@ -2,15 +2,18 @@ rm(list = ls())
 library("plyr")
 library("dplyr")
 library("stringr")
+library("httr")
 
 # http://stackoverflow.com/questions/5364264/how-to-control-the-igraph-plot-layout-with-fixed-positions/5364376#5364376
-#
+
 
 download_data <- function(){
   
   url <- "https://raw.githubusercontent.com/metacran/PACKAGES/master/PACKAGES"
   
-  txt <- readLines(url)
+  txt <- url %>% GET() %>% content()
+  
+  txt <- txt %>% str_split("\n") %>% unlist()
 
   cuts <- data_frame(start = c(0, which(txt == "") + 1),
                      end = c(which(txt == "") - 1, length(txt)))
