@@ -20,7 +20,7 @@ shinyUI(
       column(width = 9,
              d3wordcloudOutput("d3wc"),
              p(class = "pull-right small text-right",
-               "Code by ", a(href = "http://jkunst.com", "Joshua Kunst", target = "_blank"),
+               icon("code"), " by ", a(href = "http://jkunst.com", "Joshua Kunst", target = "_blank"),
                " | Package ", a(href = "https://github.com/jbkunst/d3wordcloud",
                                 "d3wordcloud", target = "_blank"),
                " | Repo here ",

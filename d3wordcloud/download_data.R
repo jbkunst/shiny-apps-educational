@@ -20,7 +20,16 @@ corpus_data <- llply(urls, function(url){
     tm_map(removePunctuation) %>%
     tm_map(function(x){ removeWords(x, stopwords()) }) 
       
-  corpus
+  d <- TermDocumentMatrix(corpus) %>%
+    as.matrix() %>%
+    rowSums() %>%
+    sort(decreasing = TRUE) %>%
+    data.frame(word = names(.), freq = .) %>%
+    tbl_df() %>%
+    arrange(desc(freq))
+  
+  d
+  
 }, .progress = "text")
 
 names(corpus_data) <- gsub("http://", "", urls)
