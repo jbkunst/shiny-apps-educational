@@ -9,7 +9,7 @@ system.time(
   print(
     ggplot()+
       geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group))+
-      coord_equal() + reuse::theme_null() + ggtitle("a")
+      coord_equal() + ggtitle("a")
     )
   )
 
@@ -20,7 +20,7 @@ system.time(
   print(
     ggplot()+
       geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group))+
-      coord_equal() + reuse::theme_null() + ggtitle("b")
+      coord_equal() + ggtitle("b")
     )
   )
 
@@ -35,7 +35,7 @@ llply(sort(unique(chi_f$id)), function(x){ #x <- 2
   chi_f$flag <- ifelse(chi_f$id==x, "yep", "nope")
   ggplot()+ 
     geom_polygon(data=chi_f,aes(long,lat, fill=flag,group=group))+
-    coord_equal() + reuse::theme_null() + ggtitle(x)
+    coord_equal() + ggtitle(x)
 })
 
 
@@ -76,29 +76,6 @@ ggplot()+
 
 chi_shp <- readShapePoly("data/chile_shp_simplified/cl_regiones_geo.shp")
 chi_f <- fortify(chi_shp)
-
-
-
-# devtools::install_github("ropensci/plotly")
-library(plotly)
-set_credentials_file("jbkunst", "oc613rj2ky")
-py <- plotly()
-gg <- ggplot()+
-  geom_polygon(data=chi_f,aes(long,lat,fill=id,group=group)) +
-  coord_equal() + reuse::theme_null() + ggtitle("a")
-gg
-py$ggplotly(gg)
-
-
-# devtools::install_github("rstudio/ggvis", build_vignettes = FALSE)
-library(ggvis)
-chi_f %>%
-  group_by(group) %>%
-  ggvis(~long, ~lat) %>%
-  layer_paths() %>%
-  hide_legend("fill") %>%
-  hide_axis("x") %>% hide_axis("y")
-  set_options(width=200, height=1000, keep_aspect=TRUE)
 
 
   

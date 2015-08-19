@@ -20,24 +20,11 @@ head(data)
 
 ggplot(data) +
   geom_point(aes(x,y, color=z), size = 10, alpha =.1) +
-  scale_colour_gradientn(colours = rainbow(3)) +
-  reuse::theme_null()
+  scale_colour_gradientn(colours = rainbow(3)) 
 
 ggplot(data) +
   geom_point(aes(x,y, color=w), size = 10, alpha =.1) +
-  scale_colour_manual(values = rainbow(length(levels(data$w)))) +
-  reuse::theme_null()
-
-
-
-# library(reuse)
-# plots <- llply(1:100, function(x){ # x <- 30
-#   ggplot(data) +
-#     geom_point(aes(x,y, color=z), size = 10, alpha =.1) +
-#     scale_colour_gradientn(colours = rainbow(x)) + theme_null()
-# })
-# reuse::save.list.plots.pdf(plots, "test.pdf")
-
+  scale_colour_manual(values = rainbow(length(levels(data$w)))) 
 
 
 library(maptools)
@@ -63,7 +50,6 @@ ggplot()+
   geom_point(data=colegios, aes(longitud, latitud, color=psu_matematica), size = 30, alpha =.01) +
   scale_colour_gradientn(colours = c("red", "blue")) +
   geom_polygon(data=region_f, aes(long,lat,group=group), color="#333333", fill="transparent") + 
-  coord_equal() +
-  reuse::theme_null()
+  coord_equal()
 
 

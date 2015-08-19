@@ -1,11 +1,11 @@
-library(shiny)
-library(rCharts)
-library(plyr)
-library(dplyr)
-library(ggplot2)
-library(scales)
-library(maptools)
-library(grid)
+library("shiny")
+library("rCharts")
+library("plyr")
+library("dplyr")
+library("ggplot2")
+library("scales")
+library("maptools")
+library("grid")
 
 load("data/consolidate_data_clean_app.RData")
 
@@ -26,7 +26,7 @@ theme_null <- function() {
 
 theme_legend <- function(){
   theme(legend.position = "bottom",
-        text=element_text(colour = "white"),
+        text = element_text(colour = "white"),
         legend.background = element_rect(fill = "transparent"),
         legend.text = element_text(size = 10),
         legend.key.size = unit(0.8, "cm"))
