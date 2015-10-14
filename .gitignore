@@ -4,5 +4,7 @@
 *\.dcf
 .httr-oauth
 
+rchessbase/data/*
+
 *\shinyapps\*
 .Rproj.user
