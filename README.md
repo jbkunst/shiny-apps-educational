@@ -3,6 +3,7 @@
 ## kmeans in image's colors
   - url: https://jbkunst.shinyapps.io/kmeans-images
   - info: A implementation of kmean in images
+  - packages: threejs, jpeg
   
 ## Chilean Education
   - url: https://jbkunst.shinyapps.io/cl-educ
