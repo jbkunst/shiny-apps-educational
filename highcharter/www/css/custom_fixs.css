@@ -1,0 +1,12 @@
+.skin-black .left-side, .skin-black .main-sidebar, .skin-black .wrapper {
+  background-color: #ecf0f5;
+  
+}
+
+.content {
+  /*background-color: white;*/
+}
+
+.skin-black .main-sidebar {
+    background-color: #222d32;
+}
