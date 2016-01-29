@@ -9,6 +9,10 @@
   - url: https://jbkunst.shinyapps.io/cl-educ
   - data: simce, psu
 
+## Highcharter Demo
+  - url: https://jbkunst.shinyapps.io/highcharter
+  - info: Some examples of what the package can chart
+
 ## d3wordlcoud package
   - url: https://jbkunst.shinyapps.io/d3wordcloud
   - info: Mi first htmlwidget package
