@@ -11,13 +11,12 @@ dscounts <- dplyr::count(diamonds, cut) %>%
   setNames(c("name", "value")) %>% 
   list.parse3()
 
-
-
 dsheatmap <- tbl_df(expand.grid(seq(12) - 1, seq(5) - 1)) %>% 
   mutate(value = abs(seq(nrow(.)) + 10 * rnorm(nrow(.))) + 10,
          value = round(value, 2)) %>% 
   list.parse2()
 
+ggplot(mtcars)
 
 f <- exp
 dshmstops <- data.frame(q = c(0, f(1:5)/f(5)), c = substring(viridis(5 + 1), 0, 7)) %>% 
@@ -114,6 +113,75 @@ function(input, output) {
       hc_colorAxis(min = 0) 
     
   })
+  
+  ts <- reactive({
+    
+    get(input$ts)
+    
+  })
+  
+  output$tschart <- renderHighchart({hchart(ts())})
+  
+  output$tsacf <- renderHighchart({hchart(acf(ts(), plot = FALSE))})
+  
+  output$tspacf <- renderHighchart({hchart(pacf(ts(), plot = FALSE))})
+  
+  output$tsforecast <- renderHighchart({
+    
+    ts <- ts()
+    # highcharter:::hchart.forecast
+    object <- forecast(ts, level = 95)
+    tmf <- datetime_to_timestamp(zoo::as.Date(time(object$mean)))
+    nmf <- paste("level", object$level)
+    
+    dsf <- data_frame(tmf, object$mean) %>% 
+      list.parse2()
+    
+    highchart() %>% 
+      hc_add_series_ts(object$x, name = input$ts) %>% 
+      hc_add_series(data = dsf, name = "AutoArima Forecast",
+                    marker = list(enabled = FALSE),
+                    enableMouseTracking = FALSE) %>% 
+      hc_add_series(data = dsf, name = "Your Forecast",
+                    cursor = "ns-resize", draggableY = TRUE) %>% 
+      hc_plotOptions(
+        series = list(
+          point = list(
+            events = list(
+              drop = JS("function(){
+                        console.log(this.series)
+                        window.data = _.map(this.series.data, function(e) { return e.y })
+                        Shiny.onInputChange('manualforecast', data);
+                        }"))
+              )))
+    
+  })
+  
+  output$dfforecast <- renderDataTable({
+    
+    ts <- ts()
+    mf <- input$manualforecast #listening the drop event defined in output$tsforecast
+    fc <- forecast(ts)$mean
+    
+    # if you change timeseries input$manualforecast dont change
+    # so we update it
+    if (is.null(mf) || length(mf) != length(fc))  
+      mf <- fc
+    
+    data_frame(
+      datetime = as.Date(time(forecast(ts)$mean)),
+      forecast = fc,
+      manualforecast = mf,
+      diff = round((mf - fc)/fc, 2)
+    )
+    
+  })
+  
+  
+  
+
+  
+
   
   
 }
