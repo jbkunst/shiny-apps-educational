@@ -1,3 +1,4 @@
+library("shiny")
 library("shinydashboard")
 library("highcharter")
 library("dplyr")
@@ -21,6 +22,7 @@ dashboardPage(
     div(includeMarkdown("hcterinfo.md"), style = "padding:10px")
   ),
   dashboardBody(
+    tags$head(tags$script(src = "js/ga.js")),
     tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "css/custom_fixs.css")),
     tabItems(
       tabItem(tabName = "examples",
@@ -42,7 +44,8 @@ dashboardPage(
       tabItem(tabName = "ts",
               fluidRow(
                 column(4, selectInput("ts", label = "Time series",
-                                      choices = c("WWWusage", "AirPassengers", "ldeaths")))
+                                      choices = c("WWWusage", "AirPassengers",
+                                                  "ldeaths", "USAccDeaths")))
               ),
               box(width = 12, highchartOutput("tschart")),
               box(width = 6, highchartOutput("tsforecast")),
