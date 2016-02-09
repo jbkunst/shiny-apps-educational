@@ -28,8 +28,8 @@ dashboardPage(
       tabItem(tabName = "examples",
               fluidRow(
                 column(4, selectInput("theme", label = "Theme",
-                                      choices = c(FALSE, "darkunica", "gridlight",
-                                                  "sandsignika", "null", "chalk"))),
+                                      choices = c(FALSE, "fivethirtyeight",  "darkunica", "gridlight",
+                                                  "sandsignika", "null", "handdrwran", "chalk"))),
                 column(4, selectInput("credits", label = "Credits enabled", choices = c(FALSE, TRUE))),
                 column(4, selectInput("exporting", label = "Exporting enabled", choices = c(FALSE, TRUE)))
               ),

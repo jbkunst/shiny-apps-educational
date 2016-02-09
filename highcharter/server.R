@@ -16,9 +16,8 @@ dsheatmap <- tbl_df(expand.grid(seq(12) - 1, seq(5) - 1)) %>%
          value = round(value, 2)) %>% 
   list.parse2()
 
-ggplot(mtcars)
-
 f <- exp
+
 dshmstops <- data.frame(q = c(0, f(1:5)/f(5)), c = substring(viridis(5 + 1), 0, 7)) %>% 
   list.parse2()
 
@@ -41,7 +40,9 @@ function(input, output) {
                       darkunica = hc_theme_darkunica(),
                       gridlight = hc_theme_gridlight(),
                       sandsignika = hc_theme_sandsignika(),
-                      chalk = hc_theme_chalk()
+                      fivethirtyeight = hc_theme_538(),
+                      chalk = hc_theme_chalk(),
+                      handdrwran = hc_theme_handdrawn()
       )
       
       hc <- hc %>% hc_add_theme(theme)
@@ -176,12 +177,5 @@ function(input, output) {
     )
     
   })
-  
-  
-  
-
-  
-
-  
   
 }
