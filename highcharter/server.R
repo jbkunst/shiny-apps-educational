@@ -37,6 +37,7 @@ function(input, output) {
     if (input$theme != FALSE) {
       theme <- switch(input$theme,
                       null = hc_theme_null(),
+                      economist = hc_theme_economist(),
                       darkunica = hc_theme_darkunica(),
                       gridlight = hc_theme_gridlight(),
                       sandsignika = hc_theme_sandsignika(),
