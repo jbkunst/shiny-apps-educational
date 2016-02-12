@@ -29,7 +29,7 @@ dashboardPage(
       tabItem(tabName = "examples",
               fluidRow(
                 column(4, selectInput("theme", label = "Theme",
-                                      choices = c(FALSE, "fivethirtyeight", "economist",
+                                      choices = c(FALSE, "fivethirtyeight", "economist", "dotabuff",
                                                   "darkunica", "gridlight",
                                                   "sandsignika", "null", "handdrwran",
                                                   "chalk"))),

@@ -38,6 +38,7 @@ function(input, output) {
       theme <- switch(input$theme,
                       null = hc_theme_null(),
                       economist = hc_theme_economist(),
+                      dotabuff = hc_theme_db(),
                       darkunica = hc_theme_darkunica(),
                       gridlight = hc_theme_gridlight(),
                       sandsignika = hc_theme_sandsignika(),
@@ -56,9 +57,13 @@ function(input, output) {
   output$highchart <- renderHighchart({
     
     hcbase() %>% 
+      hc_title(text = "Monthly Average Temperature") %>% 
+      hc_subtitle(text = "Source: WorldClimate.com") %>% 
+      hc_yAxis(title = list(text = "Temperature")) %>% 
       hc_xAxis(categories = citytemp$month) %>% 
       hc_add_series(name = "Tokyo", data = citytemp$tokyo) %>% 
-      hc_add_series(name = "London", data = citytemp$london)
+      hc_add_series(name = "London", data = citytemp$london) %>% 
+      hc_add_series(name = "Berlin", data = citytemp$berlin) 
     
   })
   
