@@ -18,7 +18,8 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Examples", tabName = "examples", icon = icon("bar-chart")),
-      menuItem("Time Series", tabName = "ts", icon = icon("line-chart"))
+      menuItem("Time Series", tabName = "ts", icon = icon("line-chart")),
+      menuItem("Plugins", tabName = "plugins", icon = icon("line-chart"))
     ),
     div(includeMarkdown("hcterinfo.md"), style = "padding:10px")
   ),
@@ -55,6 +56,9 @@ dashboardPage(
               box(width = 6, dataTableOutput("dfforecast")),
               box(width = 6, highchartOutput("tsacf")),
               box(width = 6, highchartOutput("tspacf"))
+              ),
+      tabItem(tabName = "plugins",
+              box(width = 12, highchartOutput("pluginsfa"))
               )
       )
     )
