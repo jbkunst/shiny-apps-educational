@@ -1,63 +1,67 @@
-
-# This is the server logic for a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
-
-library(shiny)
+input <- list(yr = sample(yrs, size = 1),
+              hcworldinput = "CAN")
 
 shinyServer(function(input, output) {
 
-  output$hcontainer1 <- renderHighchart({
+  output$hcworld <- renderHighchart({
+    
     fn <- "function(){
-    console.log('Category: ' + this.category + ', value: ' + this.y + ', series: ' + this.series.name);
-    ds = this.series.data.map(function(e){ return {x: e.x, y: e.y  }  }); 
-    Shiny.onInputChange('hcinput', {category: this.category, name: this.series.name, data: ds, type: this.series.type})
+      console.log(this.name);
+      Shiny.onInputChange('hcworldinput', this.iso3)
     }"
 
-    hc <- highchart() %>%
-      hc_add_series(data = c(3.9,  4.2, 5.7, 8.5), type = "column",
-                    name = "draggable", draggableY = TRUE, dragMinY = 0) %>% 
-      hc_add_series(data = 2*c(7, 6.9,  9.5, 14), type = "scatter",
-                    name = "draggable too!", draggableX = TRUE, draggableY = TRUE) %>%
-      hc_add_series(data = 3*c(2,  0.6, 3.5, 8), type  = "spline") %>% 
+    df2aux <- df2 %>% 
+      filter(time == 2015)
+      # filter(time == input$yr)
+    
+    highchart() %>% 
+      hc_add_series_map(worldgeojson, df2aux, value = "wage", joinBy = c("iso3")) %>% 
+      hc_colorAxis(min = 10, max = 60) %>% 
       hc_plotOptions(
         series = list(
           cursor = "pointer",
           point = list(
             events = list(
-              click = JS(fn),
-              drop = JS(fn)
+              click = JS(fn)
             )
           )
         )
       ) 
     
-    hc
-    
   })
   
-  output$hcontainer2 <- renderHighchart({
+  output$hcpopiramid <- renderHighchart({
 
-    hcinput <- input$hcinput
+    cod <- ifelse(is.null(input$hcworldinput), "CAN", input$hcworldinput)
 
+    dfp <- df %>% 
+      filter(time == input$yr, iso3 == cod)
+
+    xaxis <- list(categories = sort(unique(dfp$age)),
+                  reversed = FALSE, tickInterval = 2,
+                  labels = list(step = 5))
+    
     highchart() %>%
-      hc_title(text = hcinput$category) %>%
-      hc_add_serie(data = hcinput$data, type = hcinput$type, name = hcinput$name)
+      hc_chart(type = "bar", animation = FALSE) %>%
+      hc_plotOptions(series = list(stacking = "normal"),
+                     bar = list(groupPadding = 0, pointPadding =  0, borderWidth = 0)) %>% 
+      hc_legend(enabled = FALSE) %>% 
+      hc_tooltip(shared = TRUE) %>% 
+      hc_yAxis(visible = FALSE) %>% 
+      hc_xAxis(
+        xaxis,
+        list.merge(xaxis, list(opposite = TRUE))
+        ) %>% 
+      hc_add_serie(data = dfp %>% filter(sex == "male") %>% .$pop %>% {-1*.},
+                   name = "male") %>% 
+      hc_add_serie(data = dfp %>% filter(sex == "female") %>% .$pop,
+                   name = "female")
 
   })
 
-  output$hcinputout <- renderPrint({
-    
-    inputaux <- input$hcinput
-    
-    if (!is.null(inputaux))
-      inputaux$data <- map_df(inputaux$data, as_data_frame)
-    
-    inputaux
-    
+  output$hctss <- renderHighchart({
+    hctss
   })
-  
+ 
 
 })
