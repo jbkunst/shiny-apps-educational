@@ -52,48 +52,47 @@ if (file.exists(filename)) {
   
 }
 
+df
+dfcodes
+
+data("worldgeojson")
+
+dfwgj <- map_df(worldgeojson$features, function(x){
+  data_frame(
+    iso3 = x$properties$iso3,
+    namem = x$properties$name
+  )
+})
+
 
 # this will conatain median age by country and year to show in the map
 df <- df %>% 
-  left_join(dfcodes %>% select(fips, iso3 = iso_3_letter), by = "fips") 
+  left_join(dfcodes %>% select(fips, iso3 = iso_3_letter, entity), by = "fips") %>% 
+  left_join(dfwgj, by = "iso3")
+
+df <- df %>% filter(!is.na(namem))
 
 df2 <- df %>% 
-  group_by(iso3, name, time) %>% 
+  group_by(iso3, name = namem, time) %>% 
   do({
     data_frame(
       wage = weightedMedian(
         c(.$age[.$sex == "male"], .$age[.$sex == "female"]),
         c(.$pop[.$sex == "male"], .$pop[.$sex == "female"]))
     )
-  })
-
-df2 <- df2 %>% 
+  }) %>% 
+  ungroup() %>% 
   mutate(wage = round(wage, 3))
+  
 
-ggplot(df2) +
-  geom_line(aes(time, wage, group = name, color = name), alpha = 0.5) + 
-  theme(legend.position = "none")
-
-
-
-# this is a summary from df whe grouped age
-ageb <- c(seq(0, 100, by = 5))
-
-df3 <- df %>% 
-  mutate(agec = cut(age, breaks = ageb, include.lowest = TRUE)) %>% 
-  group_by(iso3, name, time, sex, agec) %>% 
-  summarise(pop = sum(pop)) %>% 
-  ungroup()
 
 # world <- geojsonio::geojson_read("countries.json")
 # save(df, df2, df3, yrs, file = "dataapp.RData")
 
-df <- df %>% select(-area_km2, -name, -fips)
+df <- df %>% select(iso3, name = namem, time, pop, age, sex)
 
 save(df,
      df2,
-     #df3,
-     dfcodes,
      yrs,
      file = "dataappmin.RData")
 

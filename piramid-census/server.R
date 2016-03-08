@@ -1,6 +1,3 @@
-input <- list(yr = sample(yrs, size = 1),
-              hcworldinput = "Canada")
-
 shinyServer(function(input, output) {
 
   output$hcworld <- renderHighchart({
@@ -44,12 +41,11 @@ shinyServer(function(input, output) {
   
   output$hcpopiramid <- renderHighchart({
 
-    nme <- ifelse(is.null(input$hcworldinput), "Canada", input$hcworldinput)
+    nme <- ifelse(is.null(input$hcworldinput), "United States of America", input$hcworldinput)
     
     cod <- df2 %>% filter(name == nme) %>% .$iso3 %>% .[1]
 
-    dfp <- df %>% 
-      filter(time == input$yr, iso3 == cod)
+    dfp <- df %>%  filter(time == input$yr, iso3 == cod)
 
     xaxis <- list(categories = sort(unique(dfp$age)),
                   reversed = FALSE, tickInterval = 5,
@@ -81,18 +77,16 @@ shinyServer(function(input, output) {
     
     nme <- ifelse(is.null(input$hcworldinput), "Canada", input$hcworldinput)
     
-    cod <- df2 %>% filter(name == nme) %>% .$iso3 %>% .[1]
-    
     med <- df2 %>% 
-      filter(time == 2016, iso3 == cod) %>% 
+      filter(time == 2016, name == nme) %>% 
       .$wage  
     
-    codes <- df2 %>% 
+    cntries <- df2 %>% 
       filter(time == 2016, wage > med - 1, wage < med + 1) %>% 
-      .$iso3  
+      .$name  
     
     df2aux <- df2 %>% 
-      filter(iso3 %in% codes)
+      filter(name %in% cntries)
     
     fn <- "function(){
       console.log(this.name);
@@ -100,32 +94,52 @@ shinyServer(function(input, output) {
     }"
     
     hctss <- highchart() %>% 
-      hc_title(text = "Median age by years") %>% 
       hc_chart(type = "spline") %>% 
+      hc_title(text = "Median age by years") %>% 
       # hc_yAxis(min = 10, max = 60) %>% 
       hc_plotOptions(
         series = list(
-          marker = list(enabled = FALSE),
+          states =  list(
+            hover = list(
+              enabled = TRUE,
+              halo = list(
+                size = 0
+              )
+            )
+          ),
+          animation = FALSE,
           showInLegend = FALSE,
+          cursor = "pointer",
           events = list(
             click = JS(fn)
-          )
-        )) %>% 
+            )
+          ),
+         point = list(
+           events = list(
+             click = JS(fn)
+           )
+         )
+        ) %>% 
       hc_xAxis(categories = yrs) %>% 
       hc_add_theme(thm)
     
-    for (isoc in (unique(df2aux$iso3))) {
-      
-      hctss <- hctss %>% 
-        hc_add_series(data = df2aux %>% filter(iso3 == isoc) %>% .$wage,
+    for (nm in (unique(df2aux$name))) {
+
+      hctss <- hctss %>%
+        hc_add_series(data = df2aux %>% filter(name == nm) %>% .$wage,
                       color = "rgba(118, 192, 193, 0.8)", zIndex = -3,
-                      name = dfcodes %>% filter(iso_3_letter == isoc) %>% .$entity)
+                      name = nm, marker = list( radius = 0))
     }
+
+    ds <- df2aux %>% filter(name == nme) %>% .$wage
+    ds <- map(ds, function(x) x)
+    tmp <- ds[which(input$yr == yrs)][[1]]
+    ds[[which(input$yr == yrs)]] <- list(y = tmp, marker = list(symbol = "circle", color = "white", radius = 5,
+                                                                fillColor = "#014d64", lineWidth = 3))
     
     hctss <- hctss %>% 
-      hc_add_series(data = df2aux %>% filter(iso3 == cod) %>% .$wage,
-                    color = "#014d64", zIndex = 1, lineWidth = 5,
-                    name = dfcodes %>% filter(iso_3_letter == cod) %>% .$entity)
+      hc_add_series(data = ds, color = "#014d64", zIndex = 1,  name = nme, lineWidth = 4,
+                    marker = list(symbol = "circle", radius = 1))
     
     hctss
     
