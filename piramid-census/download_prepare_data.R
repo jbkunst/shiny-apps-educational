@@ -74,31 +74,7 @@ ggplot(df2) +
   geom_line(aes(time, wage, group = name, color = name), alpha = 0.5) + 
   theme(legend.position = "none")
 
-hctss <- highchart() %>% 
-  hc_chart(type = "spline") %>% 
-  hc_plotOptions(
-    series = list(
-      stickyTracking = FALSE,
-      marker = list(enabled = FALSE),
-      showInLegend = FALSE,
-      events = list(
-        mouseOver = JS("function(){ this.update({color: 'red'})}"),
-        mouseOut = JS("function(){ this.update({color: '#CCC'}) }")
-      )
-  )) %>% 
-  hc_xAxis(categories = yrs) 
-  
-for (isoc in (unique(df$iso3))) {
-  
-  hctss <- hctss %>% 
-    hc_add_series(data = df2 %>% filter(iso3 == isoc) %>% .$wage,
-                  color = "#CCC",
-                  name = dfcodes %>% filter(iso_3_letter == isoc) %>% .$entity,
-                  iso3 = isoc)
-}
 
-hctss
-  
 
 # this is a summary from df whe grouped age
 ageb <- c(seq(0, 100, by = 5))
@@ -117,7 +93,6 @@ df <- df %>% select(-area_km2, -name, -fips)
 save(df,
      df2,
      #df3,
-     hctss,
      dfcodes,
      yrs,
      file = "dataappmin.RData")
