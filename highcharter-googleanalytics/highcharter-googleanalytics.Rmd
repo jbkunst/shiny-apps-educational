@@ -12,42 +12,86 @@ output:
 ```{r setup, include=FALSE}
 # rm(list = ls())
 knitr::opts_chunk$set(echo = FALSE)
-library("RGA")
-
-# authorize()
-gadata <- get_ga("113913503",
-                 start.date = "2016-01-01",
-                 dimensions = "ga:date,ga:source",
-                 token = readRDS(".ga-token.rds")[[1]])
-
+library("flexdashboard")
+library("rga")
 library("dplyr")
 library("highcharter")
 library("tidyr")
 options(highcharter.theme = hc_theme_smpl())
 
-gadata <- tbl_df(gadata)
-gadata
+# rga.open(instance = "ga")
+# saveRDS(ga, "ga.rds")
+ga <- readRDS("ga.rds")
+
+dates <- c(Sys.Date() - 30, Sys.Date() - 1)
+# gadata <- ga$getData("113913503",
+#                      start.date = ga$getFirstDate("113913503"),
+#                      metrics = "ga:sessions,ga:pageviews,ga:users",
+#                      dimensions = "ga:date,ga:source,ga:country,ga:referralPath", max = 10000) 
+# gadata <- tbl_df(gadata)
+# summary(gadata$date)
 ```
+
 
 Row
 -----------------------------------------------------------------------
 
-### 
+### Inputs
+```{r}
+dateRangeInput('daterange', label = NULL, start = Sys.Date() - 30, end = Sys.Date() - 1)
+```
 
-```{r visitsperday}
-gadata %>% 
-  select(date, users, sessions, pageviews) %>% 
+### Total downloads  {.value-box}
+```{r}
+renderValueBox({valueBox(20, icon = "fa-download")})
+```
+
+### Emit the download rate {.value-box}
+```{r}
+renderValueBox({valueBox(50,icon = "fa-area-chart")})
+```
+
+Row 
+-----------------------------------------------------------------------
+
+### Daily Data
+
+```{r perday}
+renderHighchart({
+  dates <- as.character(input$daterange)
+  ga$getData("113913503",
+           start.date = dates[1], end.date = dates[2],
+           metrics = "ga:sessions,ga:pageviews,ga:users",
+           dimensions = "ga:date") %>% 
+  tbl_df() %>% 
   gather(key, value, -date) %>% 
   count(date, key, wt = value) %>% 
   arrange(date) %>% 
   group_by(name = key) %>% 
   do(data = list.parse3(data.frame(x = datetime_to_timestamp(.$date), y = .$n))) %>% 
-  ungroup() %>% 
-  mutate(yAxis = seq(nrow(.)) - 1) %>% 
   list.parse3() %>% 
   hc_add_series_list(highchart(), .) %>% 
-  hc_yAxis_multiples(create_yaxis(3)) %>% 
   hc_chart(zoomType = "x") %>% 
+  hc_plotOptions(series = list(marker = list(enabled = FALSE))) %>% 
   hc_xAxis(type = "datetime") %>% 
   hc_tooltip(shared = TRUE)
+})
+
+```
+
+### Country
+
+```{r country}
+renderHighchart({
+  dates <- as.character(input$daterange)
+  ga$getData("113913503",
+           start.date = dates[1], end.date = dates[2],
+           metrics = "ga:pageviews", dimensions = "ga:country") %>% 
+    arrange(desc(pageviews)) %>% 
+    setNames(c("name", "y")) %>% 
+    hc_add_series_df(highchart(), .) %>% 
+    hc_chart(type = "bar")
+    
+})
+
 ```
