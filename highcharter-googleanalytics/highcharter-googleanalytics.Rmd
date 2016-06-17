@@ -3,6 +3,7 @@ title: "Google Analytics & Highcharter"
 runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
+    css: styles.css
     orientation: rows
     vertical_layout: fill
     social: menu
@@ -17,81 +18,178 @@ library("rga")
 library("dplyr")
 library("highcharter")
 library("tidyr")
-options(highcharter.theme = hc_theme_smpl())
+library("htmltools")
+library("scales")
+library("lubridate")
 
 # rga.open(instance = "ga")
 # saveRDS(ga, "ga.rds")
 ga <- readRDS("ga.rds")
 
-dates <- c(Sys.Date() - 30, Sys.Date() - 1)
-# gadata <- ga$getData("113913503",
-#                      start.date = ga$getFirstDate("113913503"),
-#                      metrics = "ga:sessions,ga:pageviews,ga:users",
-#                      dimensions = "ga:date,ga:source,ga:country,ga:referralPath", max = 10000) 
-# gadata <- tbl_df(gadata)
-# summary(gadata$date)
+theme_dash_valuebox <- hc_theme_null(
+  colors = c("white", "red")
+)
+
+options(highcharter.theme = theme_dash_valuebox) 
+
+# input <- list(daterange = daterange <- c(Sys.Date() - 31, Sys.Date() - 1),
+#               timedim = timedim <- "date",
+#               hcclick = hcclick <- "pageviews")
+
+get_vb_num <- function(what = "sessions", daterange, formatfun = comma) {
+  ga$getData("113913503",
+             start.date = daterange[1], end.date = daterange[2],
+             metrics = paste0("ga:", what), dimensions = "") %>% 
+    as.numeric() %>% 
+    formatfun
+}
+
+get_vb_hc <- function(what = "sessions", daterange, timedim) {
+  
+  todatetimefun <- switch(timedim,
+    date = identity,
+    dateHour = ymd_h,
+    yearWeek = function(x) x %>% paste(1) %>% as.Date(format = "%Y%U %u"),
+    yearMonth = function(x) x %>% paste0("01") %>% ymd()
+  )
+  
+  ga$getData("113913503",
+             start.date = daterange[1], end.date = daterange[2],
+             metrics = paste0("ga:", what), dimensions = paste0("ga:", timedim)) %>% 
+    tbl_df() %>% 
+    setNames(c("x", "y")) %>% 
+    mutate(x = todatetimefun(x)) %>% 
+    mutate(x = datetime_to_timestamp(x)) %>% 
+    hc_add_series_df(highchart(height = 100), ., name = what) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_chart(
+      type = "area",
+      events = list(
+        click = JS("function(){console.log(this.name);Shiny.onInputChange('hcclick', this.series[0].name)}")
+        )
+      ) %>% 
+    hc_legend(enabled = FALSE) %>% 
+    hc_tooltip(enabled = FALSE) %>% 
+    hc_plotOptions(
+      series = list(
+        cursor = "pointer",
+        state = list(hover = list(enabled = FALSE)),
+        marker = list(enabled = FALSE),
+        events = list(
+          click = JS("function(){console.log(this.name);Shiny.onInputChange('hcclick', this.name)}")
+          )
+        )
+      )
+}
+
+seconds_to_min <- function(x) {
+  td <- seconds_to_period(round(x))
+  sprintf("%d:%02d:%02d", td@hour, minute(td), second(td)) 
+}
+```
+
+
+Sidebar {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+dateRangeInput("daterange", label = "Range", start = Sys.Date() - 31, end = Sys.Date() - 1)
+
+selectInput("timedim", label = "Time", selected = "date",
+            choices = c("Hourly" = "dateHour", "Day" = "date", "Weekly" = "yearWeek", "Month" = "yearMonth"))
 ```
 
 
 Row
 -----------------------------------------------------------------------
 
-### Inputs
+### Sessions  {.value-box}
 ```{r}
-dateRangeInput('daterange', label = NULL, start = Sys.Date() - 30, end = Sys.Date() - 1)
+renderValueBox({
+  valueBox(
+    tagList(
+      get_vb_num("sessions", input$daterange),
+      get_vb_hc("sessions", input$daterange, input$timedim)
+      ),
+    icon = "fa-user")
+  })
 ```
 
-### Total downloads  {.value-box}
+### Users {.value-box}
 ```{r}
-renderValueBox({valueBox(20, icon = "fa-download")})
+renderValueBox({
+  valueBox(
+    tagList(
+      get_vb_num("users", input$daterange),
+      get_vb_hc("users", input$daterange, input$timedim)
+      ),
+    icon = "fa-users")
+  })
 ```
 
-### Emit the download rate {.value-box}
+### Page Views {.value-box}
 ```{r}
-renderValueBox({valueBox(50,icon = "fa-area-chart")})
+renderValueBox({
+  valueBox(
+    tagList(
+      get_vb_num("pageviews", input$daterange),
+      get_vb_hc("pageviews", input$daterange, input$timedim)
+      ),
+    icon = "fa-eye")
+  })
 ```
 
-Row 
+
+### Avg Duration of sessions {.value-box}
+```{r}
+renderValueBox({
+  valueBox(
+    tagList(
+      get_vb_num("avgSessionDuration", input$daterange, seconds_to_min),
+      get_vb_hc("avgSessionDuration", input$daterange, input$timedim)
+      ),
+    icon = "fa-clock-o")
+  })
+```
+
+### Bounce Rate {.value-box}
+```{r}
+renderValueBox({
+  valueBox(
+    tagList(
+      get_vb_num("bounceRate", input$daterange, function(x) {x/100} %>% percent),
+      get_vb_hc("bounceRate", input$daterange, input$timedim)
+      ),
+    icon = "fa-sign-out")
+  })
+```
+
+Row
 -----------------------------------------------------------------------
 
-### Daily Data
-
-```{r perday}
+### Detailed View
+```{r}
 renderHighchart({
-  dates <- as.character(input$daterange)
-  ga$getData("113913503",
-           start.date = dates[1], end.date = dates[2],
-           metrics = "ga:sessions,ga:pageviews,ga:users",
-           dimensions = "ga:date") %>% 
-  tbl_df() %>% 
-  gather(key, value, -date) %>% 
-  count(date, key, wt = value) %>% 
-  arrange(date) %>% 
-  group_by(name = key) %>% 
-  do(data = list.parse3(data.frame(x = datetime_to_timestamp(.$date), y = .$n))) %>% 
-  list.parse3() %>% 
-  hc_add_series_list(highchart(), .) %>% 
-  hc_chart(zoomType = "x") %>% 
-  hc_plotOptions(series = list(marker = list(enabled = FALSE))) %>% 
-  hc_xAxis(type = "datetime") %>% 
-  hc_tooltip(shared = TRUE)
+  
+  hc <- get_vb_hc(
+    ifelse(!is.null(input$hcclick), input$hcclick, "sessions"),
+    input$daterange, input$timedim) %>%
+    hc_tooltip(enabled = TRUE) %>% 
+    hc_add_theme(hc_theme_smpl(colors = c("#2780e3", "white"))) %>% 
+    hc_yAxis(showLastLabel = FALSE) %>% 
+    hc_plotOptions(series = list(fillOpacity = 0.1))
+  hc$height <- 200
+  
+  hc
 })
-
 ```
 
-### Country
 
-```{r country}
-renderHighchart({
-  dates <- as.character(input$daterange)
-  ga$getData("113913503",
-           start.date = dates[1], end.date = dates[2],
-           metrics = "ga:pageviews", dimensions = "ga:country") %>% 
-    arrange(desc(pageviews)) %>% 
-    setNames(c("name", "y")) %>% 
-    hc_add_series_df(highchart(), .) %>% 
-    hc_chart(type = "bar")
-    
-})
+Row
+-----------------------------------------------------------------------
+### Pars
 
+```{r}
+renderPrint({as.list(input)})
 ```
+
