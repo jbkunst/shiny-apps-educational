@@ -29,6 +29,8 @@ library("viridis")
 ga <- readRDS("ga.rds")
 ID <- "113913503"
 COLS <- viridis(10, option = "A")
+MINDATE <- ga$getFirstDate(ID)
+TODAY <- Sys.Date()
 
 options(highcharter.theme = hc_theme_smpl(colors = c("#2780e3", "white")))
 
@@ -100,7 +102,7 @@ get_valueBox <- function(dim = "sessions", daterange, timedim, icon = "fa-user",
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 ```{r}
-dateRangeInput("daterange", label = "Range", start = Sys.Date() - 31, end = Sys.Date() - 1)
+dateRangeInput("daterange", label = "Range", start = Sys.Date() - 31, end = TODAY - 1, min = MINDATE, max = TODAY)
 
 selectInput("metric", label = "Metric", selected = "sessions",
             choices = c("sessions", "users", "pageviews", "pageviewsPerSession",
