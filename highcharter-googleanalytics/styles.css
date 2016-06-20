@@ -3,6 +3,10 @@
   padding-bottom: 0;
 }
 
+.value-box .icon i {
+  color: rgba(0, 0, 0, 0.05);
+}
+
 .value-output {
   font-size: 25px;
 }
