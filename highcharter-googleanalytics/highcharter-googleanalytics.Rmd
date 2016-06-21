@@ -28,25 +28,22 @@ library("viridis")
 #### pars ####
 ga <- readRDS("ga.rds")
 ID <- "113913503"
-COLS <- viridis(10, option = "A")
-MINDATE <- ga$getFirstDate(ID)
-TODAY <- Sys.Date()
 
-options(highcharter.theme = hc_theme_smpl(colors = c("#2780e3", "white")))
+options(highcharter.theme = hc_theme_smpl())
 
-# input <- list(daterange = daterange <- c(Sys.Date() - 31, Sys.Date() - 1),
-#               metric = metric <- "pageviews"
+# input <- list(daterange = daterange <- c(Sys.Date() - 30, Sys.Date() - 1),
+#               metric = metric <- "sessions",
 #               timedim = timedim <- "date")
 
-get_dim_num <- function(dim = "sessions", daterange, formatfun = comma) {
+get_metric_num <- function(metric = "sessions", daterange, formatfun = comma) {
   ga$getData(ID, start.date = daterange[1], end.date = daterange[2],
-             metrics = paste0("ga:", dim), dimensions = "") %>% 
+             metrics = paste0("ga:", metric), dimensions = "") %>% 
     as.numeric() %>% 
     round(2) %>% 
     formatfun
 }
 
-get_dim_hc <- function(dim = "sessions", daterange, timedim) {
+get_metric_hc <- function(metric = "sessions", daterange, timedim) {
   
   todatetimefun <- switch(timedim,
     date = identity,
@@ -56,18 +53,22 @@ get_dim_hc <- function(dim = "sessions", daterange, timedim) {
   )
   
   ga$getData(ID, start.date = daterange[1], end.date = daterange[2],
-             metrics = paste0("ga:", dim), dimensions = paste0("ga:", timedim)) %>% 
+             metrics = paste0("ga:", metric), dimensions = paste0("ga:", timedim)) %>% 
     tbl_df() %>% 
     setNames(c("x", "y")) %>% 
     mutate(x = todatetimefun(x)) %>% 
     mutate(x = datetime_to_timestamp(x)) %>% 
-    hc_add_series_df(highchart(), ., name = dim) %>% 
+    hc_add_series_df(highchart(), ., name = metric) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_legend(enabled = FALSE) %>% 
     hc_chart(
       type = "area",
+      cursor = "pointer",
       events = list(
-        click = JS("function(){console.log(this.name);Shiny.onInputChange('metric', this.series[0].name)}")
+        click = JS("function(){
+                  console.log(this.series[0].name);
+                  Shiny.onInputChange('metric', this.series[0].name);
+                  }")
         )
       ) %>% 
     hc_plotOptions(
@@ -75,7 +76,10 @@ get_dim_hc <- function(dim = "sessions", daterange, timedim) {
         cursor = "pointer",
         marker = list(enabled = FALSE),
         events = list(
-          click = JS("function(){console.log(this.name);Shiny.onInputChange('metric', this.name)}")
+          click = JS("function(){
+                     console.log(this.name);
+                     Shiny.onInputChange('metric', this.name);
+                     }")
           )
         )
       )
@@ -86,13 +90,15 @@ seconds_to_min <- function(x) {
   sprintf("%d:%02d:%02d", td@hour, minute(td), second(td)) 
 }
 
-get_valueBox <- function(dim = "sessions", daterange, timedim, icon = "fa-user", formatfun = comma) {
-  hcspakr <- get_dim_hc(dim, daterange, timedim = timedim) %>%
+percent2 <- function(x){ {x/100} %>% percent }
+
+get_valueBox <- function(metric = "sessions", daterange, timedim, icon = "fa-user", formatfun = comma) {
+  hcspakr <- get_metric_hc(metric, daterange, timedim = timedim) %>%
     hc_add_theme(hc_theme_sparkline(colors = list("white"), tooltip = list(enabled = FALSE)))
   hcspakr$height <- 50
   valueBox(
     tagList(
-      get_dim_num(dim, daterange, formatfun = formatfun),
+      get_metric_num(metric, daterange, formatfun = formatfun),
       hcspakr
       ),
     icon = icon)
@@ -102,7 +108,8 @@ get_valueBox <- function(dim = "sessions", daterange, timedim, icon = "fa-user",
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 ```{r}
-dateRangeInput("daterange", label = "Range", start = Sys.Date() - 31, end = TODAY - 1, min = MINDATE, max = TODAY)
+dateRangeInput("daterange", label = "Range", start = Sys.Date() - 31,
+               end = Sys.Date() - 1, min = ga$getFirstDate(ID), max = Sys.Date())
 
 selectInput("metric", label = "Metric", selected = "sessions",
             choices = c("sessions", "users", "pageviews", "pageviewsPerSession",
@@ -132,12 +139,12 @@ renderValueBox({get_valueBox("pageviews", input$daterange, input$timedim, "fa-ey
 ```
 
 
-### Page per session {.value-box}
+### Page per Session {.value-box}
 ```{r}
 renderValueBox({get_valueBox("pageviewsPerSession", input$daterange, input$timedim, "fa-eye")})
 ```
 
-### Avg Duration of sessions {.value-box}
+### Avg Duration of Sessions {.value-box}
 ```{r}
 renderValueBox({
   get_valueBox("avgSessionDuration", input$daterange, input$timedim, "fa-clock-o", formatfun = seconds_to_min)
@@ -146,18 +153,26 @@ renderValueBox({
 
 ### Bounce Rate {.value-box}
 ```{r}
-ff <- function(x){ {x/100} %>% percent }
 renderValueBox({
-  get_valueBox("bounceRate", input$daterange, input$timedim, "fa-sign-out", formatfun = ff)
+  get_valueBox("bounceRate", input$daterange, input$timedim, "fa-sign-out", formatfun = percent2)
   })
 ```
+
+### Percent New Sessions {.value-box}
+```{r}
+renderValueBox({
+  get_valueBox("percentNewSessions", input$daterange, input$timedim, "fa-plus", formatfun = percent2)
+  })
+```
+
+ga:percentNewSessions
 
 Row {data-height=200}
 -----------------------------------------------------------------------
 ### Detailed View 
 ```{r}
 renderHighchart({
-  get_dim_hc(input$metric, input$daterange, input$timedim) %>%
+  get_metric_hc(input$metric, input$daterange, input$timedim) %>%
     hc_yAxis(showLastLabel = FALSE, showFirstLabel = FALSE) %>% 
     hc_plotOptions(series = list(fillOpacity = 0.1))
 })

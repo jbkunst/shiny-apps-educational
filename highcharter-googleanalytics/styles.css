@@ -4,7 +4,11 @@
 }
 
 .value-box .icon i {
-  color: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.10);
+}
+
+.value-box .caption {
+  font-size: 13px;
 }
 
 .value-output {
