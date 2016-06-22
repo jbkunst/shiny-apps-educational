@@ -27,9 +27,10 @@ library("viridis")
 # saveRDS(ga, "ga.rds")
 #### pars ####
 ga <- readRDS("ga.rds")
+maincolor <- "#2780e3"
 ID <- "113913503"
 
-options(highcharter.theme = hc_theme_smpl())
+options(highcharter.theme = hc_theme_smpl(colors = list(maincolor)))
 
 # input <- list(daterange = daterange <- c(Sys.Date() - 30, Sys.Date() - 1),
 #               metric = metric <- "sessions",
@@ -209,7 +210,7 @@ renderPrint({sessionInfo()})
 
 ### Input
 ```{r}
-renderPrint({reactiveValuesToList(input)})
+renderPrint({as.list(input)})
 ```
 
 
