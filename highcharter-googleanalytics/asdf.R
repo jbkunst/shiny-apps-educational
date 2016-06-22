@@ -1,6 +1,13 @@
 df <- ga$getData(ID, start.date = Sys.Date()-10, end.date = daterange[2],
            metrics = "ga:sessions,ga:bounceRate",
-           dimensions = "ga:medium, ga:source,ga:referralPath") %>% 
+           dimensions = "ga:medium,ga:source,ga:referralPath") %>% 
+  tbl_df() %>% 
+  arrange(desc(sessions)) 
+
+df <- ga$getData(ID, start.date = Sys.Date()-10, end.date = daterange[2],
+                 metrics = "ga:sessions,ga:bounceRate",
+                 dimensions = "ga:source,ga:referralPath",
+                 filter="ga:medium==referral") %>% 
   tbl_df() %>% 
   arrange(desc(sessions)) 
 
@@ -107,7 +114,7 @@ hc_add_series_treemap <- function (hc, tm, ...)
      hc_colorAxis(stops = color_stops())
 }
 
-hct <-hc_add_series_treemap(highchart(), tm <- treemap::treemap(df, index, size, color),
+hct <-hc_add_series_treemap(highchart(), tm <- treemap::treemap(df, index[-1], size, color),
                       layoutAlgorithm = "squarified",
                       allowDrillToNode = TRUE)
 hct

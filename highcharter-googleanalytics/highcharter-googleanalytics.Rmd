@@ -28,6 +28,7 @@ library("viridis")
 #### pars ####
 ga <- readRDS("ga.rds")
 maincolor <- "#2780e3"
+colorsscale <- inferno(10)
 ID <- "113913503"
 
 options(highcharter.theme = hc_theme_smpl(colors = list(maincolor)))
@@ -188,7 +189,7 @@ renderHighchart({
   m <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
              metrics = paste0("ga:", input$metric), dimensions = "ga:dayOfWeek,ga:hour") %>% 
     tbl_df() %>% 
-    setNames(c("dayOfWeek", "hour", "metric")) %>% 
+    setNames(c("dayOfWeek", "hour", "metric")) %>%
     spread(hour, metric) %>% 
     select(-1) %>% 
     as.matrix() 
@@ -198,7 +199,9 @@ renderHighchart({
   
   hchart(m) %>% 
     hc_legend(enabled = FALSE) %>% 
-    hc_yAxis(reversed = TRUE, title = list(text = ""))
+    hc_yAxis(reversed = TRUE, title = list(text = "")) %>% 
+    hc_colorAxis(min = min(m), max = max(m),
+                 stops = color_stops(colors = c(colorsscale, maincolor)))
     
 })
 ```
