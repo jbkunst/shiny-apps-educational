@@ -196,12 +196,12 @@ renderHighchart({
   
   rownames(m) <- getOption("highcharter.lang")$weekdays
   colnames(m) <- paste0(colnames(m), ":00")
-  
-  hchart(m) %>% 
-    hc_legend(enabled = FALSE) %>% 
+
+  hchart(m, name = input$metric) %>% 
+    hc_legend(enabled = TRUE) %>% 
+    hc_xAxis(opposite = TRUE) %>% 
     hc_yAxis(reversed = TRUE, title = list(text = "")) %>% 
-    hc_colorAxis(min = min(m), max = max(m),
-                 stops = color_stops(colors = c(colorsscale, maincolor)))
+    hc_colorAxis(stops = color_stops(colors = colorsscale))
     
 })
 ```

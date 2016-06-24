@@ -1,83 +1,18 @@
-df <- ga$getData(ID, start.date = Sys.Date()-10, end.date = daterange[2],
-           metrics = "ga:sessions,ga:bounceRate",
-           dimensions = "ga:medium,ga:source,ga:referralPath") %>% 
-  tbl_df() %>% 
-  arrange(desc(sessions)) 
-
-df <- ga$getData(ID, start.date = Sys.Date()-10, end.date = daterange[2],
-                 metrics = "ga:sessions,ga:bounceRate",
-                 dimensions = "ga:source,ga:referralPath",
-                 filter="ga:medium==referral") %>% 
-  tbl_df() %>% 
-  arrange(desc(sessions)) 
-
-df
-  
-aggFun <- sample(list(sum, median, max, mean), size = 1)[[1]]
-aggFun(c(1:10))
-
 index <- c("medium", "source", "referralPath")
 size <- "sessions"
 color <- "bounceRate"
+maxcats <- 20
 
-stopifnot(is.data.frame(df),
-          is.character(c(index, size, color)),
-          index %in% names(df),
-          size %in% names(df),
-          color %in% names(df))
-
-library("data.tree")
-
-df$pathString <- paste("root", df$medium, df$source, df$referralPath,   sep = "|")
-df$pathString <- paste("root", df$medium, df$source,   sep = "|")
-
-s <- as.Node(df, mode="table", pathDelimiter = "|")
-
-s$Do(function(node){
-  if(!is.null(size)){
-    node$value <- Aggregate(node , attribute = size, aggFun = aggFun)
-  }
-  if(!is.null(color)){
-    node$colorValue  <- Aggregate(node , attribute = color, aggFun = aggFun)
-  }
-})
-
-# assign ids to all nodes
-s$Set(id = 1:s$totalCount)
-s$Set(parent1 = c(function(self) GetAttribute(self$parent, "id", format = identity)))
+aggFun <- sample(list(sum, median, max, mean), size = 1)[[1]]
+aggFun(c(1:10))
 
 
-vars <- c(index, "value", "colorValue", "level", "id", "parent1")
-dft <- do.call(function(...) data.tree:::print.Node(..., limit = Inf), c(s, vars))
-dft <- tbl_df(data.frame(dft))
-
-# dft <- dft[-1, ]
-dft$level <- dft$level - 0
-dft$id <- dft$id - 0
-
-dft <- fill_(dft, fill_cols = index, "up") 
-
-nms <- dft %>%
-  select_(.dots = c(index, "level")) %>% 
-  purrr::by_row(function(x){
-    as.character(x[, x$level])
-  }) %>%
-  unnest() %>% 
-  .$.out
-
-dft$name <- nms
-dft$id <- paste0("id", dft$id)
-dft$parent <- paste0("p", dft$parent1)
-dft$parent1 <- NULL
-dft$levelName <- NULL
-dft <- dft[, setdiff(names(dft), index)]
-
-series <- list.parse3(dft)
-series <- purrr::map(series, function(x){
-  if(x$parent == x$id) x$parent <- NULL
-  x
-})
-
+df <- ga$getData(ID, start.date = Sys.Date() - 20, end.date = daterange[2],
+           metrics = "ga:sessions,ga:bounceRate",
+           dimensions = "ga:source,ga:referralPath",
+           filter = "ga:medium==referral") %>% 
+  tbl_df() %>% 
+  arrange(desc(sessions)) 
 
 hc_add_series_treemap <- function (hc, tm, ...) 
 {
@@ -114,8 +49,17 @@ hc_add_series_treemap <- function (hc, tm, ...)
      hc_colorAxis(stops = color_stops())
 }
 
-hct <-hc_add_series_treemap(highchart(), tm <- treemap::treemap(df, index[-1], size, color),
-                      layoutAlgorithm = "squarified",
+tm <- treemap::treemap(business,
+        index=c("NACE1", "NACE2"),
+        vSize="employees",
+        vColor="employees.prev",
+        type="value",
+        palette="RdYlGn",
+        range=c(-20000,30000),           # this is shown in the legend
+        mapping=c(-30000, 10000, 40000))
+# tm <- treemap::treemap(df, index[-1], size, color)
+hct <-hc_add_series_treemap(highchart(), tm,
+                      # layoutAlgorithm = "squarified",
                       allowDrillToNode = TRUE)
 hct
 bind_rows(
