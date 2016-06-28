@@ -4,7 +4,7 @@
 }
 
 .value-box .icon i {
-  color: rgba(0, 0, 0, 0.10);
+  color: rgba(0, 0, 0, 0.075);
 }
 
 .value-box .caption {
@@ -18,3 +18,8 @@
 .input-group-addon {
   padding: 7px 18px;
 }
+
+#referral-path {
+  font-size: 0.8em
+}
+    
