@@ -3,11 +3,13 @@ title: "Google Analytics & Highcharter"
 runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
+    favicon: https://www.iconexperience.com/_img/o_collection_png/office/24x24/plain/chart_line.png
     css: styles.css
     orientation: rows
     vertical_layout: fill
     social: menu
     source_code: embed
+    theme: lumen
 ---
 
 ```{r setup, include=FALSE}
@@ -30,7 +32,7 @@ library("viridis")
 # saveRDS(ga, "ga.rds")
 #### pars ####
 ga <- readRDS("ga.rds")
-maincolor <- "#2780e3"
+maincolor <- "#000080"
 colorsscale <- inferno(10)
 ID <- "113913503"
 
@@ -111,7 +113,8 @@ get_valueBox <- function(metric = "sessions", daterange, timedim, icon = "fa-use
       get_metric_num(metric, daterange, formatfun = formatfun),
       hcspakr
       ),
-    icon = icon)
+    icon = icon,
+    color = "navy")
 }
 
 aggfun <- reactive({
@@ -178,7 +181,7 @@ renderValueBox({get_valueBox("pageviews", input$daterange, input$timedim, "fa-ey
 ```
 
 
-### Page per Session {.value-box}
+### Pages per Session {.value-box}
 ```{r}
 renderValueBox({get_valueBox("pageviewsPerSession", input$daterange, input$timedim, "fa-eye")})
 ```
@@ -218,6 +221,100 @@ renderHighchart({
 
 Row {.tabset .tabset-fade data-height=350}
 -----------------------------------------------------------------------
+### Referral Path
+```{r}
+renderDataTable({
+  
+  mtrcs <- c("sessions", "percentNewSessions", "users",
+             "bounceRate",  "pageviewsPerSession", "avgSessionDuration")
+  mtrcs <- paste0("ga:", mtrcs, collapse = ",")
+  
+  dfref <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
+                      metrics = mtrcs,
+                      dimensions = "ga:source,ga:referralPath",
+                      filters = "ga:medium==referral") %>% 
+    tbl_df() %>% 
+    unite(url, source, referralPath, sep = "") %>% 
+    # mutate(url = substr(url, 0, nchr),
+    #        url = ifelse(nchar(url) == nchr, paste0(url, "..."), url)) %>% 
+    arrange(desc(sessions)) %>% 
+    rename(percNewSess = percentNewSessions,
+           pagVwsPSess = pageviewsPerSession,
+           avgSessDur = avgSessionDuration) %>% 
+    map_if(is.numeric, round) %>% 
+    as_data_frame()
+  
+  datatable(dfref, rownames = FALSE,
+            extensions = c("TableTools"),
+            options = list(scrollY = 350))
+  
+})
+```
+
+### Referral Source
+```{r}
+renderHighchart({
+  
+  ncum <- 10
+  nses <- 5
+  
+  summfun <- aggfun()
+  ordrdir <- orddir()
+  
+  dfref <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
+                      metrics = paste0("ga:sessions,ga:", input$metric),
+                      dimensions = "ga:source",
+                      filters = "ga:medium==referral") %>% 
+    setNames(c("source", "sessionsaux", "metric")) %>% 
+    tbl_df() %>% 
+    mutate(source = ifelse(sessionsaux < nses, "others", source)) %>% 
+    group_by(source) %>% 
+    summarise(metric = summfun(as.numeric(metric)), sessionsaux = sum(as.numeric(sessionsaux))) %>% 
+    ungroup() %>% 
+    arrange(desc(ordrdir * metric)) %>% 
+    mutate(source = ifelse(row_number() > ncum, "others", source)) %>% 
+    group_by(source) %>% 
+    summarise(metric = summfun(as.numeric(metric)), sessionsaux = sum(as.numeric(sessionsaux))) %>%  
+    ungroup() %>% 
+    arrange(desc(ordrdir * metric))
+  
+  highchart() %>% 
+    hc_chart(type = "bar") %>% 
+    hc_add_series(data = dfref$metric, name = input$metric) %>% 
+    hc_xAxis(categories = dfref$source)
+
+})
+```
+
+### dayOfWeek vs hour
+```{r}
+renderHighchart({
+  m <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
+             metrics = paste0("ga:", input$metric), dimensions = "ga:dayOfWeek,ga:hour") %>% 
+    tbl_df() %>% 
+    setNames(c("dayOfWeek", "hour", "metric")) %>%
+    map_if(is.factor, as.character) %>% 
+    as_data_frame() %>% 
+    complete(dayOfWeek = as.character(0:6), hour = as.character(0:23)) %>% 
+    mutate(metric = ifelse(is.na(metric), 0, metric),
+           hour = as.numeric(hour)) %>% 
+    arrange(dayOfWeek, hour) %>% 
+    spread(hour, metric) %>% 
+    select(-1) %>% 
+    as.matrix() 
+  
+  rownames(m) <- getOption("highcharter.lang")$weekdays
+  colnames(m) <- paste0(colnames(m), ":00")
+
+  hchart(m, name = input$metric) %>% 
+    hc_yAxis(reversed = TRUE, title = list(text = "")) %>% 
+    hc_colorAxis(stops = color_stops(colors = colorsscale))
+    
+})
+```
+
+
+
 ### Pages
 ```{r}
 renderHighchart({
@@ -267,98 +364,6 @@ renderHighchart({
     hc_add_series(data = dfref$metric, name = input$metric) %>% 
     hc_xAxis(categories = dfref$channelGrouping)
 
-})
-```
-
-### Referral Source
-```{r}
-renderHighchart({
-  
-  ncum <- 10
-  nses <- 5
-  
-  summfun <- aggfun()
-  ordrdir <- orddir()
-  
-  dfref <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
-                      metrics = paste0("ga:sessions,ga:", input$metric),
-                      dimensions = "ga:source",
-                      filters = "ga:medium==referral") %>% 
-    setNames(c("source", "sessionsaux", "metric")) %>% 
-    tbl_df() %>% 
-    mutate(source = ifelse(sessionsaux < nses, "others", source)) %>% 
-    group_by(source) %>% 
-    summarise(metric = summfun(as.numeric(metric)), sessionsaux = sum(as.numeric(sessionsaux))) %>% 
-    ungroup() %>% 
-    arrange(desc(ordrdir * metric)) %>% 
-    mutate(source = ifelse(row_number() > ncum, "others", source)) %>% 
-    group_by(source) %>% 
-    summarise(metric = summfun(as.numeric(metric)), sessionsaux = sum(as.numeric(sessionsaux))) %>%  
-    ungroup() %>% 
-    arrange(desc(ordrdir * metric))
-  
-  highchart() %>% 
-    hc_chart(type = "bar") %>% 
-    hc_add_series(data = dfref$metric, name = input$metric) %>% 
-    hc_xAxis(categories = dfref$source)
-
-})
-```
-
-### Referral Path
-```{r}
-renderDataTable({
-  
-  mtrcs <- c("sessions", "percentNewSessions", "users",
-             "bounceRate",  "pageviewsPerSession", "avgSessionDuration")
-  mtrcs <- paste0("ga:", mtrcs, collapse = ",")
-  
-  dfref <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
-                      metrics = mtrcs,
-                      dimensions = "ga:source,ga:referralPath",
-                      filters = "ga:medium==referral") %>% 
-    tbl_df() %>% 
-    unite(url, source, referralPath, sep = "") %>% 
-    # mutate(url = substr(url, 0, nchr),
-    #        url = ifelse(nchar(url) == nchr, paste0(url, "..."), url)) %>% 
-    arrange(desc(sessions)) %>% 
-    rename(percNewSess = percentNewSessions,
-           pagVwsPSess = pageviewsPerSession,
-           avgSessDur = avgSessionDuration) %>% 
-    map_if(is.numeric, round) %>% 
-    as_data_frame()
-  
-  datatable(dfref, rownames = FALSE,
-            extensions = c("TableTools"),
-            options = list(scrollY = 350))
-  
-})
-```
-
-### dayOfWeek vs hour
-```{r}
-renderHighchart({
-  m <- ga$getData(ID, start.date = input$daterange[1], end.date = input$daterange[2],
-             metrics = paste0("ga:", input$metric), dimensions = "ga:dayOfWeek,ga:hour") %>% 
-    tbl_df() %>% 
-    setNames(c("dayOfWeek", "hour", "metric")) %>%
-    map_if(is.factor, as.character) %>% 
-    as_data_frame() %>% 
-    complete(dayOfWeek = as.character(0:6), hour = as.character(0:23)) %>% 
-    mutate(metric = ifelse(is.na(metric), 0, metric),
-           hour = as.numeric(hour)) %>% 
-    arrange(dayOfWeek, hour) %>% 
-    spread(hour, metric) %>% 
-    select(-1) %>% 
-    as.matrix() 
-  
-  rownames(m) <- getOption("highcharter.lang")$weekdays
-  colnames(m) <- paste0(colnames(m), ":00")
-
-  hchart(m, name = input$metric) %>% 
-    hc_yAxis(reversed = TRUE, title = list(text = "")) %>% 
-    hc_colorAxis(stops = color_stops(colors = colorsscale))
-    
 })
 ```
 
