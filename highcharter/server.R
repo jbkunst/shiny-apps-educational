@@ -4,7 +4,7 @@ eurkpw <- getSymbols("EUR/KPW", src = "oanda", auto.assign = FALSE)
 data(citytemp, package = "highcharter")
 data(worldgeojson, package = "highcharter")
 data(sample_matrix, package = "xts")
-data(GNI2010, package = "treemap")
+data(GNI2014, package = "treemap")
 data(diamonds, package = "ggplot2")
 
 dscounts <- dplyr::count(diamonds, cut) %>% 
@@ -78,7 +78,7 @@ function(input, output) {
   output$highmap <- renderHighchart({
     
     hcbase() %>% 
-      hc_add_series_map(worldgeojson, GNI2010, value = "GNI", joinBy = "iso3") %>% 
+      hc_add_series_map(worldgeojson, GNI2014, value = "GNI", joinBy = "iso3") %>% 
       hc_colorAxis(stops = dshmstops) 
     
   })
