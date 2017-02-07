@@ -9,12 +9,13 @@ library("tidyr")
 library("ggplot2")
 library("treemap")
 library("forecast")
+library("datalegreyar")
 library("DT")
 rm(list = ls())
 
 dashboardPage(
   skin = "black",
-  dashboardHeader(title = "highcharter", disable = FALSE),
+  dashboardHeader(title = tags$h1(datalegreya("highcharter", type = "gradient")), disable = FALSE),
   dashboardSidebar(
     sidebarMenu(
       menuItem("Examples", tabName = "examples", icon = icon("bar-chart")),
