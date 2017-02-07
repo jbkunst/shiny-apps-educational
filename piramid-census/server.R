@@ -65,9 +65,9 @@ shinyServer(function(input, output) {
         xaxis,
         list.merge(xaxis, list(opposite = TRUE, linkedTo = 0))
         ) %>% 
-      hc_add_serie(data = dfp %>% filter(sex == "male") %>% .$pop %>% {-1*.},
+      hc_add_series(data = dfp %>% filter(sex == "male") %>% .$pop %>% {-1*.},
                    name = "male") %>% 
-      hc_add_serie(data = dfp %>% filter(sex == "female") %>% .$pop,
+      hc_add_series(data = dfp %>% filter(sex == "female") %>% .$pop,
                    name = "female") %>% 
       hc_add_theme(thm)
 
