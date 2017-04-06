@@ -4,22 +4,22 @@ eurkpw <- getSymbols("EUR/KPW", src = "oanda", auto.assign = FALSE)
 data(citytemp, package = "highcharter")
 data(worldgeojson, package = "highcharter")
 data(sample_matrix, package = "xts")
-data(GNI2010, package = "treemap")
+data(GNI2014, package = "treemap")
 data(diamonds, package = "ggplot2")
 
 dscounts <- dplyr::count(diamonds, cut) %>% 
   setNames(c("name", "value")) %>% 
-  list.parse3()
+  list_parse()
 
 dsheatmap <- tbl_df(expand.grid(seq(12) - 1, seq(5) - 1)) %>% 
   mutate(value = abs(seq(nrow(.)) + 10 * rnorm(nrow(.))) + 10,
          value = round(value, 2)) %>% 
-  list.parse2()
+  list_parse2()
 
 f <- exp
 
 dshmstops <- data.frame(q = c(0, f(1:5)/f(5)), c = substring(viridis(5 + 1), 0, 7)) %>% 
-  list.parse2()
+  list_parse2()
 
 function(input, output) {
   
@@ -78,7 +78,7 @@ function(input, output) {
   output$highmap <- renderHighchart({
     
     hcbase() %>% 
-      hc_add_series_map(worldgeojson, GNI2010, value = "GNI", joinBy = "iso3") %>% 
+      hc_add_series_map(worldgeojson, GNI2014, value = "GNI", joinBy = "iso3") %>% 
       hc_colorAxis(stops = dshmstops) 
     
   })
@@ -142,7 +142,7 @@ function(input, output) {
     nmf <- paste("level", object$level)
     
     dsf <- data_frame(tmf, object$mean) %>% 
-      list.parse2()
+      list_parse2()
     
     highchart() %>% 
       hc_add_series_ts(object$x, name = input$ts) %>% 
