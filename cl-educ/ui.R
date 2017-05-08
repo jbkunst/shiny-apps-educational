@@ -4,7 +4,7 @@ shinyUI(
       tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")
       ),
     fluidRow(
-      includeScript("www/js/hc_custom.js"),
+      # includeScript("www/js/hc_custom.js"),
       h2(id="title", "Indicadores de Educación en Chile"),
       div(class="space"),
       tabsetPanel(type = "pills", selected = "PAIS",
@@ -22,7 +22,7 @@ shinyUI(
                                   selectizeInput("region_numero", NULL, regiones_choices, width = "90%"),
                                   selectizeInput("region_indicador", NULL, region_indicador_choices, width="90%"),
                                   div(class="space"),
-                                  chartOutput("plot_region", "highcharts")
+                                  highchartOutput("plot_region")
                                   ),
                            column(width = 5,
                                   uiOutput("report_region"),
@@ -54,7 +54,7 @@ shinyUI(
                                   div(class="space")
                                   ),
                            column(width = 5,
-                                  chartOutput("plot_colegio", "highcharts"),
+                                  highchartOutput("plot_colegio"),
                                   div(class="space")
                                   ),
                            column(width = 3,

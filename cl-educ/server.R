@@ -56,7 +56,7 @@ shinyServer(function(input, output) {
 
   })
   
-  output$plot_colegio <- renderChart2({
+  output$plot_colegio <- renderHighchart({
     
     data <- data()
     colegio_nombre <- colegios %>% filter(rbd == input$colegio_rbd) %>% .$nombre_establecimiento
@@ -74,19 +74,28 @@ shinyServer(function(input, output) {
       filter(rbd==input$colegio_rbd) %>%
       select(agno, value = get(input$indicador))
     
-    d3 <- join(d1, d2, by ="agno")
+    d3 <- left_join(d1, d2, by ="agno")
+    
+    d3 %>% 
+      gather(key, value, -agno) %>% 
+      filter(key != "n", key != "n.val") %>% 
+      hchart("line", hcaes(x = agno, y = value, group = key),
+             name = c("25% Peor", "Mediana", "25% mejor", colegio_nombre),
+             color = c(rep("#FCFCFC", 3), "#F0F0F0"),
+             lineWidth = c(rep(1, 3), 5),
+             dashStyle = c("dot", "dash", "dot", NA))
 
-    p <- Highcharts$new()
+    # p <- Highcharts$new()
+    # 
+    # p$series(name = colegio_nombre, data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
+    # p$series(name = "Mediana", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
+    # p$series(name = "25% peor", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
+    # p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")    
+    # p$xAxis(categories = d3$agno)
+    # p$plotOptions(line = list(marker = list(enabled = FALSE)))
+    # p$set(width = "100%" ,height = "100%")
     
-    p$series(name = colegio_nombre, data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
-    p$series(name = "Mediana", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
-    p$series(name = "25% peor", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
-    p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")    
-    p$xAxis(categories = d3$agno)
-    p$plotOptions(line = list(marker = list(enabled = FALSE)))
-    p$set(width = "100%" ,height = "100%")
-    
-    p
+    # p
     
   })
 
@@ -103,20 +112,21 @@ shinyServer(function(input, output) {
     
   })
   
-  output$plot_region <- renderChart2({  
+  output$plot_region <- renderHighchart({  
     
-    df <- data_reg()    
-    df <-  df %>%
+    data_reg <- data_reg()    
+    data_reg2 <-  data_reg %>%
       filter(!is.na(value)) %>%
       group_by(value) %>%
       summarise(n=n()) 
       
-    p <- rCharts:::Highcharts$new()
-    p$chart(type = "column")
-    p$xAxis(categories = df$value)
-    p$series(name = "Cantidad", data = df$n)
-    p$set(width = "100%", height = "100%")
-    p
+    hchart(data_reg2, "column", hcaes(value, n), name = "Cantidad")
+    # p <- rCharts:::Highcharts$new()
+    # p$chart(type = "column")
+    # p$xAxis(categories = df$value)
+    # p$series(name = "Cantidad", data = df$n)
+    # p$set(width = "100%", height = "100%")
+    # p
   })
   
   output$report_region <- renderUI({

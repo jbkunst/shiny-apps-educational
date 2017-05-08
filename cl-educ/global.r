@@ -1,13 +1,25 @@
-library("shiny")
-library("rCharts")
-library("plyr")
-library("dplyr")
-library("ggplot2")
-library("scales")
-library("maptools")
-library("grid")
+library(shiny)
+library(highcharter)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(maptools)
+library(grid)
 
 load("data/consolidate_data_clean_app.RData")
+
+hc_theme_chalk2 <- hc_theme_merge(
+  hc_theme_chalk(),
+  hc_theme(
+    chart = list(divBackgroundImage = NULL)
+  )
+)
+
+options(
+  shiny.launch.browser = TRUE,
+  highcharter.theme = hc_theme_chalk2
+)
 
 theme_null <- function() {
   theme(axis.line = element_blank(),
