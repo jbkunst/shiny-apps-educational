@@ -1,4 +1,8 @@
-input <- list(image = sample(img_choices, 1), k = sample(seq(3, 5), size = 1))
+# input <- list(
+#   image = sample(img_choices, 1),
+#   k1 = sample(1:10, size = 1),
+#   k2 = sample(100, 10000, size = 1)
+#   )
 
 shinyServer(function(input, output) {
   
@@ -6,40 +10,62 @@ shinyServer(function(input, output) {
     
     message(sprintf("reading %s", input$image))
     readImage <- readJPEG(input$image)
+    dim(readImage)
     
     message("processing image")
-    longImage <- melt(readImage)
-    rgbImage <- reshape(longImage, timevar = "X3", idvar = c("X1", "X2"), direction = "wide")
-    rgbImage <- rgbImage %>%
-      mutate(X1 = -X1,
-             rgb = rgb(value.1, value.2, value.3))
-    
-    message(sprintf("kmeans algorithm: %s", input$k))
-    kColors <- input$k
-    kMeans <- kmeans(rgbImage %>% select(value.1, value.2, value.3), centers = kColors)
-    
-    rgbImage <- rgbImage %>% mutate(rbgApp = rgb(kMeans$centers[kMeans$cluster, ])) %>% 
-      tbl_df()
+    rgbImage <- map(1:3, function(i) readImage[,,i]) %>% 
+      map(tbl_df) %>% 
+      map(function(d){ mutate(d, y = seq_len(nrow(d))) }) %>% 
+      map(gather, x, c, -y) %>% 
+      reduce(left_join, by = c("x", "y")) %>% 
+      dplyr::rename(r = c.x, g = c.y, b = c) %>% 
+      mutate(
+        x = as.numeric(gsub("V", "", x)),
+        y = rev(y),
+        rgb = rgb(r, g, b)
+        ) 
     
   })
   
   output$originalImage <- renderPlot({
-    
     rgbImage <- rgbImage()
+    plot(rgbImage$x, rgbImage$y, col = rgbImage$rgb,
+         asp = 1, pch = ".", ylab = "", xlab = "", xaxt="n", yaxt = "n", axes = FALSE)
+    
+  })
   
-    plot(rgbImage$X2, rgbImage$X1, col = rgbImage$rgb, asp = 1, pch = ".",
+  output$resultImage1 <- renderPlot({
+    rgbImage <- rgbImage()
+    
+    kMeans <- rgbImage %>% 
+      select(r, g, b) %>% 
+      kmeans(centers = input$k1)
+    
+    rgbImage <- rgbImage %>%
+      mutate(rbgApp = rgb(kMeans$centers[kMeans$cluster, c("r", "g", "b")])) %>% 
+      tbl_df()
+    
+    plot(rgbImage$x, rgbImage$y, col = rgbImage$rbgApp, asp = 1, pch = ".",
          ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
     
   })
   
-  output$resultImage <- renderPlot({
-    
+  output$resultImage2 <- renderPlot({
     rgbImage <- rgbImage()
     
-    plot(rgbImage$X2, rgbImage$X1, col = rgbImage$rbgApp, asp = 1, pch = ".",
+    kMeans <- rgbImage %>% 
+      select(x, y, r, g, b) %>% 
+      kmeans(centers = input$k2)
+    
+    rgbImage <- rgbImage %>%
+      mutate(rbgApp = rgb(kMeans$centers[kMeans$cluster, c("r", "g", "b")])) %>% 
+      tbl_df()
+    
+    plot(rgbImage$x, rgbImage$y, col = rgbImage$rbgApp, asp = 1, pch = ".",
          ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
     
   })
+  
   
   output$originaltDist <- renderPlot({
     
@@ -60,7 +86,7 @@ shinyServer(function(input, output) {
       coord_flip() + theme_bw() + scale_y_continuous(label=percent) +
       theme_gg_custom()
     
-    print(p)
+    p
     
   })
   

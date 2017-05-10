@@ -1,11 +1,15 @@
 library(shiny)
+library(shinythemes)
 library(dplyr)
+library(purrr)
 library(markdown)
 library(jpeg)
-library(reshape)
+library(tidyr)
 library(ggplot2)
 library(scales)
 library(threejs)
+
+options(shiny.launch.browser = TRUE)
 
 str_capitalize <- function(string){
   # http://stackoverflow.com/questions/6364783/capitalize-the-first-letter-of-both-words-in-a-two-word-string/6365349#6365349
