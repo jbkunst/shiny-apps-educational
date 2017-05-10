@@ -1,1 +1,0 @@
-"C:\Program Files\R\R-3.2.0\bin\R.exe" -e "shiny::runApp('~/app - behavior/', host = '10.235.13.165', port = 5050)"
