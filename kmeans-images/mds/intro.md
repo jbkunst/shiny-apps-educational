@@ -1,5 +1,3 @@
-## K-means image colors clustering
+### K-means image colors clustering
 
 In evey image each pixel have a color and every color have an rgb representation (a 3-coordinates point), so we can group the colors into clusters and see what happens.
-
-Select and image and the *k* parameter to make a *K means* clustering over the pixels colors.

@@ -1,3 +1,4 @@
+rm(list = ls())
 library(shiny)
 library(shinythemes)
 library(dplyr)
@@ -5,9 +6,6 @@ library(purrr)
 library(markdown)
 library(jpeg)
 library(tidyr)
-library(ggplot2)
-library(scales)
-library(threejs)
 
 options(shiny.launch.browser = TRUE)
 
@@ -16,15 +14,26 @@ str_capitalize <- function(string){
   gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", tolower(string), perl=TRUE)
 }
 
-theme_gg_custom <- function(){
-  theme(axis.line = element_line(colour = "black"),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank()) 
-}
-  
-
 img_choices <- setNames(dir("imgs/", full.names = TRUE),
-                        gsub("\\.jpg$|\\.jpeg$|", "", dir("imgs/")) %>% str_capitalize)
+                        str_capitalize(gsub("\\.jpg$|\\.jpeg$|", "", dir("imgs/"))))
 
+
+matrix_to_df <- function(m) {
+  # m <- matrix(round(runif(12), 2), nrow = 4)
+  m %>% 
+    tbl_df() %>% 
+    mutate(y = seq_len(nrow(.))) %>% 
+    gather(x, c, -y) %>% 
+    mutate(
+      x = as.numeric(gsub("V", "", x)),
+      y = rev(y)
+      ) %>% 
+    select(x, y, c)
+  
+}
+
+rotate_m <- function(m) {
+  mr <- m[rev(1:nrow(m)),]
+  mr <- t(mr)
+  mr
+}

@@ -8,7 +8,8 @@ body {
 
 hr {
   display: block;
-  height: 1px;
+  height: 0.5px;
   border: 0;
-  border-top: 5px solid white;
-  margin: 1em 0; padding: 0; }
+  border-top: 1px solid lightgray;
+  margin: 1em 0; padding: 0;
+}

@@ -2,146 +2,204 @@
 #   image = sample(img_choices, 1),
 #   k1 = sample(1:10, size = 1),
 #   k2 = sample(100, 10000, size = 1)
-#   )
+#   ); input
 
 shinyServer(function(input, output) {
   
-  rgbImage <- reactive({
+  image <- reactive({
     
-    message(sprintf("reading %s", input$image))
-    readImage <- readJPEG(input$image)
-    dim(readImage)
+    image <- readJPEG(input$image)
+    image
+    
+  })
+  
+  df_image <- reactive({
+    
+    image <- image()
     
     message("processing image")
-    rgbImage <- map(1:3, function(i) readImage[,,i]) %>% 
-      map(tbl_df) %>% 
-      map(function(d){ mutate(d, y = seq_len(nrow(d))) }) %>% 
-      map(gather, x, c, -y) %>% 
+    df_image <- map(1:3, function(i) image[,,i]) %>% 
+      map(matrix_to_df) %>% 
       reduce(left_join, by = c("x", "y")) %>% 
-      dplyr::rename(r = c.x, g = c.y, b = c) %>% 
-      mutate(
-        x = as.numeric(gsub("V", "", x)),
-        y = rev(y),
-        rgb = rgb(r, g, b)
-        ) 
+      rename(r = c.x, g = c.y, b = c) %>% 
+      mutate(rgb = rgb(r, g, b)) 
+    
+  })
+  
+  gray_image <- reactive({
+    
+    image <- image()
+    
+    fcts <- c(0.21, 0.72, 0.07)
+    
+    gray_image <- map(1:3, function(i) image[,,i]) %>% 
+      map2(fcts, `*`) %>% 
+      reduce(`+`)
+    
+    gray_image
     
   })
   
   output$originalImage <- renderPlot({
-    rgbImage <- rgbImage()
-    plot(rgbImage$x, rgbImage$y, col = rgbImage$rgb,
+    df_image <- df_image()
+    plot(df_image$x, df_image$y, col = df_image$rgb,
          asp = 1, pch = ".", ylab = "", xlab = "", xaxt="n", yaxt = "n", axes = FALSE)
     
   })
   
   output$resultImage1 <- renderPlot({
-    rgbImage <- rgbImage()
     
-    kMeans <- rgbImage %>% 
+    df_image <- df_image()
+    
+    kMeans <- df_image %>% 
       select(r, g, b) %>% 
       kmeans(centers = input$k1)
     
-    rgbImage <- rgbImage %>%
+    df_image <- df_image %>%
       mutate(rbgApp = rgb(kMeans$centers[kMeans$cluster, c("r", "g", "b")])) %>% 
       tbl_df()
     
-    plot(rgbImage$x, rgbImage$y, col = rgbImage$rbgApp, asp = 1, pch = ".",
+    plot(df_image$x, df_image$y, col = df_image$rbgApp, asp = 1, pch = ".",
          ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
     
   })
   
   output$resultImage2 <- renderPlot({
-    rgbImage <- rgbImage()
+    df_image <- df_image()
     
-    kMeans <- rgbImage %>% 
+    kMeans <- df_image %>% 
       select(x, y, r, g, b) %>% 
       kmeans(centers = input$k2)
     
-    rgbImage <- rgbImage %>%
+    df_image <- df_image %>%
       mutate(rbgApp = rgb(kMeans$centers[kMeans$cluster, c("r", "g", "b")])) %>% 
       tbl_df()
     
-    plot(rgbImage$x, rgbImage$y, col = rgbImage$rbgApp, asp = 1, pch = ".",
+    plot(df_image$x, df_image$y, col = df_image$rbgApp, asp = 1, pch = ".",
          ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
     
   })
   
-  
-  output$originaltDist <- renderPlot({
+  output$grayImage <- renderPlot({
     
-    rgbImage <- rgbImage()
+    gray_image <- gray_image()
     
-    rgbImage_aux <- rgbImage %>%
-      group_by(rgb) %>%
-      summarise(n=n()) %>%
-      arrange(desc(n)) %>%
-      head(10) %>% 
-      arrange(n) %>%
-      mutate(rgb = factor(rgb, levels = rgb),
-             proportion = n/nrow(rgbImage)) 
+    # df_gray <- matrix_to_df(gray_image) %>% 
+    #   mutate(rgb = rgb(0, 0, 0, alpha = 1 - c))
+    # 
+    # plot(df_gray$x, df_gray$y, col = df_gray$rgb,
+    #      asp = 1, pch = ".", ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
     
-    p <- ggplot(rgbImage_aux) +
-      geom_bar(aes(x= rgb, y=proportion, fill= rgb), color="grey90", stat="identity") +
-      scale_fill_manual(values=as.character(rgbImage_aux$ rgb)) + 
-      coord_flip() + theme_bw() + scale_y_continuous(label=percent) +
-      theme_gg_custom()
-    
-    p
-    
+    img <- rotate_m(gray_image)
+    graphics::image(img, axes = FALSE, col = grey(seq(0, 1, length = 256)))
   })
   
-  output$resultDist <- renderPlot({
+  output$filterImage <- renderPlot({
     
-    rgbImage <- rgbImage()
+    gray_image <- gray_image()
     
-    rgbImage_aux <- rgbImage %>%
-      group_by(rbgApp) %>%
-      summarise(n=n()) %>%
-      arrange(n) %>%
-      mutate(rbgApp = factor(rbgApp, levels = rbgApp),
-             proportion = n/nrow(rgbImage)) 
+    fltr <- matrix(c(0, -1, 0, -1, 5, -1, 0, -1, 0), nrow = 3)
+    # fltr <- matrix(rep(1/9, 9), nrow = 3)
     
-    p <- ggplot(rgbImage_aux) +
-      geom_bar(aes(x=rbgApp, y=proportion, fill=rbgApp), color="grey90", stat="identity") +
-      scale_fill_manual(values=as.character(rgbImage_aux$rbgApp)) + 
-      coord_flip() + theme_bw() + scale_y_continuous(label=percent) +
-      theme_gg_custom()
+    filter_image <- matrix(NA, nrow = nrow(gray_image), ncol = ncol(gray_image))
     
-    print(p)
+    for(i in 2:(ncol(gray_image) - 1)) { 
+      for(j in 2:(nrow(gray_image) - 1)) {
+        msub <- gray_image[(j-1):(j+1), (i-1):(i+1)]
+        filter_image[j, i] <- sum(msub * fltr)
+        # message(i, ", ",  j)
+        # print(msub)
+      }
+    }
     
-  })
-
-  output$scatterplot3d <- renderScatterplotThree({
-    
-    rgbImage <- rgbImage()
-    
-    rgbImage_sample <- rgbImage %>%
-      sample_n(500) %>% 
-      .$rgb %>% 
-      col2rgb() %>% 
-      t() %>% 
-      data.frame() %>% 
-      tbl_df() %>% 
-      mutate(rbg = rgb(red/255, green/255, blue/255, 0.5)) %>% 
-      as.data.frame() %>% 
-      mutate(label = sprintf("rgb (%s, %s, %s)", red, green, blue))
-    
-    scatterplot3js(rgbImage_sample[,1:3], color=rgbImage_sample$rbg, labels=rgbImage_sample$label, renderer="canvas")
+    # df_filter <- matrix_to_df(filter_image) %>% 
+    #   filter(!is.na(c)) %>% 
+    #   mutate(
+    #     c =  (c - min(c)) / ( max(c) - min(c)),
+    #     rgb = rgb(0, 0, 0, alpha = 1 - c)
+    #     ) 
+    # 
+    # plot(df_filter$x, df_filter$y, col = df_filter$rgb, type = "o",
+    #      asp = 1, pch = ".", ylab = "", xlab = "", xaxt="n", yaxt="n", axes=FALSE)
+    img <- rotate_m(filter_image)
+    graphics::image(img, axes = FALSE, col = grey(seq(0, 1, length = 256)))
   })
   
-  output$scatterplot3dresult <- renderScatterplotThree({
-    
-    rgbImage <- rgbImage()
-    
-    rgbImage_aux <- rgbImage %>%
-      group_by(rbgApp) %>%
-      summarise(n=n()) %>%
-      arrange(n) %>%
-      mutate(proportion = n/nrow(rgbImage))
-    rgbImage_aux <- cbind(rgbImage_aux, col2rgb(rgbImage_aux$rbgApp) %>% t)
-    
-    scatterplot3js(rgbImage_aux[,c("red", "green", "blue")], size = log(rgbImage_aux$proportion*1000),
-                   color=rgbImage_aux$rbgApp, renderer="canvas")
-  })
+  # output$originaltDist <- renderPlot({
+  #   
+  #   df_image <- df_image()
+  #   
+  #   df_image_aux <- df_image %>%
+  #     group_by(rgb) %>%
+  #     summarise(n=n()) %>%
+  #     arrange(desc(n)) %>%
+  #     head(10) %>% 
+  #     arrange(n) %>%
+  #     mutate(rgb = factor(rgb, levels = rgb),
+  #            proportion = n/nrow(df_image)) 
+  #   
+  #   p <- ggplot(df_image_aux) +
+  #     geom_bar(aes(x= rgb, y=proportion, fill= rgb), color="grey90", stat="identity") +
+  #     scale_fill_manual(values=as.character(df_image_aux$ rgb)) + 
+  #     coord_flip() + theme_bw() + scale_y_continuous(label=percent) +
+  #     theme_gg_custom()
+  #   
+  #   p
+  #   
+  # })
+  # 
+  # output$resultDist <- renderPlot({
+  #   
+  #   df_image <- df_image()
+  #   
+  #   df_image_aux <- df_image %>%
+  #     group_by(rbgApp) %>%
+  #     summarise(n=n()) %>%
+  #     arrange(n) %>%
+  #     mutate(rbgApp = factor(rbgApp, levels = rbgApp),
+  #            proportion = n/nrow(df_image)) 
+  #   
+  #   p <- ggplot(df_image_aux) +
+  #     geom_bar(aes(x=rbgApp, y=proportion, fill=rbgApp), color="grey90", stat="identity") +
+  #     scale_fill_manual(values=as.character(df_image_aux$rbgApp)) + 
+  #     coord_flip() + theme_bw() + scale_y_continuous(label=percent) +
+  #     theme_gg_custom()
+  #   
+  #   print(p)
+  #   
+  # })
+  # 
+  # output$scatterplot3d <- renderScatterplotThree({
+  #   
+  #   df_image <- df_image()
+  #   
+  #   df_image_sample <- df_image %>%
+  #     sample_n(500) %>% 
+  #     .$rgb %>% 
+  #     col2rgb() %>% 
+  #     t() %>% 
+  #     data.frame() %>% 
+  #     tbl_df() %>% 
+  #     mutate(rbg = rgb(red/255, green/255, blue/255, 0.5)) %>% 
+  #     as.data.frame() %>% 
+  #     mutate(label = sprintf("rgb (%s, %s, %s)", red, green, blue))
+  #   
+  #   scatterplot3js(df_image_sample[,1:3], color=df_image_sample$rbg, labels=df_image_sample$label, renderer="canvas")
+  # })
+  # 
+  # output$scatterplot3dresult <- renderScatterplotThree({
+  #   
+  #   df_image <- df_image()
+  #   
+  #   df_image_aux <- df_image %>%
+  #     group_by(rbgApp) %>%
+  #     summarise(n=n()) %>%
+  #     arrange(n) %>%
+  #     mutate(proportion = n/nrow(df_image))
+  #   df_image_aux <- cbind(df_image_aux, col2rgb(df_image_aux$rbgApp) %>% t)
+  #   
+  #   scatterplot3js(df_image_aux[,c("red", "green", "blue")], size = log(df_image_aux$proportion*1000),
+  #                  color=df_image_aux$rbgApp, renderer="canvas")
+  # })
   
 })
