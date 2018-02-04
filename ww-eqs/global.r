@@ -13,7 +13,7 @@ download_data <- function(){
   
   url <- "http://ds.iris.edu/seismon/eventlist/index.phtml"
   
-  data <- html(url) %>% 
+  data <- read_html(url) %>% 
     html_node("table") %>% 
     html_table(fill = TRUE) %>% 
     tbl_df()
@@ -31,7 +31,7 @@ download_data <- function(){
            magnitude = mag,
            latitude = lat,
            longitude = lon,
-           location = location_map,
+           location = location,
            event = event_id) %>%
     mutate(event = str_trim(event),
            location = stri_trans_totitle(location),
