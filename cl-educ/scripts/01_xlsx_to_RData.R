@@ -1,7 +1,7 @@
 #### Packages ####
 rm(list=ls())
-library(XLConnect)
-library(plyr)
+# library(XLConnect)
+# library(plyr)
 
 
 #### xlsx to RData ####

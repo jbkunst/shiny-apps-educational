@@ -5,7 +5,6 @@ library(dplyr)
 # library(reshape2)
 # library(ggplot2)
 library(lubridate)
-library(rCharts)
 
 
 #### load RData ####

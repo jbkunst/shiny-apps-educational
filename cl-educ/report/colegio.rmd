@@ -4,7 +4,7 @@ data <- data()
 d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
   
 d1 <- data %>%
-  select(rbd, agno, value = get(input$indicador)) %>%
+  select(rbd, agno, value := input$indicador) %>%
   filter(agno %in% max(d[["agno"]]) & !is.na(value)) %>%
   mutate(ranking = rank(value, ties.method = "first"))
 

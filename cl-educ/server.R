@@ -8,26 +8,34 @@ shinyServer(function(input, output) {
   data <- reactive({
 
     colegios_new <- colegios
-    d_colegio <- colegios %>% filter(rbd == input$colegio_rbd)
+    
+    d_colegio <- colegios %>% 
+      filter(rbd == input$colegio_rbd)
     
     if(input$colegio_misma_region){
       colegios_new <- colegios_new %>% filter(numero_region %in% d_colegio$numero_region)
     }
+    
     if(input$colegio_misma_dependencia){
       colegios_new <- colegios_new %>% filter(dependencia %in% d_colegio$dependencia)
     }
+    
     if(input$colegio_misma_area){
       colegios_new <- colegios_new %>% filter(area_geografica %in% d_colegio$area_geografica)
     }
     
-    data <- d %>% filter(rbd %in% colegios_new$rbd)
+    data <- d %>%
+      filter(rbd %in% colegios_new$rbd)
     
   })
   
   data_reg <- reactive({
     
     max_agno <- max(colegios$max_agno)
-    data_reg <- colegios %>% filter(max_agno ==  max_agno & numero_region == input$region_numero)
+    
+    data_reg <- colegios %>%
+      filter(max_agno ==  max_agno & numero_region == input$region_numero)
+    
     d_reg <- d %>%
       filter(agno == max_agno & rbd %in% data_reg$rbd) %>%
       mutate(simce_leng_cat = cut(simce_leng, c(100,250,270,300)),
@@ -59,10 +67,13 @@ shinyServer(function(input, output) {
   output$plot_colegio <- renderHighchart({
     
     data <- data()
-    colegio_nombre <- colegios %>% filter(rbd == input$colegio_rbd) %>% .$nombre_establecimiento
+    
+    colegio_nombre <- colegios %>% 
+      filter(rbd == input$colegio_rbd) %>%
+      .$nombre_establecimiento
       
     d1 <- data %>%
-      select(rbd, agno, value = get(input$indicador)) %>%
+      select(rbd, agno, value := input$indicador) %>%
       group_by(agno) %>%
       summarize(n = n(),
                 n.val = sum(!is.na(value)),
@@ -72,37 +83,30 @@ shinyServer(function(input, output) {
     
     d2 <- d %>%
       filter(rbd==input$colegio_rbd) %>%
-      select(agno, value = get(input$indicador))
+      select(agno, value := input$indicador)
     
     d3 <- left_join(d1, d2, by ="agno")
     
-    d3 %>% 
+    d3 <- d3 %>% 
       gather(key, value, -agno) %>% 
-      filter(key != "n", key != "n.val") %>% 
-      hchart("line", hcaes(x = agno, y = value, group = key),
-             name = c("25% Peor", "Mediana", "25% mejor", colegio_nombre),
-             color = c(rep("#FCFCFC", 3), "#F0F0F0"),
-             lineWidth = c(rep(1, 3), 5),
-             dashStyle = c("dot", "dash", "dot", NA))
-
-    # p <- Highcharts$new()
-    # 
-    # p$series(name = colegio_nombre, data = d3$value, type ="line", lineWidth = 5, color="#F0F0F0")
-    # p$series(name = "Mediana", data = d3$p50, type ="line", lineWidth = 1, dashStyle="dash", color="#FCFCFC")
-    # p$series(name = "25% peor", data = d3$p25, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")
-    # p$series(name = "25% mejor", data = d3$p75, type ="line", lineWidth = 1, dashStyle="dot", color="#FCFCFC")    
-    # p$xAxis(categories = d3$agno)
-    # p$plotOptions(line = list(marker = list(enabled = FALSE)))
-    # p$set(width = "100%" ,height = "100%")
+      filter(key != "n", key != "n.val")
     
-    # p
+    hchart(
+      d3, "line", hcaes(x = agno, y = value, group = key),
+      name = c("25% Peor", "Mediana", "25% mejor", colegio_nombre),
+      color = c(rep("#FCFCFC", 3), "#F0F0F0"),
+      lineWidth = c(rep(1, 3), 5),
+      dashStyle = c("dot", "dash", "dot", NA)
+      ) 
     
   })
 
   output$report_colegio <- renderUI({
     
-    drow <- data() %>%
-      select(rbd, value = get(input$indicador)) %>%
+    data <- data()
+    
+    drow <- data %>%
+      select(rbd, value:= input$indicador) %>%
       filter(!is.na(value) & rbd == input$colegio_rbd) %>%
       nrow()
    

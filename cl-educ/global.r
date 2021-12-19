@@ -6,8 +6,13 @@ library(ggplot2)
 library(scales)
 library(maptools)
 library(grid)
+library(markdown)
 
 load("data/consolidate_data_clean_app.RData")
+
+colegios <- as_tibble(colegios)
+
+d <- as_tibble(d)
 
 hc_theme_chalk2 <- hc_theme_merge(
   hc_theme_chalk(),
@@ -20,6 +25,8 @@ options(
   shiny.launch.browser = TRUE,
   highcharter.theme = hc_theme_chalk2
 )
+
+# options(highcharter.theme = hc_theme_darkunica())
 
 theme_null <- function() {
   theme(axis.line = element_blank(),
