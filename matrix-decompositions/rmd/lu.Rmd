@@ -41,6 +41,6 @@ cat(
 )
 ```
 
-Source: https://en.wikipedia.org/wiki/LU_decomposition
+Source https://en.wikipedia.org/wiki/LU_decomposition
 
 

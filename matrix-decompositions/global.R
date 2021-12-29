@@ -3,7 +3,8 @@ library(knitr)
 library(bslib)
 library(stringr)
 library(htmltools)
-library(here )
+library(here)
+library(markdown)
 
 source("helpers.R")
 

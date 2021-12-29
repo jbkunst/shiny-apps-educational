@@ -46,6 +46,6 @@ cat(
 )
 ```
 
-Source: https://en.wikipedia.org/wiki/Cholesky_decomposition
+Source https://en.wikipedia.org/wiki/Cholesky_decomposition
 
 
