@@ -7,7 +7,9 @@ library(markdown)
 library(jpeg)
 library(tidyr)
 
-options(shiny.launch.browser = TRUE)
+library(threejs) # devtools::install_github("bwlewis/rthreejs")
+
+# options(shiny.launch.browser = TRUE)
 
 str_capitalize <- function(string){
   # http://stackoverflow.com/questions/6364783/capitalize-the-first-letter-of-both-words-in-a-two-word-string/6365349#6365349
@@ -21,6 +23,7 @@ img_choices <- setNames(dir("imgs/", full.names = TRUE),
 matrix_to_df <- function(m) {
   # m <- matrix(round(runif(12), 2), nrow = 4)
   m %>% 
+    as.data.frame() %>% 
     tbl_df() %>% 
     mutate(y = seq_len(nrow(.))) %>% 
     gather(x, c, -y) %>% 

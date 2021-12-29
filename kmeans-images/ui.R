@@ -15,11 +15,12 @@ fluidPage(
     column(4, h5("Cluster using only colors"), plotOutput("resultImage1")),
     column(4, h5("Cluster using colors and position"), plotOutput("resultImage2"))
     ),
-  fluidRow(
-    column(4, h5("filter")),
-    column(4, h5("Gray Scale"), imageOutput("grayImage")),
-    column(4, h5("Filter Image"), plotOutput("filterImage"))
-    ),
+  # fluidRow(
+  #   column(4, h5("filter")),
+  #   column(4, h5("Gray Scale"), imageOutput("grayImage")),
+  #   column(4, h5("Filter Image"), plotOutput("filterImage"))
+  #   ),
+  # fluidRow(
   #   column(
   #     width = 6,
   #     h4("Orignal colors distribution, top 10"),

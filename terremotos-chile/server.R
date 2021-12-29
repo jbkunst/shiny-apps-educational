@@ -46,7 +46,7 @@ shinyServer(function(input, output, session){
     
     data <- data()
     
-    data <- data %>% select(-popup_info, -agencia)
+    data <- data %>% select(-popup_info)
     
     opts <- list(pageLength = 5, lengthChange = FALSE, searching = FALSE,
                  info = FALSE, language = list(url = "json/Spanish.json"))

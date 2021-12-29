@@ -8,13 +8,14 @@ library("DT")
 
 download_data <- function(){
   
-  url <- "http://www.sismologia.cl/links/ultimos_sismos.html"
+  url <- "http://www.sismologia.cl/ultimos_sismos.html"
   
-  data_url <- html(url) %>% 
+  data_url <- read_html(url) %>% 
     html_node("table") %>%
     html_table()
   
-  links <- html(url) %>% 
+  links <- read_html(url) %>% 
+    html_node("table") %>%
     html_nodes("a") %>%
     html_attr("href") %>% 
     sprintf("http://www.sismologia.cl%s", .) %>% 
@@ -27,8 +28,10 @@ download_data <- function(){
     gsub("\\[|\\]", "", .)
   
   data_url <- data_url %>% 
-    mutate(magnitud = extract_numeric(magnitud),
-           link = links) %>% 
+    mutate(
+      magnitud = readr::parse_number(magnitud),
+      link = links
+      ) %>% 
     separate(fecha_local, into = c("fecha", "hora"), sep = " ") %>% 
     rename(referencia = referencia_geográfica,
            profundidad = profundidad_km) %>% 

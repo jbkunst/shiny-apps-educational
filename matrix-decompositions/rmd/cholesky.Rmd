@@ -1,0 +1,51 @@
+---
+title: "cholesky"
+output: html_document
+params:
+    mat: !r matrix(c(4, 12, -16, 12, 37, -43, -16, -43, 98), nrow = 3)
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat =  matrix(c(4, 12, -16, 12, 37, -43, -16, -43, 98), nrow = 3))
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE)
+source(here::here("helpers.R"))
+```
+
+<h3 class="title">Cholesky decomposition</h3>
+
+In linear algebra, the Cholesky decomposition or Cholesky factorization is a decomposition of a Hermitian, positive-definite matrix into the product of a lower triangular matrix and its conjugate transpose, which is useful for efficient numerical solutions, e.g., Monte Carlo simulations. It was discovered by André-Louis Cholesky for real matrices, and posthumously published in 1924. When it is applicable, the Cholesky decomposition is roughly twice as efficient as the LU decomposition for solving systems of linear equations.
+
+The Cholesky decomposition of a Hermitian positive-definite matrix $A$, is a decomposition of the form 
+
+$${\displaystyle \mathbf {A} =\mathbf {LL} ^{*},}$$
+
+where $L$ is a lower triangular matrix with real and positive diagonal entries, and $L^{*}$ denotes the conjugate transpose of $L$. Every Hermitian positive-definite matrix (and thus also every real-valued symmetric positive-definite matrix) has a unique Cholesky decomposition. When $A$ is a real matrix (hence symmetric positive-definite), the factorization may be written
+
+$${\displaystyle \mathbf {A} =\mathbf {LL} ^{\mathsf {T}},}$$
+
+where $L$ is a real lower triangular matrix with positive diagonal entries.
+
+
+```{r, results='asis'}
+cho.mat <- chol(params$mat)
+
+L <- t(cho.mat)
+Lt <- t(L)
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(L),
+    " \\times ",
+    matrix2latex(Lt),
+    "$$"
+  )
+)
+```
+
+Source: https://en.wikipedia.org/wiki/Cholesky_decomposition
+
+
