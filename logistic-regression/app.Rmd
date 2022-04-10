@@ -1,0 +1,431 @@
+---
+title: "Logistic Regression"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme:
+      version: 4
+      primary: "#262162"
+      navbar-bg: "#262162"
+      base_font:
+        google: "IBM Plex Sans"
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+library(shiny)
+library(tidyverse)
+library(broom)
+library(metR)
+library(scales)
+library(patchwork)
+# library(bslib)
+library(thematic)
+library(risk3r)       # remotes::install_github("jbkunst/risk3r")
+library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
+# library(xtable)
+
+primary_color <- "#262162"
+
+theme_set(theme_minimal(base_size = 12) + theme(legend.position = "bottom"))
+thematic_shiny(font = "auto")
+```
+
+<style>
+.irs-grid-pol.small {
+  height: 0px;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+}
+</style>
+
+Column { .sidebar data-width=300 }
+-----------------------------------------------------------------------
+
+<hr/>
+
+```{r inputs}
+radioButtons(
+  "relationship",
+  tags$span("Relationship between \\(x\\), \\(y\\) and the response variable"),
+  choices = list(
+    "\\(x > y\\)" = "x > y",
+    "\\(x^2 > y\\)" = "x^2 - y > 0",
+    "\\(|x| > |y|\\)" = "abs(x) - abs(y) > 0",
+    "\\(x^2 + y^2 < 0.5\\)" = "x^2 + y^2 < 0.5",
+    "\\( \\sin(x \\cdot \\pi ) > \\sin(y \\cdot \\pi ) \\)" = "sin(x*pi) > sin(y*pi)"
+  )
+)
+
+checkboxInput(
+  "show_model_field", 
+  label = "Show model predicctions",
+  value = TRUE
+)
+
+# checkboxInput(
+#   "show_xy_rel",
+#   label = "Show relationship between \\( x \\)  and \\( y \\))"
+# )
+
+sliderInput(
+  "percent_noise",
+  tags$span("Percent noise"),
+  min = 0,
+  max = 50,
+  step = 5,
+  value = 20,
+  post = "%"
+)
+
+sliderInput(
+  "order",
+  tags$span("Model Order"),
+  min = 1,
+  max = 4,
+  step = 1,
+  value = 1
+)
+
+checkboxInput(
+  "apply_stepwise", 
+  label = "Apply stepwise",
+  value = FALSE
+)
+
+sliderInput(
+  "n",
+  tags$span("Number of observartions"),
+  min = 100,
+  max = 1000,
+  step = 100,
+  value = 500
+)
+```
+
+
+```{r reactives-server, include=FALSE}
+# input <- list(
+#   n = 500,
+#   relationship = "x > y",
+#   show_model_field = TRUE,
+#   show_xy_rel = TRUE,
+#   percent_noise = 10,
+#   order = 8,
+#   apply_stepwise = TRUE
+# )
+
+dxy <- reactive({
+
+  set.seed(1234)
+  
+  dxy <- tibble(
+    x = runif(input$n, -1, 1),
+    y = runif(input$n, -1, 1)
+  )
+  
+  dxy <- dxy |>
+    mutate(
+      response := eval(parse(text = input$relationship))
+      # response = sin(x*pi) > sin(y*pi)  
+      )
+
+  dxy <- dxy |>
+    mutate(
+      response = ifelse(
+        runif(input$n) < input$percent_noise/100,
+        !response,
+        response
+        )
+      )
+  
+  if(input$order > 1){
+    
+    pwr <- function(x, p) { x**p }
+    
+    fns <- map(2:input$order, ~ partial(pwr, p = .x)) |> 
+      set_names(str_c(2:input$order))
+    
+    dxy <- dxy |> 
+      mutate(across(x:y, .fns = fns)) 
+    
+  }
+  
+  # glimpse(dxy)
+  
+  dxy
+
+})
+
+mod <- reactive({
+
+  dxy <- dxy()
+
+  # mod <- suppressWarnings(
+  #   glm(response ~
+  #         poly(x, input$order, raw = TRUE, simple = TRUE) +
+  #         poly(y, input$order, raw = TRUE, simple = TRUE),
+  #       family = binomial,
+  #       data = dxy
+  #       )
+  #   )
+  
+  mod <- glm(response ~ .,  family = binomial, data = dxy)
+  
+  if(input$apply_stepwise) {
+    
+     mod <- step(mod)
+    
+  }
+  
+  mod
+
+})
+
+dgrd <- reactive({
+
+  dxy <- dxy()
+  mod  <- mod()
+
+  dgrd <- crossing(
+    x = seq(-1, 1, by = 0.05),
+    y = seq(-1, 1, by = 0.05)
+    )
+  
+  if(input$order > 1){
+    
+    pwr <- function(x, p) { x**p }
+    
+    fns <- map(2:input$order, ~ partial(pwr, p = .x)) |> 
+      set_names(str_c(2:input$order))
+    
+    dgrd <- dgrd |> 
+      mutate(across(x:y, .fns = fns)) 
+    
+  }
+  
+  dgrd <- dgrd |>
+    mutate(pred = predict(mod, newdata = dgrd, type = "response"))
+
+  dgrd
+
+})
+```
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### 
+
+```{r}
+renderPlot({
+  
+  dxy <- dxy()
+  dgrd <- dgrd()
+  
+  p <- ggplot()
+  
+  if(input$show_model_field) {
+    
+    p <- p + 
+      # predictions
+      geom_contour_fill(aes(x, y, z = pred), data = dgrd, bins = 100) +
+      scale_fill_divergent(
+        name = expression("P(·|x,y)"),
+        midpoint = 0.5,
+        breaks = seq(0, 1, by = 0.25),
+        limits = c(0, 1)
+        ) +
+      geom_text_contour(aes(x, y, z = pred), data = dgrd, stroke = 0.2)
+    
+  }
+  
+  # if(input$show_xy_rel) {
+  #   
+  # }
+   
+  p <- p +  
+    # data
+    geom_point(
+      aes(x, y, color = factor(response), shape = factor(response)),
+      data = dxy,
+      size = 3
+      ) +
+    
+    scale_shape_manual(name = NULL, values = c(1, 4)) +
+    scale_color_manual(name = NULL, values = c(muted("blue"), muted("red"))) +
+
+    theme(legend.key.width = unit(2, "cm"))
+  
+  p
+
+})
+```
+
+### 
+
+```{r}
+renderPlot({
+  
+  dxy <- dxy()
+  mod  <- mod()
+  
+  dxy <- dxy |>
+    mutate(pred = predict(mod, newdata = dxy, type = "response"))
+  
+  dg <- dxy |>
+    select(x, y, response) |> 
+    gather(key, value, -response) |>
+    mutate(key = str_glue("variable {key}"))
+  
+  p <- ggplot() +
+    # data
+    geom_point(
+      data = dg,
+      aes(value, as.numeric(response), color = factor(response), shape = factor(response)),
+      size = 3,
+      alpha = 0.5,
+      position = position_jitter(height = 0.05)
+      ) +
+    
+    scale_shape_manual(name = NULL, values = c(1, 4)) +
+    scale_color_manual(name = NULL, values = c(muted("blue"), muted("red"))) +
+    
+    scale_y_continuous(
+      breaks = c(0, 1),
+      labels = c("FALSE\n(response = 0)", "TRUE\n(response = 1)")
+      ) +
+    
+    # predictions
+    
+    # geom_smooth(
+    #   color = primary_color, size = 1.2, alpha = 0.1, 
+    #   method = "loess", formula  = y ~ x
+    #   ) +
+    
+    labs(
+      x = NULL,
+      y = NULL
+    ) +
+    
+    facet_wrap(vars(key))
+  
+  if(input$show_model_field) {
+    
+    dg2 <- dxy |>
+      select(x, y, pred) |> 
+      gather(key, value, -pred) |>
+      mutate(key = str_glue("variable {key}"))
+    
+    p <- p + 
+      geom_smooth(
+        data = dg2,
+        aes(value, pred),
+        color = primary_color
+      )
+    
+  }
+  
+  p
+  
+})
+```
+
+Row
+-----------------------------------------------------------------------
+
+### 
+
+```{r}
+renderPlot({
+  
+  mod <- mod()
+  
+  aucroc <- Metrics::auc(
+    actual = as.numeric(mod$data$response),
+    predicted = mod$fitted.values
+    )
+  
+  risk3r::gg_model_roc(mod, size = 2, color = primary_color) +
+    labs(title = str_glue("AUC: { percent(aucroc)  }")) +
+    theme(legend.position = "none")
+  
+})
+```
+
+### 
+
+```{r}
+renderPlot({
+  
+  mod <- mod()
+  
+  ksmod <- risk3r::ks(
+    actual = as.numeric(mod$data$response),
+    predicted = mod$fitted.values
+    )
+  
+  dprd <- mod$data |> 
+    mutate(pred = predict(mod, newdata = mod$data, type = "response"))
+  
+  ggplot(dprd, aes(pred, group = response, fill = response, color = response, label = response)) +
+    geom_density(alpha = 0.1, size = 2) +
+    geom_textdensity(size = 4, fontface = 1, hjust = 0.2, vjust = -0.5) +
+    scale_y_continuous(labels = NULL) +
+    scale_x_continuous(limits = c(0, 1)) + 
+    labs(x = "Probability", y = "Density") +
+    labs(title = str_glue("KS: { percent(ksmod) }")) +
+    theme(legend.position = "none")
+  
+})
+```
+
+### 
+
+```{r}
+renderTable({
+# renderUI({
+  
+  mod <- mod()
+  
+  dmod <- tidy(mod) |> 
+    mutate(
+      # term =  str_c(
+      #   str_extract(term, "poly\\([x|y]") |> str_remove("poly\\("),
+      #   "^",
+      #   str_extract(term, "[0-9]{0,1}$")
+      #   ),
+      # term = coalesce(term, "(Intercept)"),
+      # term = str_remove(term, "\\^$"),
+      # term = str_glue("\\( {term} \\)"),
+      term = str_replace_all(term, "_", "^"),
+      # term = str_c("\\( ", term, " \\)"),
+      ` ` = symnum(p.value, corr = FALSE, na = FALSE, legend = FALSE,
+                   cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+                   symbols = c("***", "**", "*", ".", " "))
+      )
+  
+  dmod
+  
+  # dmod <- dmod |> tibble::column_to_rownames("term")
+  # 
+  # LaTeXtab <- print(
+  #   xtable(dmod, align=rep("c", ncol(dmod)+1)), 
+  #   floating = FALSE,
+  #   tabular.environment = "array",
+  #   comment = FALSE,
+  #   print.results = FALSE,
+  #   sanitize.rownames.function = identity
+  #   )
+  # 
+  # tagList(
+  #   withMathJax(),
+  #   HTML(paste0("$$", LaTeXtab, "$$"))
+  #   )
+  
+})
+```
+
