@@ -17,6 +17,7 @@ library(shiny)
 library(tidyverse)
 library(highcharter)
 library(bbemkr)
+library(markdown) # htmltools::includeMarkdown
 
 primary_color <- "#262162"
 font_family <- "IBM Plex Sans"
