@@ -15,6 +15,10 @@ Shiny apps for educational purposes
 Use `subdir` argument to select the app to run, in this example the app
 selected is `"matrix-decompositions"`.
 
+``` r
+shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
+```
+
 ## Shiny apps
 
 ### ARMA Process
