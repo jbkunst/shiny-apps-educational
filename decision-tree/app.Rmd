@@ -101,14 +101,8 @@ sliderInput(
   min = 100,
   max = 1000,
   step = 100,
-  value = 500
+  value = 1000
 )
-
-# checkboxInput(
-#   "apply_stepwise", 
-#   tags$small("Apply stepwise"),
-#   value = FALSE
-# )
 
 checkboxInput(
   "show_model_field", 
@@ -116,6 +110,13 @@ checkboxInput(
   value = TRUE
 )
 ```
+
+
+<small>
+```{r}
+htmltools::includeMarkdown("readme.md")
+```
+</small>
 
 
 ```{r reactives-server, include=FALSE}
@@ -177,35 +178,6 @@ mod <- reactive({
   mod
 
 })
-
-# dgrd <- reactive({
-# 
-#   dxy <- dxy()
-#   mod  <- mod()
-# 
-#   dgrd <- crossing(
-#     x = seq(-1, 1, by = 0.05),
-#     y = seq(-1, 1, by = 0.05)
-#     )
-#   
-#   if(input$order > 1){
-#     
-#     pwr <- function(x, p) { x**p }
-#     
-#     fns <- map(2:input$order, ~ partial(pwr, p = .x)) |> 
-#       set_names(str_c(2:input$order))
-#     
-#     dgrd <- dgrd |> 
-#       mutate(across(x:y, .fns = fns)) 
-#     
-#   }
-#   
-#   dgrd <- dgrd |>
-#     mutate(pred = predict(mod, newdata = dgrd, type = "response"))
-# 
-#   dgrd
-# 
-# })
 ```
 
 Row {data-height=700}
@@ -213,8 +185,14 @@ Row {data-height=700}
 
 ### 
 
+
 ```{r}
-renderPlot({
+plotOutput("join_dist", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$join_dist <- renderPlot({
   
   dxy <- dxy()
   mod <- mod()
@@ -257,71 +235,21 @@ renderPlot({
 
 ### 
 
+
 ```{r}
-# renderPlot({
-#   
-#   dxy <- dxy()
-#   mod  <- mod()
-#   
-#   dxy <- dxy |>
-#     mutate(pred = predict(mod, newdata = dxy, type = "response"))
-#   
-#   dg <- dxy |>
-#     select(x, y, response) |> 
-#     gather(key, value, -response) |>
-#     mutate(key = str_glue("variable {key}"))
-#   
-#   p <- ggplot() +
-#     # data
-#     geom_point(
-#       data = dg,
-#       aes(value, as.numeric(response), color = factor(response), shape = factor(response)),
-#       size = 3,
-#       alpha = 0.5,
-#       position = position_jitter(height = 0.05)
-#       ) +
-#     
-#     scale_shape_manual(name = NULL, values = c(1, 4)) +
-#     scale_color_manual(name = NULL, values = c(muted("blue"), muted("red"))) +
-#     
-#     scale_y_continuous(
-#       breaks = c(0, 1),
-#       labels = c("FALSE\n(response = 0)", "TRUE\n(response = 1)")
-#       ) +
-#     
-#     # predictions
-#     
-#     # geom_smooth(
-#     #   color = primary_color, size = 1.2, alpha = 0.1, 
-#     #   method = "loess", formula  = y ~ x
-#     #   ) +
-#     
-#     labs(
-#       x = NULL,
-#       y = NULL
-#     ) +
-#     
-#     facet_wrap(vars(key))
-#   
-#   if(input$show_model_field) {
-#     
-#     dg2 <- dxy |>
-#       select(x, y, pred) |> 
-#       gather(key, value, -pred) |>
-#       mutate(key = str_glue("variable {key}"))
-#     
-#     p <- p + 
-#       geom_smooth(
-#         data = dg2,
-#         aes(value, pred),
-#         color = primary_color
-#       )
-#     
-#   }
-#   
-#   p
-#   
-# })
+plotOutput("tree_plot", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$tree_plot <- renderPlot({
+
+  mod <- mod()
+
+  plot(mod)
+  
+
+})
 ```
 
 Row
@@ -329,8 +257,14 @@ Row
 
 ### 
 
+
 ```{r}
-renderPlot({
+plotOutput("roc_plot", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$roc_plot <- renderPlot({
   
   mod <- mod()
   
@@ -356,8 +290,14 @@ renderPlot({
 
 ### 
 
+
 ```{r}
-renderPlot({
+plotOutput("bg_plot", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$bg_plot <- renderPlot({
   
   mod <- mod()
 
@@ -388,46 +328,25 @@ renderPlot({
 ### 
 
 ```{r}
-# renderTable({
-# # renderUI({
-#   
-#   mod <- mod()
-#   
-#   dmod <- tidy(mod) |> 
-#     mutate(
-#       # term =  str_c(
-#       #   str_extract(term, "poly\\([x|y]") |> str_remove("poly\\("),
-#       #   "^",
-#       #   str_extract(term, "[0-9]{0,1}$")
-#       #   ),
-#       # term = coalesce(term, "(Intercept)"),
-#       # term = str_remove(term, "\\^$"),
-#       # term = str_glue("\\( {term} \\)"),
-#       term = str_replace_all(term, "_", "^"),
-#       # term = str_c("\\( ", term, " \\)"),
-#       ` ` = symnum(p.value, corr = FALSE, na = FALSE, legend = FALSE,
-#                    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
-#                    symbols = c("***", "**", "*", ".", " "))
-#       )
-#   
-#   dmod
-#   
-#   # dmod <- dmod |> tibble::column_to_rownames("term")
-#   # 
-#   # LaTeXtab <- print(
-#   #   xtable(dmod, align=rep("c", ncol(dmod)+1)), 
-#   #   floating = FALSE,
-#   #   tabular.environment = "array",
-#   #   comment = FALSE,
-#   #   print.results = FALSE,
-#   #   sanitize.rownames.function = identity
-#   #   )
-#   # 
-#   # tagList(
-#   #   withMathJax(),
-#   #   HTML(paste0("$$", LaTeXtab, "$$"))
-#   #   )
-#   
-# })
+tableOutput("cross_table")
+```
+
+
+```{r, context="server"}
+output$cross_table <- renderTable({
+
+  mod <- mod()
+  
+  df <- mod$data |> 
+    as_tibble() |> 
+    select(response) |> 
+    mutate(prediction = predict(mod, type = "response"))
+  
+  df |> 
+    count(response, prediction) |> 
+    spread(prediction, n) |> 
+    rename(`response \\\ prediction` = response)
+  
+})
 ```
 

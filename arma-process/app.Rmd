@@ -9,6 +9,8 @@ output:
       navbar-bg: "#262162"
       base_font:
         google: "IBM Plex Sans"
+editor_options: 
+  chunk_output_type: console        
 runtime: shiny
 ---
 
@@ -24,10 +26,12 @@ font_family   <- "IBM Plex Sans"
 
 colors_app <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
 
+scales::show_col(colors_app)
+
 LAG_MAX  <- 10
 STR_OBS  <- 20
 NOBS     <- 5000
-AR       <- 0.75
+AR       <- 0.0
 MA       <- 0.20
 SEED     <- 123
 DURATION <- 100 # needs to be <= than min refresh interval
@@ -36,27 +40,8 @@ options(
   highcharter.theme = hc_theme_smpl(
     chart = list(style = list(fontFamily = font_family)),
     colors = colors_app
-    # tooltip = list(valueDecimals = 3, shared = TRUE),
-    # # plotOptions.series.marker.symbol
-    # # plotOptions.series.animation.duration
-    # # plotOptions.series.event.legendItemClick
-    # plotOptions = list(
-    #   series = list(
-    #     marker = list(symbol = "cirlce"),
-    #     animation = list(duration = 100),
-    #     events = list(legendItemClick = JS("function () { return false; }"))
-    #   )
-    # ),
-    # legend = list(
-    #   # this for legendItemClick false
-    #   itemStyle = list(cursor = "default"),
-    #   # itemStyle = list(color = "#666666"),
-    #   itemHiddenStyle = list(color = "#666666")
-    #   # itemHoverStyle = list(color = "#666666")
-    #   )
     )
   )
-
 
 # start chart
 set.seed(SEED)
@@ -64,7 +49,18 @@ set.seed(SEED)
 ts_aux <- arima.sim(model = list(ar = AR, ma = MA), n = STR_OBS)
 
 teoACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = FALSE))
-smpACF <- as.numeric(acf(ts_aux, lag.max = LAG_MAX, plot = FALSE)$acf)
+smpACF <- as.numeric(acf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
+
+plot(smpACF, ylim = c(-1, 1))
+lines(teoACF)
+
+
+teoPACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = TRUE))
+smpPACF <- as.numeric(pacf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
+
+plot(smpPACF, ylim = c(-1, 1))
+lines(teoPACF)
+
 ```
 
 <style>
@@ -91,10 +87,11 @@ sliderInput("ma", "MA", -.9, .9, value = MA, 0.05, width = "100%")
 sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%")
 ```
 
+<small>
 ```{r}
-uiOutput("model")
+# uiOutput("model")
 ```
-
+</small>
 
 <hr/>
 
@@ -126,30 +123,28 @@ ts <- reactive({
 })
 
 output$model <- renderUI({
-  arp <-
-    ifelse(input$ar != 0, paste0(input$ar, " \\times X_{t-1}"), "")
-  map <-
-    ifelse(input$ma != 0,
-           paste0(" + ", input$ma, " \\times \\epsilon_{t-1}"),
-           "")
+  
+  arp <- ifelse(input$ar != 0, paste0(input$ar, " \\times X_{t-1}"), "")
+  map <- ifelse(input$ma != 0, paste0(" + ", input$ma, " \\times \\epsilon_{t-1}"), "")
 
-  mod <-
-    paste0("X_{t} = ",
-           arp,
-           ifelse(input$ar != 0, " + ", ""),
-           "\\epsilon_t",
-           map)
+  mod <- paste0("X_{t} = ",
+                arp,
+                ifelse(input$ar != 0, " + ", ""),
+                "\\epsilon_t",
+                map
+                )
+  
   mod <- paste0("$$", mod, "$$")
 
-  tags$p(withMathJax(mod))
+  tags$small(tags$p(withMathJax(mod)))
 
 })
 ```
 
-Row {data-height=300}
+Row {data-height=500}
 -----------------------------------------------------------------------
-
-### 
+ 
+### `r uiOutput("model", inline = TRUE)`
 
 ```{r}
 highchartOutput("ts")
@@ -167,7 +162,6 @@ output$ts <- renderHighchart({
     df,
     "line",
     id = "ts",
-    color =  "#428bca",
     name = "Time series",
     marker = list(enabled = FALSE),
     animation = list(duration = DURATION),
@@ -198,10 +192,11 @@ output$ts <- renderHighchart({
 })
 
 observeEvent(ts(), {
+  
   # if ts change redraw the teo ACF
   ts <- ts()
   
-  message("asdasda")
+  # message("asdasda")
   
   print(input$ar)
   print(input$ma)
@@ -222,6 +217,23 @@ observeEvent(ts(), {
   highchartProxy("acf") %>%
     hcpxy_update_series(id = "tacf", data = teoACF) %>%
     hcpxy_update_series(id = "sacf", data = smpACF)
+  
+  teoPACF <- as.numeric(
+    ARMAacf(
+      # ar = 0.2,
+      # ma = 0.2,
+      ar = ifelse(!is.null(input$ar), input$ar, AR),
+      ma = ifelse(!is.null(input$ma), input$ar, MA),
+      lag.max = LAG_MAX,
+      pacf = TRUE
+      )
+    )
+  
+  smpPACF <- as.numeric(pacf(head(ts, STR_OBS), lag.max = LAG_MAX, plot = FALSE)$acf)
+  
+  highchartProxy("pacf") %>%
+    hcpxy_update_series(id = "tpacf", data = teoPACF) %>%
+    hcpxy_update_series(id = "spacf", data = smpPACF)
   
 })
 
@@ -258,7 +270,7 @@ observe({
 Row
 -----------------------------------------------------------------------
 
-### 
+### ACF
 
 ```{r}
 highchartOutput("acf")
@@ -274,18 +286,64 @@ output$acf <- renderHighchart({
     hc_add_series(
       data = smpACF,
       id = "sacf",
-      name = "Estimated",
-      color = "#428bca"
+      name = "Estimated"
     ) |>
-    hc_add_series(data = teoACF, id = "tacf", name = "Theoretical") |>
-    hc_tooltip(table = TRUE,
-               headerFormat = "<small>Lag {point.key}</small><table>",
-               valueDecimals = 3) |>
-    hc_plotOptions(series = list(
-      pointWidth = 5,
-      animation = list(duration = DURATION),
-      marker = list(symbol = "circle")
-    ))
+    hc_add_series(
+      data = teoACF, 
+      id = "tacf",
+      name = "Theoretical"
+      ) |>
+    hc_tooltip(
+      table = TRUE,
+      headerFormat = "<small>Lag {point.key}</small><table>",
+      valueDecimals = 3
+      ) |>
+    hc_plotOptions(
+      series = list(
+        pointWidth = 5,
+        animation = list(duration = DURATION),
+        marker = list(symbol = "circle")
+        )
+      )
   
+})
+```
+
+### PACF
+
+```{r}
+highchartOutput("pacf")
+```
+
+
+```{r, context="server"}
+output$pacf <- renderHighchart({
+  
+  highchart() |>
+    hc_chart(type = "column") |>
+    hc_yAxis(min = -1, max = 1) |>
+    hc_add_series(
+      data = smpPACF,
+      id = "spacf",
+      name = "Estimated"
+    ) |>
+    hc_add_series(
+      data = teoPACF, 
+      id = "tpacf",
+      name = "Theoretical"
+      ) |>
+    hc_tooltip(
+      table = TRUE,
+      headerFormat = "<small>Lag {point.key}</small><table>",
+      valueDecimals = 3
+      ) |>
+    hc_plotOptions(
+      series = list(
+        pointStart = 1,
+        pointWidth = 5,
+        animation = list(duration = DURATION),
+        marker = list(symbol = "circle")
+        )
+      )
 })
 ```

@@ -9,6 +9,8 @@ output:
       navbar-bg: "#262162"
       base_font:
         google: "IBM Plex Sans"
+editor_options: 
+  chunk_output_type: console        
 runtime: shiny
 ---
 
@@ -107,6 +109,12 @@ checkboxInput(
   value = TRUE
 )
 ```
+
+<small>
+```{r}
+htmltools::includeMarkdown("readme.md")
+```
+</small>
 
 
 ```{r reactives-server, include=FALSE}
@@ -223,7 +231,12 @@ Row {data-height=700}
 ### 
 
 ```{r}
-renderPlot({
+plotOutput("join_dist", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$join_dist <- renderPlot({
   
   dxy <- dxy()
   dgrd <- dgrd()
@@ -270,7 +283,12 @@ renderPlot({
 ### 
 
 ```{r}
-renderPlot({
+plotOutput("marginal_dist", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$marginal_dist <- renderPlot({
   
   dxy <- dxy()
   mod  <- mod()
@@ -326,6 +344,7 @@ renderPlot({
       geom_smooth(
         data = dg2,
         aes(value, pred),
+        method = "loess",
         color = primary_color
       )
     
@@ -342,7 +361,12 @@ Row
 ### 
 
 ```{r}
-renderPlot({
+plotOutput("roc_plot", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$roc_plot <- renderPlot({
   
   mod <- mod()
   
@@ -361,7 +385,12 @@ renderPlot({
 ### 
 
 ```{r}
-renderPlot({
+plotOutput("bg_dist", width = "100%", height = "100%")
+```
+
+
+```{r, context="server"}
+output$bg_dist <- renderPlot({
   
   mod <- mod()
   
@@ -391,45 +420,23 @@ renderPlot({
 ### 
 
 ```{r}
-renderTable({
-# renderUI({
-  
+tableOutput("coef_table")
+```
+
+
+```{r, context="server"}
+output$coef_table <- renderTable({
   mod <- mod()
   
   dmod <- tidy(mod) |> 
     mutate(
-      # term =  str_c(
-      #   str_extract(term, "poly\\([x|y]") |> str_remove("poly\\("),
-      #   "^",
-      #   str_extract(term, "[0-9]{0,1}$")
-      #   ),
-      # term = coalesce(term, "(Intercept)"),
-      # term = str_remove(term, "\\^$"),
-      # term = str_glue("\\( {term} \\)"),
       term = str_replace_all(term, "_", "^"),
-      # term = str_c("\\( ", term, " \\)"),
       ` ` = symnum(p.value, corr = FALSE, na = FALSE, legend = FALSE,
                    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
                    symbols = c("***", "**", "*", ".", " "))
       )
   
   dmod
-  
-  # dmod <- dmod |> tibble::column_to_rownames("term")
-  # 
-  # LaTeXtab <- print(
-  #   xtable(dmod, align=rep("c", ncol(dmod)+1)), 
-  #   floating = FALSE,
-  #   tabular.environment = "array",
-  #   comment = FALSE,
-  #   print.results = FALSE,
-  #   sanitize.rownames.function = identity
-  #   )
-  # 
-  # tagList(
-  #   withMathJax(),
-  #   HTML(paste0("$$", LaTeXtab, "$$"))
-  #   )
   
 })
 ```

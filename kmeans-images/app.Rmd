@@ -10,6 +10,8 @@ output:
       base_font:
         google: IBM Plex Sans
 runtime: shiny
+editor_options: 
+  chunk_output_type: console
 resource_files:
 - imgs/tulip farm.jpg
 - imgs/big hero 6.jpg
@@ -23,11 +25,10 @@ resource_files:
 
 ```{r global, include=FALSE}
 library(tidyverse)
-# library(thematic)
-
+library(scales)
+library(shiny)
 library(jpeg)
 library(imager)
-
 library(threejs) # devtools::install_github("bwlewis/rthreejs")
 library(markdown) # htmltools::includeMarkdown
 library(shinyWidgets)
@@ -105,7 +106,7 @@ htmltools::includeMarkdown("readme.md")
 #   image_file = sample(img_choices, 1),
 #   k = sample(1:10, size = 1),
 #   use_xy = TRUE,
-#   scale = sample(c(TRUE, FALSE), size = 1)
+#   scale = sample(c(TRUE, FALSE), size = 1),
 #   show_axes = FALSE
 #   ); input
 
@@ -168,24 +169,24 @@ df_image_kmeans <- reactive({
   }
   
   kMeans <- kmeans(df_image_input, centers = as.integer(input$k))
-  
+
   df_image_kmeans <- df_image %>%
     mutate(
       rgb_app= rgb(kMeans$centers[kMeans$cluster, c("r", "g", "b")])
-      ) 
-  
-  df_image_kmeans2 <- df_image_kmeans |> 
-    pull(rgb_app) |> 
-    # head() |> 
-    col2rgb() |> 
-    t() |> 
-    as_tibble() |> 
-    mutate(across(everything(), ~ ./255)) |> 
-    set_names(c("r", "g", "b")) |> 
+      )
+
+  df_image_kmeans2 <- df_image_kmeans |>
+    pull(rgb_app) |>
+    # head() |>
+    col2rgb() |>
+    t() |>
+    as_tibble() |>
+    mutate(across(everything(), ~ ./255)) |>
+    set_names(c("r", "g", "b")) |>
     rename_with(~ str_c(., "_app"), .cols = everything())
-  
+
   df_image_kmeans <- bind_cols(df_image_kmeans, df_image_kmeans2)
-  
+
   df_image_kmeans
   
 })
@@ -199,7 +200,6 @@ Row {data-height=500}
 ```{r}
 plotOutput("originalImage", width = "100%", height = "100%")
 ```
-
 
 ```{r, context="server"}
 output$originalImage <- renderPlot({
@@ -243,7 +243,7 @@ output$originalColorDist <- renderPlot({
     arrange(desc(n)) |> 
     mutate(
       rgb = fct_inorder(rgb),
-      rgb = fct_lump_n(rgb, n = 10, w = n)
+      rgb = fct_lump_n(rgb, n = 20, w = n)
       ) |> 
     count(rgb, wt = n) |> 
     mutate(proportion = n/sum(n))
@@ -259,9 +259,11 @@ output$originalColorDist <- renderPlot({
   cols
 
   ggplot(daux) +
-    geom_bar(aes(x = rgb, y = proportion, fill = rgb), color = "grey90", stat = "identity") +
+    geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
     scale_fill_manual(values = cols, guide = "none") +
+    scale_x_continuous(labels = scales::percent) +
     labs(x = NULL, y = NULL)
+  
 })
 ```
 
@@ -362,7 +364,7 @@ output$resultColorDist <- renderPlot({
     arrange(desc(n)) |> 
     mutate(
       rgb = fct_inorder(rgb),
-      rgb = fct_lump_n(rgb, n = 10, w = n)
+      rgb = fct_lump_n(rgb, n = 20, w = n)
       ) |> 
     count(rgb, wt = n) |> 
     mutate(proportion = n/sum(n))
@@ -377,11 +379,10 @@ output$resultColorDist <- renderPlot({
   
   cols
   
-  # scales::show_col(cols)
-
   ggplot(daux) +
-    geom_bar(aes(x = rgb, y = proportion, fill = rgb), color = "grey90", stat = "identity") +
+    geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
     scale_fill_manual(values = cols, guide = "none") +
+    scale_x_continuous(labels = scales::percent) +
     labs(x = NULL, y = NULL)
 })
 ```
