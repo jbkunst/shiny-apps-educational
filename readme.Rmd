@@ -100,7 +100,7 @@ walk(apps, function(app = "arma-process"){
   
   cat("\n")
   
-  cat(str_glue("Source code [here](tree/master/{ app })."))
+  cat(str_glue("Source code [here](/{ app })."))
   
   cat("\n")
   
