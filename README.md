@@ -23,36 +23,32 @@ shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix
 
 ### ARMA Process
 
-![](arma-process/screenshot.png) Source code
-[here](tree/master/arma-process). Go to
-[index](#shiny-apps-for-educational-purposes).
+![](arma-process/screenshot.png) Source code [here](/arma-process). Go
+to [index](#shiny-apps-for-educational-purposes).
 
 ### Bias Variance
 
-![](bias-variance/screenshot.png) Source code
-[here](tree/master/bias-variance). Go to
-[index](#shiny-apps-for-educational-purposes).
+![](bias-variance/screenshot.png) Source code [here](/bias-variance). Go
+to [index](#shiny-apps-for-educational-purposes).
 
 ### Decision Tree
 
-![](decision-tree/screenshot.png) Source code
-[here](tree/master/decision-tree). Go to
-[index](#shiny-apps-for-educational-purposes).
+![](decision-tree/screenshot.png) Source code [here](/decision-tree). Go
+to [index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans Images
 
-![](kmeans-images/screenshot.png) Source code
-[here](tree/master/kmeans-images). Go to
-[index](#shiny-apps-for-educational-purposes).
+![](kmeans-images/screenshot.png) Source code [here](/kmeans-images). Go
+to [index](#shiny-apps-for-educational-purposes).
 
 ### Logistic Regression
 
 ![](logistic-regression/screenshot.png) Source code
-[here](tree/master/logistic-regression). Go to
+[here](/logistic-regression). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Matrix Decompositions
 
 ![](matrix-decompositions/screenshot.png) Source code
-[here](tree/master/matrix-decompositions). Go to
+[here](/matrix-decompositions). Go to
 [index](#shiny-apps-for-educational-purposes).
