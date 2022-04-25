@@ -4,12 +4,38 @@
 <h3 class="title">
 Singular value decomposition
 </h3>
-<p>SVD (Singular Value Decomposition) stands for splitting a matrix <span class="math inline">\(A\)</span> into a product <span class="math inline">\(A=U \Sigma V^{T}\)</span> where <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span> are unitary matrices and <span class="math inline">\(\Sigma\)</span> is a diagonal matrix consisting of singular values on its main diagonal arranged in non-increasing order where all the singular values are non-negative.</p>
-<p>Mathematical applications of the SVD include computing the pseudoinverse, matrix approximation, and determining the rank, range, and null space of a matrix. The SVD is also extremely useful in all areas of science, engineering, and statistics, such as signal processing, least squares fitting of data, and process control.</p>
-<p><span class="math display">\[ A = \begin{pmatrix}-0.16301 &amp; -0.21273 &amp; 0.96342\\-0.45732 &amp; -0.84895 &amp; -0.26483\\0.87423 &amp; -0.48376 &amp; 0.0411\end{pmatrix} \times \begin{pmatrix}123.47723 &amp; 0 &amp; 0\\0 &amp; 15.50396 &amp; 0\\0 &amp; 0 &amp; 0.0188\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp; 0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483 &amp; 0.0411\end{pmatrix}\]</span></p>
-<p>Check <span class="math inline">\(UU^{\mathrm {T} }= VV^{\mathrm {T} } = I\)</span>:</p>
-<p><span class="math display">\[ UU^{\mathrm {T}} = \begin{pmatrix}-0.16301 &amp; -0.21273 &amp; 0.96342\\-0.45732 &amp; -0.84895 &amp; -0.26483\\0.87423 &amp; -0.48376 &amp; 0.0411\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp; 0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483 &amp; 0.0411\end{pmatrix} = \begin{pmatrix}1 &amp; 0 &amp; 0\\0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 1\end{pmatrix}\]</span></p>
-<p><span class="math display">\[ VV^{\mathrm {T}} = \begin{pmatrix}-0.16301 &amp; -0.21273 &amp; 0.96342\\-0.45732 &amp; -0.84895 &amp; -0.26483\\0.87423 &amp; -0.48376 &amp; 0.0411\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp; 0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483 &amp; 0.0411\end{pmatrix} = \begin{pmatrix}1 &amp; 0 &amp; 0\\0 &amp; 1 &amp; 0\\0 &amp; 0 &amp; 1\end{pmatrix}\]</span></p>
+<p>SVD (Singular Value Decomposition) stands for splitting a matrix
+<span class="math inline">\(A\)</span> into a product <span class="math inline">\(A=U \Sigma V^{T}\)</span> where <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span> are unitary matrices and <span class="math inline">\(\Sigma\)</span> is a diagonal matrix consisting of
+singular values on its main diagonal arranged in non-increasing order
+where all the singular values are non-negative.</p>
+<p>Mathematical applications of the SVD include computing the
+pseudoinverse, matrix approximation, and determining the rank, range,
+and null space of a matrix. The SVD is also extremely useful in all
+areas of science, engineering, and statistics, such as signal
+processing, least squares fitting of data, and process control.</p>
+<p><span class="math display">\[ A = \begin{pmatrix}-0.16301 &amp;
+-0.21273 &amp; 0.96342\\-0.45732 &amp; -0.84895 &amp; -0.26483\\0.87423
+&amp; -0.48376 &amp; 0.0411\end{pmatrix} \times \begin{pmatrix}123.47723
+&amp; 0 &amp; 0\\0 &amp; 15.50396 &amp; 0\\0 &amp; 0 &amp;
+0.0188\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp;
+0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483
+&amp; 0.0411\end{pmatrix}\]</span></p>
+<p>Check <span class="math inline">\(UU^{\mathrm {T} }= VV^{\mathrm {T}
+} = I\)</span>:</p>
+<p><span class="math display">\[ UU^{\mathrm {T}} =
+\begin{pmatrix}-0.16301 &amp; -0.21273 &amp; 0.96342\\-0.45732 &amp;
+-0.84895 &amp; -0.26483\\0.87423 &amp; -0.48376 &amp;
+0.0411\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp;
+0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483
+&amp; 0.0411\end{pmatrix} = \begin{pmatrix}1 &amp; 0 &amp; 0\\0 &amp; 1
+&amp; 0\\0 &amp; 0 &amp; 1\end{pmatrix}\]</span></p>
+<p><span class="math display">\[ VV^{\mathrm {T}} =
+\begin{pmatrix}-0.16301 &amp; -0.21273 &amp; 0.96342\\-0.45732 &amp;
+-0.84895 &amp; -0.26483\\0.87423 &amp; -0.48376 &amp;
+0.0411\end{pmatrix} \times \begin{pmatrix}-0.16301 &amp; -0.45732 &amp;
+0.87423\\-0.21273 &amp; -0.84895 &amp; -0.48376\\0.96342 &amp; -0.26483
+&amp; 0.0411\end{pmatrix} = \begin{pmatrix}1 &amp; 0 &amp; 0\\0 &amp; 1
+&amp; 0\\0 &amp; 0 &amp; 1\end{pmatrix}\]</span></p>
 <p>Sources:</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Singular_value_decomposition" class="uri">https://en.wikipedia.org/wiki/Singular_value_decomposition</a></li>

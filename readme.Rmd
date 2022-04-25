@@ -1,0 +1,113 @@
+---
+title: "Shiny apps for educational purposes"
+output:
+  github_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(shiny)
+library(callr)
+library(webshot2)
+# remotes::install_github("rstudio/webshot2")
+```
+
+## Using apps
+
+Use `subdir` argument to select the app to run, in this example the app selected
+is `"matrix-decompositions"`.
+
+```{r, eval=FALSE}
+shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
+```
+
+## Shiny apps
+
+```{r generate_screenshots, include=FALSE}
+apps <- dir() |> 
+  str_subset("\\.", negate = TRUE)
+
+apps_valid <- map(apps, dir) |> 
+  map(str_detect, "ui.R|server.R|app.Rmd|app.R") |> 
+  map_lgl(any)
+
+apps <- apps[apps_valid]
+
+# dir(full.names = TRUE, recursive = TRUE) |> 
+#   str_subset("screenshot.png") |> 
+#   fs::file_delete()
+
+walk(apps, function(app = "kmeans-images"){
+  
+  # app <-  "arma-process"
+  # app <-  "bias-variance"
+  # app <- "matrix-decompositions"
+  message(app)
+  
+  if(apps == "kmeans-images") {
+    message("Please make kmean-image screenshont inside de app (line 20 app)")
+    return(TRUE)
+  }
+  
+  fout <- fs::path(app, "screenshot", ext = "png")
+  
+  if(file.exists(fout)) return(TRUE)
+  
+  if(any(str_detect(dir(app, full.names = TRUE), "app.Rmd"))){
+    
+    app_rmd <- fs::path(app, "app", ext = "Rmd")
+    
+    port <- sample(1000:9999, size = 1)
+    
+    p <- callr::r_bg(
+      function(app, port) rmarkdown::run(app, shiny_args = list(port = port)), 
+      args = list(app = app_rmd, port = port)
+      )
+    
+    webshot2::webshot(url = str_glue("http://127.0.0.1:{ port }/app.Rmd"), file = fout, delay = 15)
+    
+    p$finalize()
+    
+    
+  } else {
+    
+    webshot2::appshot(app, file = fout, delay = 15)
+    
+  }
+  
+})
+```
+
+```{r generate_md, results='asis'}
+walk(apps, function(app = "arma-process"){
+  
+  cat("\n")
+  
+  app_ttl <- app |> 
+    str_replace_all("-", " ") |> 
+    str_to_title() |> 
+    str_replace("Arma ", "ARMA ")
+  
+  cat(str_glue("### { app_ttl }"))
+  
+  cat("\n")
+  
+  cat(str_glue("![]({app}/screenshot.png)"))
+  
+  cat("\n")
+  
+  cat(str_glue("Source code [here](tree/master/{ app })."))
+  
+  cat("\n")
+  
+  cat("Go to [index](#shiny-apps-for-educational-purposes).")
+  
+  cat("\n")
+  
+})
+```
+

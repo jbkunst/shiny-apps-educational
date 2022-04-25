@@ -1,27 +1,54 @@
-# shiny-apps
+Shiny apps for educational purposes
+================
 
-## kmeans in image's colors
-  - url: https://jbkunst.shinyapps.io/kmeans-images
-  - info: A implementation of kmean in images
-  - packages: threejs, jpeg
-  
-## Chilean Education
-  - url: https://jbkunst.shinyapps.io/cl-educ
-  - data: simce, psu
+-   [Using apps](#using-apps)
+-   [Shiny apps](#shiny-apps)
+    -   [ARMA Process](#arma-process)
+    -   [Bias Variance](#bias-variance)
+    -   [Decision Tree](#decision-tree)
+    -   [Kmeans Images](#kmeans-images)
+    -   [Logistic Regression](#logistic-regression)
+    -   [Matrix Decompositions](#matrix-decompositions)
 
-## Highcharter Demo
-  - url: https://jbkunst.shinyapps.io/highcharter
-  - info: Some examples of what the package can chart
+## Using apps
 
-## d3wordlcoud package
-  - url: https://jbkunst.shinyapps.io/d3wordcloud
-  - info: Mi first htmlwidget package
-  - packages: https://github.com/jbkunst/d3wordcloud
+Use `subdir` argument to select the app to run, in this example the app
+selected is `"matrix-decompositions"`.
 
-## Earthquakes around the world  
-  - https://jbkunst.shinyapps.io/ww-eqs
-  - packages: rvest, leafet
-  
-## Earthquakes in chile  
-  - https://jbkunst.shinyapps.io/cl-eqs
-  - packages: rvest, leafet
+## Shiny apps
+
+### ARMA Process
+
+![](arma-process/screenshot.png) Source code
+[here](tree/master/arma-process). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Bias Variance
+
+![](bias-variance/screenshot.png) Source code
+[here](tree/master/bias-variance). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Decision Tree
+
+![](decision-tree/screenshot.png) Source code
+[here](tree/master/decision-tree). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Kmeans Images
+
+![](kmeans-images/screenshot.png) Source code
+[here](tree/master/kmeans-images). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Logistic Regression
+
+![](logistic-regression/screenshot.png) Source code
+[here](tree/master/logistic-regression). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Matrix Decompositions
+
+![](matrix-decompositions/screenshot.png) Source code
+[here](tree/master/matrix-decompositions). Go to
+[index](#shiny-apps-for-educational-purposes).

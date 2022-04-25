@@ -24,6 +24,7 @@ resource_files:
 ---
 
 ```{r global, include=FALSE}
+# webshot2::webshot("http://127.0.0.1:5899/app.Rmd", file = "screenshot.png", delay = 10)
 library(tidyverse)
 library(scales)
 library(shiny)
@@ -114,7 +115,7 @@ image <- reactive({
   
   # image <- readJPEG(input$image_file)
   
-  image <- load.image(input$image_file)
+  image <- load.image(here::here(input$image_file))
   image
   
 })
