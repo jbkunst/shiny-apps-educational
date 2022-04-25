@@ -21,7 +21,7 @@ library(webshot2)
 Use `subdir` argument to select the app to run, in this example the app selected
 is `"matrix-decompositions"`.
 
-```{r, eval=FALSE}
+```{r, echo=TRUE, eval=FALSE}
 shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
 ```
 
