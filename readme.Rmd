@@ -60,7 +60,7 @@ walk(apps, function(app = "kmeans-images"){
   # app <- "matrix-decompositions"
   message(app)
   
-  if(apps == "kmeans-images") {
+  if(apps %in% c("kmeans-images", "matrix-decompositions")) {
     message("Please make kmean-image screenshont inside de app (line 20 app)")
     return(TRUE)
   }

@@ -1,0 +1,57 @@
+---
+title: "eigen"
+output: html_document
+params:
+    mat: !r matrix(c(1, 2, 3, 4), ncol = 2)
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE)
+source(here::here("helpers.R"))
+```
+
+<h3 class="title">Eigen decomposition of a matrix</h3>
+
+In linear algebra, eigendecomposition is the factorization of a matrix into a canonical form, whereby the matrix is represented in terms of its eigenvalues and eigenvectors. Only diagonalizable matrices can be factorized in this way. When the matrix being factorized is a normal or real symmetric matrix, the decomposition is called "spectral decomposition", derived from the spectral theorem.
+
+Decomposition have the form ${\displaystyle A=VDV^{-1}}$, where $D$ is a diagonal matrix formed from the eigenvalues of $A$, and the columns of $V$ are the corresponding eigenvectors of $A$.
+
+
+```{r, results='asis'}
+# params$mat <-  params$mat + t(params$mat)
+eigen.mat <- eigen(params$mat)
+
+D <- diag(eigen.mat$values)
+V <- eigen.mat$vectors
+
+Df <- round(D, 5)
+Vf <- round(V, 5)
+Vm1f <- round(solve(V), 5)
+
+# V %*% D %*% solve(V)
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(Vf),
+    " \\times ",
+    matrix2latex(Df),
+    " \\times ",
+    matrix2latex(Vm1f),
+    "$$"
+  )
+)
+```
+
+
+
+Sources: 
+
+- https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix
+- https://r-snippets.readthedocs.io/en/latest/la/svd.html
+
+

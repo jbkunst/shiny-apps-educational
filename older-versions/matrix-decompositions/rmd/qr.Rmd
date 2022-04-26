@@ -1,0 +1,65 @@
+---
+title: "qr"
+output: html_document
+params:
+    mat: !r matrix(c(1, 2, 3, 4), ncol = 2)
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE)
+source(here::here("helpers.R"))
+```
+    
+<h3 class="title">QR decomposition</h3>
+
+In linear algebra, a QR decomposition, also known as a QR factorization or QU factorization, is a decomposition of a matrix $A$ into a product $A = QR$ of an orthogonal matrix $Q$ and an upper triangular matrix $R$. QR decomposition is often used to solve the linear least squares problem and is the basis for a particular eigenvalue algorithm, the QR algorithm.
+
+
+```{r, results='asis'}
+qr.mat <- qr(params$mat)
+
+Q <- qr.Q(qr.mat)
+
+R <- qr.R(qr.mat)
+
+Qf <- round(Q, 5)
+Rf <- round(R, 5)
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(Qf),
+    " \\times ",
+    matrix2latex(Rf),
+    "$$"
+  )
+)
+```
+
+And $Q$ is an orthogonal because $Q^{\mathrm {T} }Q=QQ^{\mathrm {T} }=I$.
+
+```{r, results='asis'}
+QtQ <- t(Qf) %*% Qf
+QtQf <- round(QtQ, 5)
+
+Qtf <-  round(t(Q), 5)
+
+cat(
+  str_c(
+    "$$ Q^{\\mathrm {T} }Q = ",
+    matrix2latex(t(Qf)),
+    " \\times ",
+    matrix2latex(Qf),
+    " = ",
+    matrix2latex(QtQf),
+    "$$"
+  )
+)
+```
+
+
+Source https://en.wikipedia.org/wiki/QR_decomposition

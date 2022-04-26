@@ -1,0 +1,94 @@
+---
+title: "svd"
+output: html_document
+params:
+    mat: !r matrix(c(1, 2, 3, 4), ncol = 2)
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE)
+source(here::here("helpers.R"))
+```
+
+<h3 class="title">Singular value decomposition</h3>
+
+SVD (Singular Value Decomposition) stands for splitting a matrix $A$ into a product $A=U \Sigma V^{T}$ where $U$ and $V$ are unitary matrices and $\Sigma$ is a diagonal matrix consisting of singular values on its main diagonal arranged in non-increasing order where all the singular values are non-negative.
+
+Mathematical applications of the SVD include computing the pseudoinverse, matrix approximation, and determining the rank, range, and null space of a matrix. The SVD is also extremely useful in all areas of science, engineering, and statistics, such as signal processing, least squares fitting of data, and process control.
+
+
+```{r, results='asis'}
+svd.mat <- svd(params$mat)
+
+# svd.mat$u %*% diag(svd.mat$d) %*% t(svd.mat$v)
+
+U  <- svd.mat$u
+S  <- diag(svd.mat$d)
+Vt <- t(svd.mat$v)
+
+Uf  <- round(U, 5)
+Sf  <- round(S, 5)
+Vtf <- round(Vt, 5)
+
+# params$mat - (svd.mat$u %*% diag(svd.mat$d) %*% t(svd.mat$v))
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(Uf),
+    " \\times ",
+    matrix2latex(Sf),
+    " \\times ",
+    matrix2latex(Vtf),
+    "$$"
+  )
+)
+```
+
+Check  $UU^{\mathrm {T} }= VV^{\mathrm {T} } = I$:
+
+```{r, results='asis'}
+UUt <- U %*% t(U)
+UUtf <- round(UUt, 5)
+
+cat(
+  str_c(
+    "$$ UU^{\\mathrm {T}} = ",
+    matrix2latex(Uf),
+    " \\times ",
+    matrix2latex(t(Uf)),
+    " = ",
+    matrix2latex(UUtf),
+    "$$"
+  )
+)
+```
+
+```{r, results='asis'}
+VVt <- t(Vt) %*% Vt
+VVtf <- round(VVt, 5)
+
+cat(
+  str_c(
+    "$$ VV^{\\mathrm {T}} = ",
+    matrix2latex(t(Vtf)),
+    " \\times ",
+    matrix2latex(Vtf),
+    " = ",
+    matrix2latex(VVtf),
+    "$$"
+  )
+)
+```
+
+
+Sources: 
+
+- https://en.wikipedia.org/wiki/Singular_value_decomposition
+- https://r-snippets.readthedocs.io/en/latest/la/svd.html
+
+
