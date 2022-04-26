@@ -1,6 +1,7 @@
 Shiny apps for educational purposes
 ================
 
+-   [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
 -   [Using apps](#using-apps)
 -   [Shiny apps](#shiny-apps)
     -   [ARMA Process](#arma-process)
@@ -10,6 +11,17 @@ Shiny apps for educational purposes
     -   [Logistic Regression](#logistic-regression)
     -   [Matrix Decompositions](#matrix-decompositions)
 
+## FOA: ♫ Tell me *Y* ♪
+
+The ideas/purposes behind every shiny app in this repository are:
+
+-   Being a complement for a ML, Statistics, Probability, R class. The
+    application mainly shows and exemplifies a *result* that needs to be
+    explained. By themselves, the apps are just an app.
+-   Point out other resources and links that are more formal and/or
+    useful.
+-   TBD.
+
 ## Using apps
 
 Use `subdir` argument to select the app to run, in this example the app
@@ -18,6 +30,9 @@ selected is `"matrix-decompositions"`.
 ``` r
 shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
 ```
+
+(Sadly *AFAIK* `shiny::runGitHub` with rmarkdown `runthime:shiny`
+files.)
 
 ## Shiny apps
 

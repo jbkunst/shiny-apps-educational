@@ -16,6 +16,16 @@ library(webshot2)
 # remotes::install_github("rstudio/webshot2")
 ```
 
+## FOA: ♫ Tell me _Y_ ♪
+
+The ideas/purposes behind every shiny app in this repository are:
+
+- Being a complement for a ML, Statistics, Probability, R class. 
+The application mainly shows and exemplifies a _result_ that needs to be explained.
+By themselves, the apps are just an app.
+- Point out other resources and links that are more formal and/or useful.
+- TBD.
+
 ## Using apps
 
 Use `subdir` argument to select the app to run, in this example the app selected
@@ -24,6 +34,8 @@ is `"matrix-decompositions"`.
 ```{r, echo=TRUE, eval=FALSE}
 shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
 ```
+
+(Sadly _AFAIK_ `shiny::runGitHub` with rmarkdown `runthime:shiny` files.)
 
 ## Shiny apps
 
