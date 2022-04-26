@@ -44,7 +44,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 }
 </style>
 
-Column { .sidebar data-width=300 }
+Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
 
 <hr/>

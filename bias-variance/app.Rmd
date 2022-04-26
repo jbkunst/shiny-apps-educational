@@ -64,7 +64,7 @@ options(
 }
 </style>
 
-Column { .sidebar data-width=300 }
+Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
 
 <hr/>
