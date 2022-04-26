@@ -26,7 +26,23 @@ By themselves, the apps are just an app.
 - Point out other resources and links that are more formal and/or useful.
 - TBD.
 
-## Using apps
+
+```{r, include=FALSE}
+screenshots <- dir(full.names = TRUE, recursive = TRUE) |>
+  str_subset("screenshot.png") |> 
+  map(magick::image_read) |> 
+  reduce(magick::image_join) |> 
+  magick::image_animate(fps = 2)
+
+# screenshots
+magick::image_write(screenshots, path = "screenshots.gif")
+```
+
+![](screenshots.gif)
+
+
+
+## ~~Using apps locally~~
 
 Use `subdir` argument to select the app to run, in this example the app selected
 is `"matrix-decompositions"`.

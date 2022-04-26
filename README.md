@@ -2,7 +2,7 @@ Shiny apps for educational purposes
 ================
 
 -   [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
--   [Using apps](#using-apps)
+-   [~~Using apps locally~~](#using-apps-locally)
 -   [Shiny apps](#shiny-apps)
     -   [ARMA Process](#arma-process)
     -   [Bias Variance](#bias-variance)
@@ -22,7 +22,9 @@ The ideas/purposes behind every shiny app in this repository are:
     useful.
 -   TBD.
 
-## Using apps
+![](screenshots.gif)
+
+## ~~Using apps locally~~
 
 Use `subdir` argument to select the app to run, in this example the app
 selected is `"matrix-decompositions"`.
