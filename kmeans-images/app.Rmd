@@ -52,12 +52,15 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
   margin-bottom: 0.5rem;
   margin-top:    0.5rem;
 }
+
+.sidebar {
+  padding-top: 1rem;
+}
+
 </style>
 
-Column { .sidebar data-width=300 }
+Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
-
-<hr/>
 
 ```{r inputs}
 shiny::selectizeInput(
@@ -262,8 +265,9 @@ output$originalColorDist <- renderPlot({
   ggplot(daux) +
     geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
     scale_fill_manual(values = cols, guide = "none") +
-    scale_x_continuous(labels = scales::percent) +
-    labs(x = NULL, y = NULL)
+    # scale_x_continuous(labels = scales::percent) +
+    scale_x_sqrt(labels = scales::percent) +
+    labs(x = NULL, y = NULL) 
   
 })
 ```

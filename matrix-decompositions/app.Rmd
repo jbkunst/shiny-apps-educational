@@ -57,6 +57,11 @@ body,
 .chart-wrapper {
   border: none;
 }
+
+.sidebar {
+  padding-top: 1rem;
+}
+
 </style>
 
 Controls { .sidebar data-width=300 }
@@ -98,7 +103,7 @@ sliderInput(
 htmlOutput("matrix_render")
 ```
 
-<br/>
+<hr/>
 
 <small>
 ```{r}

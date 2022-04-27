@@ -10,7 +10,7 @@ output:
       base_font:
         google: "IBM Plex Sans"
 editor_options: 
-  chunk_output_type: console        
+  chunk_output_type: console
 runtime: shiny
 ---
 
@@ -44,12 +44,15 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
   margin-bottom: 0.5rem;
   margin-top:    0.5rem;
 }
+
+.sidebar {
+  padding-top: 1rem;
+}
+
 </style>
 
-Column { .sidebar data-width=300 }
+Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
-
-<hr/>
 
 ```{r inputs}
 radioButtons(
@@ -109,6 +112,8 @@ checkboxInput(
   value = TRUE
 )
 ```
+
+<hr/>
 
 <small>
 ```{r}

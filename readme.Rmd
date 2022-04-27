@@ -32,7 +32,7 @@ screenshots <- dir(full.names = TRUE, recursive = TRUE) |>
   str_subset("screenshot.png") |> 
   map(magick::image_read) |> 
   reduce(magick::image_join) |> 
-  magick::image_animate(fps = 2)
+  magick::image_animate(fps = 4)
 
 # screenshots
 magick::image_write(screenshots, path = "screenshots.gif")

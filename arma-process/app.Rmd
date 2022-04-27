@@ -72,12 +72,15 @@ lines(teoPACF)
   margin-bottom: 1.5rem;
   margin-top: 1.5rem;
 }
+
+.sidebar {
+  padding-top: 1rem;
+}
+
 </style>
 
-Column { .sidebar data-width=300 }
+Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
-
-<hr/>
 
 ```{r inputs}
 sliderInput("ar", "AR", -.9, .9, value = AR, 0.05, width = "100%")
@@ -86,12 +89,6 @@ sliderInput("ma", "MA", -.9, .9, value = MA, 0.05, width = "100%")
 
 sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%")
 ```
-
-<small>
-```{r}
-# uiOutput("model")
-```
-</small>
 
 <hr/>
 

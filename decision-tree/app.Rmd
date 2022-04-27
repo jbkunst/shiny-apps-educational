@@ -42,12 +42,15 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
   margin-bottom: 0.5rem;
   margin-top:    0.5rem;
 }
+
+.sidebar {
+  padding-top: 1rem;
+}
+
 </style>
 
 Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
-
-<hr/>
 
 ```{r inputs}
 radioButtons(
@@ -111,6 +114,7 @@ checkboxInput(
 )
 ```
 
+<hr/>
 
 <small>
 ```{r}

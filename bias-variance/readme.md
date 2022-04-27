@@ -1,5 +1,3 @@
-To be completed
-
 Inspiration y resources:
 
 - MLU [Bias Variance tradeoff](https://mlu-explain.github.io/bias-variance/) by Jared Wilber & Brent Werness.
