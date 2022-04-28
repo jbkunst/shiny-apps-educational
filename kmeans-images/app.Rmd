@@ -102,15 +102,15 @@ htmltools::includeMarkdown("readme.md")
 #   image_file = "imgs/chess.jpg",
 #   k = 4,
 #   use_xy = FALSE,
-#   scale = sample(c(TRUE, FALSE), size = 1),
+#   scale = FALSE,
 #   show_axes = FALSE
 #   ); input
-
+# 
 # input <- list(
 #   image_file = sample(img_choices, 1),
 #   k = sample(1:10, size = 1),
 #   use_xy = TRUE,
-#   scale = sample(c(TRUE, FALSE), size = 1),
+#   scale = FALSE,
 #   show_axes = FALSE
 #   ); input
 
