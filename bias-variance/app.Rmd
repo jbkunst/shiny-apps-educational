@@ -72,7 +72,6 @@ options(
 Controls { .sidebar data-width=300 }
 -----------------------------------------------------------------------
 
-<hr/>
 
 ```{r inputs}
 sliderInput(
@@ -99,8 +98,6 @@ shiny::checkboxInput(
   value = FALSE
 )
 ```
-
-<hr/>
 
 <small>
 ```{r}

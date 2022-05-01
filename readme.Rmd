@@ -111,7 +111,7 @@ walk(apps, function(app = "kmeans-images"){
 ```
 
 ```{r generate_md, results='asis'}
-walk(apps, function(app = "arma-process"){
+walk(apps, function(app = "kmeans-images"){
   
   cat("\n")
   

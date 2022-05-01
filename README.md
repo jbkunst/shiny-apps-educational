@@ -7,6 +7,7 @@ Shiny apps for educational purposes
     -   [ARMA Process](#arma-process)
     -   [Bias Variance](#bias-variance)
     -   [Decision Tree](#decision-tree)
+    -   [Kmeans](#kmeans)
     -   [Kmeans Images](#kmeans-images)
     -   [Logistic Regression](#logistic-regression)
     -   [Matrix Decompositions](#matrix-decompositions)
@@ -52,6 +53,11 @@ to [index](#shiny-apps-for-educational-purposes).
 
 ![](decision-tree/screenshot.png) Source code [here](/decision-tree). Go
 to [index](#shiny-apps-for-educational-purposes).
+
+### Kmeans
+
+![](kmeans/screenshot.png) Source code [here](/kmeans). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans Images
 
