@@ -1,4 +1,4 @@
-app_to_run <- functio(app = "kmeans"){
+app_to_run <- function(app = "kmeans"){
   
   url <- "https://github.com/jbkunst/shiny-apps-edu/archive/refs/heads/master.zip"
   
