@@ -2,7 +2,7 @@ Shiny apps for educational purposes
 ================
 
 -   [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
--   [~~Using apps locally~~](#using-apps-locally)
+-   [Using apps locally](#using-apps-locally)
 -   [Shiny apps](#shiny-apps)
     -   [ARMA Process](#arma-process)
     -   [Bias Variance](#bias-variance)
@@ -25,17 +25,22 @@ The ideas/purposes behind every shiny app in this repository are:
 
 ![](screenshots.gif)
 
-## ~~Using apps locally~~
+## Using apps locally
 
-Use `subdir` argument to select the app to run, in this example the app
-selected is `"matrix-decompositions"`.
+There is a script `run_app.R` which contanins a helper function to
+download the repo in a temporal folder and then you can run the apps
+
+To load that function:
 
 ``` r
-shiny::runGitHub(repo = "shiny-apps-edu", username = "jbkunst", subdir = "matrix-decompositions")
+source("https://raw.githubusercontent.com/jbkunst/shiny-apps-edu/master/run_app.R")
 ```
 
-(Sadly *AFAIK* `shiny::runGitHub` with rmarkdown `runthime:shiny`
-files.)
+Then you can use it giving the folder name, for example:
+
+``` r
+run_app("kmeans")
+```
 
 ## Shiny apps
 
