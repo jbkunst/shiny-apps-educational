@@ -1,4 +1,4 @@
-app_to_run <- function(app = "kmeans"){
+run_app <- function(app = "kmeans"){
   
   url <- "https://github.com/jbkunst/shiny-apps-edu/archive/refs/heads/master.zip"
   
@@ -21,7 +21,6 @@ app_to_run <- function(app = "kmeans"){
     # normal shiny
   }
   
-  
 }
 
-# app_to_run("kmeans")
+# run_app("kmeans")
