@@ -18,6 +18,7 @@ runtime: shiny
 library(tidyverse)
 library(shiny)
 library(scales)
+library(markdown)
 
 library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r")
