@@ -17,15 +17,11 @@ runtime: shiny
 ```{r global, include=FALSE}
 library(tidyverse)
 library(shiny)
-# library(thematic)
-
-library(partykit)
-library(parttree) # remotes::install_github("grantmcdermott/parttree")
 library(scales)
 
-library(risk3r)       # remotes::install_github("jbkunst/risk3r")
 library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
-# library(xtable)
+library(risk3r)       # remotes::install_github("jbkunst/risk3r")
+library(klassets)     # remotes::install_github("jbkunst/klassets")
 
 primary_color <- "#262162"
 
@@ -138,48 +134,20 @@ dxy <- reactive({
 
   set.seed(1234)
   
-  dxy <- tibble(
-    x = runif(input$n, -1, 1),
-    y = runif(input$n, -1, 1)
+  dxy <- klassets::sim_response_xy(
+    n = input$n,
+    x_dist = purrr::partial(runif, min = -1, max = 1),
+    relationship = function(x, y) eval(parse(text = input$relationship)),
+    noise = input$percent_noise/100
   )
   
-  dxy <- dxy |>
-    mutate(
-      response := eval(parse(text = input$relationship))
-      # response = sin(x*pi) > sin(y*pi)  
-      )
-
-  dxy <- dxy |>
-    mutate(
-      response = ifelse(
-        runif(input$n) < input$percent_noise/100,
-        !response,
-        response
-        )
-      )
-  
-  dxy <- dxy |>
-    # select(r response = )
-    # set_names(c("v1", "v2", "r")) |>
-    mutate(response = factor(response, levels = c("TRUE", "FALSE")))
-  
-  # glimpse(dxy)
+  dxy <- klassets::fit_classification_tree(
+    dxy, 
+    maxdepth = input$depth, 
+    alpha = input$alpha
+    )
   
   dxy
-
-})
-
-mod <- reactive({
-
-  dxy <- dxy()
-  
-  mod <- ctree(
-    response ~ x + y,
-    data = dxy,
-    control = ctree_control(maxdepth = input$depth, alpha = input$alpha)
-    )
-
-  mod
 
 })
 ```
@@ -199,39 +167,20 @@ plotOutput("join_dist", width = "100%", height = "100%")
 output$join_dist <- renderPlot({
   
   dxy <- dxy()
-  mod <- mod()
-  # dgrd <- dgrd()
   
-  p <- ggplot(dxy) 
+  p <- ggplot()
   
   if(input$show_model_field) {
-
-    p <- p +
-      # predictions
-      geom_parttree(
-      data = mod,
-      aes(fill = response), 
-      alpha = 0.2, 
-      color = "gray70",
-      size = 0.1
-      ) +
-      scale_fill_manual(name = NULL, values = c(muted("blue"), muted("red"))) 
+    
+    p <- plot(dxy)
+    
+  } else {
+    
+    
+    p <- klassets:::plot.klassets_response_xy(dxy)
     
   }
-  
-  p <- p +  
-    # data
-    geom_point(
-      aes(x, y, color = factor(response), shape = factor(response)),
-      data = dxy,
-      size = 3
-      ) +
-    
-    scale_shape_manual(name = NULL, values = c(1, 4)) +
-    scale_color_manual(name = NULL, values = c(muted("blue"), muted("red"))) +
-
-    theme(legend.key.width = unit(2, "cm"))
-  
+   
   p
 
 })
@@ -248,10 +197,9 @@ plotOutput("tree_plot", width = "100%", height = "100%")
 ```{r, context="server"}
 output$tree_plot <- renderPlot({
 
-  mod <- mod()
+  dxy <- dxy()
 
-  plot(mod)
-  
+  plot(attr(dxy, "model"))
 
 })
 ```
@@ -270,17 +218,17 @@ plotOutput("roc_plot", width = "100%", height = "100%")
 ```{r, context="server"}
 output$roc_plot <- renderPlot({
   
-  mod <- mod()
+  dxy <- dxy()
+
+  droc <- risk3r::roc_data(
+    actual = as.numeric(dxy$response),
+    predicted = 1 - dxy$prediction
+  )
   
   aucroc <- Metrics::auc(
-    actual = mod$data$response == "TRUE",
-    predicted = as.numeric(predict(mod, type = "prob")[,1])
+    actual = as.numeric(dxy$response),
+    predicted = 1 - dxy$prediction
     )
- 
-  droc <- risk3r::roc_data(
-    mod$data$response == "TRUE", 
-    as.numeric(predict(mod, type = "prob")[,1])
-  )
   
   ggplot(droc) +
     geom_line(aes(x, y), size = 2, color = primary_color) +
@@ -303,18 +251,14 @@ plotOutput("bg_plot", width = "100%", height = "100%")
 ```{r, context="server"}
 output$bg_plot <- renderPlot({
   
-  mod <- mod()
-
+  dxy <- dxy()
+  
   ksmod <- risk3r::ks(
-    actual = mod$data$response == "TRUE",
-    predicted = as.numeric(predict(mod, type = "prob")[,1])
+    actual = as.numeric(dxy$response),
+    predicted = 1 - dxy$prediction
     )
   
-  dprd <- mod$data |> 
-    as_tibble() |> 
-    mutate(pred = predict(mod, newdata = mod$data, type = "prob")[, 1])
-  
-  ggplot(dprd, aes(pred, group = response, fill = response, color = response, label = response)) +
+   ggplot(dxy, aes(1 - prediction, group = response, fill = response, color = response, label = response)) +
     geom_density(alpha = 0.1, size = 2) +
     
     scale_color_manual(name = NULL, values = c(muted("red", 35), muted("blue", 35))) +
@@ -339,14 +283,16 @@ tableOutput("cross_table")
 ```{r, context="server"}
 output$cross_table <- renderTable({
 
-  mod <- mod()
+  dxy <- dxy()
   
-  df <- mod$data |> 
-    as_tibble() |> 
-    select(response) |> 
-    mutate(prediction = predict(mod, type = "response"))
+  dxy2 <- klassets::fit_classification_tree(
+    dxy, 
+    type = "response",
+    maxdepth = input$depth, 
+    alpha = input$alpha
+    )
   
-  df |> 
+  dxy2 |> 
     count(response, prediction) |> 
     spread(prediction, n) |> 
     rename(`response \\\ prediction` = response)
