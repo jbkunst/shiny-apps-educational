@@ -18,6 +18,7 @@ editor_options:
 library(shiny)
 library(shinyWidgets)
 library(tidyverse)
+library(markdown)
 
 primary_color <- "#262162"
 
