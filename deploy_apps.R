@@ -1,19 +1,15 @@
 library(tidyverse)
 
 # remotes::install_github("jbkunst/highcharter", force = TRUE)
+# remotes::install_github("jbkunst/klassets", force = TRUE)
 
-apps <- dir(here::here(), full.names = TRUE) %>% 
-  str_subset("highcharter-shiny.Rproj", negate = TRUE) %>% 
-  str_subset("deploy_apps.R", negate = TRUE) 
-
-apps <- apps %>% 
-  str_subset("chess-explorer|cl-educ")
-
-apps
+apps <- fs::dir_ls(here::here(), full.names = TRUE) |>
+  str_subset("\\.", negate = TRUE) |> 
+  str_subset("older-versions", negate = TRUE) 
 
 walk(apps, function(app = "D:/Git/shiny-apps/chess-explorer"){
   
-  message(app)
+  cli::cli_h2(app)
   
   try(fs::dir_delete(fs::path(app, "rsconnect")))
   
