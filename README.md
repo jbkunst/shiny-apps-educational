@@ -52,46 +52,46 @@ run_app("kmeans")
 
 ![](arma-process/screenshot.png) Source code [here](/arma-process). See
 the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[shinyapps.io](https://jbkunst.shinyapps.io/arma-process). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Bias Variance
 
 ![](bias-variance/screenshot.png) Source code [here](/bias-variance).
 See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[shinyapps.io](https://jbkunst.shinyapps.io/bias-variance). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Decision Tree
 
 ![](decision-tree/screenshot.png) Source code [here](/decision-tree).
 See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[shinyapps.io](https://jbkunst.shinyapps.io/decision-tree). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans
 
 ![](kmeans/screenshot.png) Source code [here](/kmeans). See the live
-version in [shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D).
-Go to [index](#shiny-apps-for-educational-purposes).
+version in [shinyapps.io](https://jbkunst.shinyapps.io/kmeans). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans Images
 
 ![](kmeans-images/screenshot.png) Source code [here](/kmeans-images).
 See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[shinyapps.io](https://jbkunst.shinyapps.io/kmeans-images). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Logistic Regression
 
 ![](logistic-regression/screenshot.png) Source code
 [here](/logistic-regression). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[shinyapps.io](https://jbkunst.shinyapps.io/logistic-regression). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Matrix Decompositions
 
 ![](matrix-decompositions/screenshot.png) Source code
 [here](/matrix-decompositions). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
-[index](#shiny-apps-for-educational-purposes).
+[shinyapps.io](https://jbkunst.shinyapps.io/matrix-decompositions). Go
+to [index](#shiny-apps-for-educational-purposes).
