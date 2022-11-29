@@ -1,16 +1,20 @@
 Shiny apps for educational purposes
 ================
 
--   [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
--   [Using apps locally](#using-apps-locally)
--   [Shiny apps](#shiny-apps)
-    -   [ARMA Process](#arma-process)
-    -   [Bias Variance](#bias-variance)
-    -   [Decision Tree](#decision-tree)
-    -   [Kmeans](#kmeans)
-    -   [Kmeans Images](#kmeans-images)
-    -   [Logistic Regression](#logistic-regression)
-    -   [Matrix Decompositions](#matrix-decompositions)
+-   <a href="#foa--tell-me-y-" id="toc-foa--tell-me-y-">FOA: ♫ Tell me
+    <em>Y</em> ♪</a>
+-   <a href="#using-apps-locally" id="toc-using-apps-locally">Using apps
+    locally</a>
+-   <a href="#shiny-apps" id="toc-shiny-apps">Shiny apps</a>
+    -   <a href="#arma-process" id="toc-arma-process">ARMA Process</a>
+    -   <a href="#bias-variance" id="toc-bias-variance">Bias Variance</a>
+    -   <a href="#decision-tree" id="toc-decision-tree">Decision Tree</a>
+    -   <a href="#kmeans" id="toc-kmeans">Kmeans</a>
+    -   <a href="#kmeans-images" id="toc-kmeans-images">Kmeans Images</a>
+    -   <a href="#logistic-regression" id="toc-logistic-regression">Logistic
+        Regression</a>
+    -   <a href="#matrix-decompositions" id="toc-matrix-decompositions">Matrix
+        Decompositions</a>
 
 ## FOA: ♫ Tell me *Y* ♪
 
@@ -46,37 +50,48 @@ run_app("kmeans")
 
 ### ARMA Process
 
-![](arma-process/screenshot.png) Source code [here](/arma-process). Go
-to [index](#shiny-apps-for-educational-purposes).
+![](arma-process/screenshot.png) Source code [here](/arma-process). See
+the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Bias Variance
 
-![](bias-variance/screenshot.png) Source code [here](/bias-variance). Go
-to [index](#shiny-apps-for-educational-purposes).
+![](bias-variance/screenshot.png) Source code [here](/bias-variance).
+See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Decision Tree
 
-![](decision-tree/screenshot.png) Source code [here](/decision-tree). Go
-to [index](#shiny-apps-for-educational-purposes).
+![](decision-tree/screenshot.png) Source code [here](/decision-tree).
+See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans
 
-![](kmeans/screenshot.png) Source code [here](/kmeans). Go to
-[index](#shiny-apps-for-educational-purposes).
+![](kmeans/screenshot.png) Source code [here](/kmeans). See the live
+version in [shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D).
+Go to [index](#shiny-apps-for-educational-purposes).
 
 ### Kmeans Images
 
-![](kmeans-images/screenshot.png) Source code [here](/kmeans-images). Go
-to [index](#shiny-apps-for-educational-purposes).
+![](kmeans-images/screenshot.png) Source code [here](/kmeans-images).
+See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
+[index](#shiny-apps-for-educational-purposes).
 
 ### Logistic Regression
 
 ![](logistic-regression/screenshot.png) Source code
-[here](/logistic-regression). Go to
+[here](/logistic-regression). See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Matrix Decompositions
 
 ![](matrix-decompositions/screenshot.png) Source code
-[here](/matrix-decompositions). Go to
+[here](/matrix-decompositions). See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/%7B%20app%20%7D). Go to
 [index](#shiny-apps-for-educational-purposes).
