@@ -10,7 +10,7 @@ output:
       base_font:
         google: "IBM Plex Sans"
 editor_options: 
-  chunk_output_type: console        
+  chunk_output_type: console
 runtime: shiny
 ---
 
