@@ -203,7 +203,8 @@ output$marginal_dist <- renderPlot({
   dg <- dxy |>
     select(x, y, response) |> 
     gather(key, value, -response) |>
-    mutate(key = str_glue("variable {key}"))
+    mutate(key = str_glue("variable {key}")) |> 
+    mutate(response = as.logical(response))
   
   p <- ggplot() +
     # data
