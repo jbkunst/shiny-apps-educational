@@ -138,7 +138,7 @@ walk(apps, function(app = "kmeans-images"){
   
   cat("\n")
   
-  cat("See the live version in [shinyapps.io](https://jbkunst.shinyapps.io/{ app }).")
+  cat(str_glue("See the live version in [shinyapps.io](https://jbkunst.shinyapps.io/{ app })."))
   
   cat("\n")
   
