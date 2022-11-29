@@ -32,7 +32,7 @@ screenshots <- dir(full.names = TRUE, recursive = TRUE) |>
   str_subset("screenshot.png") |> 
   map(magick::image_read) |> 
   reduce(magick::image_join) |> 
-  magick::image_animate(fps = 4)
+  magick::image_animate(fps = 10)
 
 # screenshots
 magick::image_write(screenshots, path = "screenshots.gif")
@@ -138,9 +138,14 @@ walk(apps, function(app = "kmeans-images"){
   
   cat("\n")
   
+  cat("See the live version in [shinyapps.io](https://jbkunst.shinyapps.io/{ app }).")
+  
+  cat("\n")
+  
   cat("Go to [index](#shiny-apps-for-educational-purposes).")
   
   cat("\n")
+  
   
 })
 ```
