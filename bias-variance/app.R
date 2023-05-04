@@ -155,8 +155,6 @@ server <- function(input, output, session) {
     
     set.seed(1234)
     
-    invalidateLater(2000)
-    
     s <- seq(1:input$n)/input$n 
     d <- max(diff(s))
     
