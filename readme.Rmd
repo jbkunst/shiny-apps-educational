@@ -26,20 +26,7 @@ By themselves, the apps are just an app.
 - Point out other resources and links that are more formal and/or useful.
 - TBD.
 
-
-```{r, include=FALSE}
-screenshots <- dir(full.names = TRUE, recursive = TRUE) |>
-  str_subset("screenshot.png") |> 
-  map(magick::image_read) |> 
-  reduce(magick::image_join) |> 
-  magick::image_animate(fps = 2)
-
-# screenshots
-magick::image_write(screenshots, path = "screenshots.gif")
-```
-
 ![](screenshots.gif)
-
 
 
 ## Using apps locally
@@ -75,17 +62,16 @@ apps <- apps[apps_valid]
 #   str_subset("screenshot.png") |> 
 #   fs::file_delete()
 
-walk(apps, function(app = "kmeans-images"){
+walk(apps, function(app = "matrix-decompositions"){
   
   # app <-  "arma-process"
-  # app <-  "bias-variance"
-  # app <- "matrix-decompositions"
-  message(app)
+  # app <- "kmeans-images"
+  cli::cli_progress_step(app)
   
-  if(app %in% c("kmeans-images", "matrix-decompositions")) {
-    message("Please make kmean-image screenshont inside de app (line 20 app)")
-    return(TRUE)
-  }
+  # if(app %in% c("kmeans-images", "matrix-decompositions")) {
+  #   message("Please make kmeans-image screenshont inside de app (line 20 app)")
+  #   return(TRUE)
+  # }
   
   fout <- fs::path(app, "screenshot", ext = "png")
   
@@ -106,15 +92,26 @@ walk(apps, function(app = "kmeans-images"){
     
     p$finalize()
     
-    
   } else {
     
-    webshot2::appshot(app, file = fout, delay = 15)
+    webshot2::appshot(app, file = fout, delay = 10)
     
   }
   
 })
 ```
+
+```{r, include=FALSE}
+screenshots <- dir(full.names = TRUE, recursive = TRUE) |>
+  str_subset("screenshot.png") |> 
+  map(magick::image_read) |> 
+  reduce(magick::image_join) |> 
+  magick::image_animate(fps = 0.5)
+
+# screenshots
+magick::image_write(screenshots, path = "screenshots.gif")
+```
+
 
 ```{r generate_md, results='asis'}
 walk(apps, function(app = "kmeans-images"){
