@@ -1,31 +1,31 @@
 Shiny apps for educational purposes
 ================
 
--   <a href="#foa--tell-me-y-" id="toc-foa--tell-me-y-">FOA: ♫ Tell me
-    <em>Y</em> ♪</a>
--   <a href="#using-apps-locally" id="toc-using-apps-locally">Using apps
-    locally</a>
--   <a href="#shiny-apps" id="toc-shiny-apps">Shiny apps</a>
-    -   <a href="#arma-process" id="toc-arma-process">ARMA Process</a>
-    -   <a href="#bias-variance" id="toc-bias-variance">Bias Variance</a>
-    -   <a href="#decision-tree" id="toc-decision-tree">Decision Tree</a>
-    -   <a href="#kmeans" id="toc-kmeans">Kmeans</a>
-    -   <a href="#kmeans-images" id="toc-kmeans-images">Kmeans Images</a>
-    -   <a href="#logistic-regression" id="toc-logistic-regression">Logistic
-        Regression</a>
-    -   <a href="#matrix-decompositions" id="toc-matrix-decompositions">Matrix
-        Decompositions</a>
+- <a href="#foa--tell-me-y-" id="toc-foa--tell-me-y-">FOA: ♫ Tell me
+  <em>Y</em> ♪</a>
+- <a href="#using-apps-locally" id="toc-using-apps-locally">Using apps
+  locally</a>
+- <a href="#shiny-apps" id="toc-shiny-apps">Shiny apps</a>
+  - <a href="#arma-process" id="toc-arma-process">ARMA Process</a>
+  - <a href="#bias-variance" id="toc-bias-variance">Bias Variance</a>
+  - <a href="#decision-tree" id="toc-decision-tree">Decision Tree</a>
+  - <a href="#kmeans" id="toc-kmeans">Kmeans</a>
+  - <a href="#kmeans-images" id="toc-kmeans-images">Kmeans Images</a>
+  - <a href="#logistic-regression" id="toc-logistic-regression">Logistic
+    Regression</a>
+  - <a href="#matrix-decompositions" id="toc-matrix-decompositions">Matrix
+    Decompositions</a>
 
 ## FOA: ♫ Tell me *Y* ♪
 
 The ideas/purposes behind every shiny app in this repository are:
 
--   Being a complement for a ML, Statistics, Probability, R class. The
-    application mainly shows and exemplifies a *result* that needs to be
-    explained. By themselves, the apps are just an app.
--   Point out other resources and links that are more formal and/or
-    useful.
--   TBD.
+- Being a complement for a ML, Statistics, Probability, R class. The
+  application mainly shows and exemplifies a *result* that needs to be
+  explained. By themselves, the apps are just an app.
+- Point out other resources and links that are more formal and/or
+  useful.
+- TBD.
 
 ![](screenshots.gif)
 
