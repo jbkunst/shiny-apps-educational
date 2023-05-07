@@ -3,7 +3,7 @@ run_app <- function(app = "kmeans"){
   url <- "https://github.com/jbkunst/shiny-apps-edu/archive/refs/heads/master.zip"
   
   filePath <- tempfile("shinyapp", fileext = ".zip")
-  fileDir <- tempfile("shinyapp")  
+  fileDir  <- tempfile("shinyapp")  
   
   message("Downloading ", url)
   
@@ -19,6 +19,7 @@ run_app <- function(app = "kmeans"){
     
   } else {
     # normal shiny
+    shiny::runApp(fp)
   }
   
 }
