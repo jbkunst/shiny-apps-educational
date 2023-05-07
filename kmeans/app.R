@@ -144,7 +144,8 @@ server <- function(input, output, session) {
     updateSliderInput(
         inputId = "iter",
         max = max(kmi$centers$iteration),
-        value = 1 # sample(1:max(kmi$center$iteration), size = 1)
+        # value = 1
+        value = sample(1:max(kmi$center$iteration), size = 1)
     )
     
     kmi
