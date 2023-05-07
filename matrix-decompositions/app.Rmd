@@ -10,7 +10,7 @@ output:
       fg: '#92E5A1'
       base_font:
         google: IBM Plex Sans
-    css: www/custom.css
+
 editor_options:
   chunk_output_type: console
 runtime: shiny
