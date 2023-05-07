@@ -5,7 +5,7 @@ run_app <- function(app = "kmeans"){
   filePath <- tempfile("shinyapp", fileext = ".zip")
   fileDir <- tempfile("shinyapp")  
   
-  message("Donloading ", url)
+  message("Downloading ", url)
   
   download.file(url, filePath)
   
