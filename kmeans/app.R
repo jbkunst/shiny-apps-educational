@@ -5,6 +5,7 @@ library(tidyverse)
 library(klassets)
 library(markdown)
 library(ggforce)
+library(deldir)
 
 # parameters & options ----------------------------------------------------
 primary_color <- "#262162"
