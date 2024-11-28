@@ -62,41 +62,31 @@ dir(full.names = TRUE, recursive = TRUE) |>
   str_subset("screenshot.png") |>
   fs::file_delete()
 
-walk(apps, function(app = "matrix-decompositions"){
+purrr::walk(apps, function(app = "matrix-decompositions"){
   
   # app <-  "arma-process"
   # app <- "kmeans-images"
+  
   cli::cli_progress_step(app)
   
-  # if(app %in% c("kmeans-images", "matrix-decompositions")) {
-  #   message("Please make kmeans-image screenshont inside de app (line 20 app)")
-  #   return(TRUE)
-  # }
+  # message(app)
+  # cat(app)
   
   fout <- fs::path(app, "screenshot", ext = "png")
   
   if(file.exists(fout)) return(TRUE)
   
-  if(any(str_detect(dir(app, full.names = TRUE), "app.Rmd"))){
-    
-    app_rmd <- fs::path(app, "app", ext = "Rmd")
-    
-    port <- sample(1000:9999, size = 1)
-    
-    p <- callr::r_bg(
-      function(app, port) rmarkdown::run(app, shiny_args = list(port = port)), 
-      args = list(app = app_rmd, port = port)
-      )
-    
-    webshot2::webshot(url = str_glue("http://127.0.0.1:{ port }/app.Rmd"), file = fout, delay = 15)
-    
-    p$finalize()
-    
-  } else {
-    
-    webshot2::appshot(app, file = fout, delay = 10)
-    
-  }
+  webshot2::appshot(app, file = fout, delay = 10)
+  
+  # app_rmd <- fs::path(app, "app", ext = "Rmd")
+  # port <- sample(1000:9999, size = 1)
+  # p <- callr::r_bg(
+  #   function(app, port) rmarkdown::run(app, shiny_args = list(port = port)), 
+  #   args = list(app = app_rmd, port = port)
+  # )
+  # webshot2::webshot(url = str_glue("http://127.0.0.1:{ port }/app.Rmd"), file = fout, delay = 15)
+  # p$finalize()
+  
   
 })
 ```

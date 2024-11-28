@@ -67,6 +67,8 @@ shinyServer(function(input, output) {
     
     file <- here(str_c("rmd/", input$decomposition, ".Rmd"))
     
+    message(file)
+    
     withMathJax(
       HTML(
         readLines(

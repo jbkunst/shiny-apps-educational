@@ -6,6 +6,7 @@ library(htmltools)
 library(here)
 library(markdown)
 
+# matrix2latex funcion is needed in .Rmds
 source("helpers.R")
 
 theme_matrix <-  bs_theme(
@@ -14,18 +15,3 @@ theme_matrix <-  bs_theme(
   primary = "#22B455",
   base_font = font_google("IBM Plex Sans")
 ) 
-
-matrix2latex <- function(matr) {
-  
-  out <- apply(matr, 1, function(r) str_c(r, collapse = " & ")) |> 
-    str_c(collapse = "\\\\") 
-  
-  out <- str_c(
-    "\\begin{pmatrix}",
-    out,
-    "\\end{pmatrix}"
-  )
-  
-  out
-  
-}
