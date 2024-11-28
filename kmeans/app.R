@@ -7,30 +7,18 @@ library(markdown)
 library(ggforce)
 library(deldir)
 
-# parameters & options ----------------------------------------------------
-primary_color <- "#262162"
-# colors_app    <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
-# scales::show_col(hc_theme_smpl()$color)
-
+# theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
+
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-apptheme <- bs_theme(
-  bg = "#F5F5F5",
-  fg = "#36454F", 
-  primary = primary_color, 
-  base_font = font_google("IBM Plex Sans")
-  )
+apptheme <- bs_theme()
 
-sidebar <- purrr::partial(
-  bslib::sidebar, 
-  bg = "#FDFDFD",
-  fg = "#36454F",
-  width = 300
-  )
+sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
-card <- function(...) bslib::card(..., style = "background-color: #FDFDFD;", full_screen = TRUE)
+primary_color <- unname(bs_get_variables(apptheme, c("primary")))
 
+# app options -------------------------------------------------------------
 KMAX <- 5
 
 # ui ----------------------------------------------------------------------
@@ -71,7 +59,7 @@ ui <- page_fillable(
           sliderInput(
             "n", tags$small("Number of points to simulate"), value = 200, min = 100, max = 500, step = 100
           ),
-          actionButton("button", "Generate", class = "btn-success btn-sm")
+          actionButton("button", "Generate", class = "btn-primary btn-sm")
           )
         ),
         tags$small(htmltools::includeMarkdown("readme.md"))
@@ -84,7 +72,7 @@ ui <- page_fillable(
         card_body(plotOutput("iter_plot"))
         )
       ),
-    br(),
+    # br(),
     layout_column_wrap(
       width = 1/4,
       height = "40%",

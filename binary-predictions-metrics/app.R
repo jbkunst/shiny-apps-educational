@@ -1,39 +1,24 @@
 # packages ----------------------------------------------------------------
 library(shiny)
 library(bslib)
-
 library(dplyr)
 library(stringr)
 library(purrr)
 library(tibble)
-
 library(markdown)
 library(highcharter)
 
 # theme options -----------------------------------------------------------
-primary_color <- "#262162"
-# colors_app    <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
-# scales::show_col(hc_theme_smpl()$color)
+apptheme <- bs_theme()
 
-# thematic::thematic_shiny(font = "auto")
-# theme_set(theme_minimal() + theme(legend.position = "bottom"))
+sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
-apptheme <- bs_theme(
-  bg = "#F5F5F5",
-  fg = "#36454F", 
-  primary = primary_color, 
-  base_font = font_google("IBM Plex Sans")
+options(
+  highcharter.theme = hc_theme(
+    chart = list(style = list(fontFamily =  "system-ui")),
+    colors = unname(bs_get_variables(apptheme, c("primary", "danger", "success",  "warning", "info", "secondary")))
   )
-
-sidebar <- purrr::partial(
-  bslib::sidebar, 
-  bg = "#FDFDFD",
-  fg = "#36454F",
-  width = 300
-  )
-
-card <- function(...) bslib::card(..., style = "background-color: #FDFDFD;", full_screen = TRUE)
-
+)
 # data --------------------------------------------------------------------
 credit_data <- modeldata::credit_data |> 
   as_tibble() |> 
@@ -70,7 +55,6 @@ ui <- page_fillable(
       height = "60%",
       card(highchartOutput("hcpoints"))
       ),
-    br(),
     layout_column_wrap(
       width = 1/4,
       height = "40%",

@@ -5,27 +5,36 @@ library(tidyverse)
 library(highcharter)
 library(markdown)
 
-# parameters & options ----------------------------------------------------
-primary_color <- "#262162"
-colors_app    <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
-# scales::show_col(hc_theme_smpl()$color)
+# theme options -----------------------------------------------------------
+apptheme <- bs_theme()
 
-apptheme <- bs_theme(
-  bg = "#F5F5F5",
-  fg = "#36454F", 
-  primary = primary_color, 
-  base_font =  font_google("IBM Plex Sans")
+sidebar <- purrr::partial(bslib::sidebar, width = 300)
+
+options(
+  highcharter.theme = hc_theme(
+    chart = list(style = list(fontFamily =  "system-ui")),
+    colors = unname(bs_get_variables(apptheme, c("primary", "danger", "warning", "success", "info", "secondary"))),
+    tooltip = list(valueDecimals = 3, shared = TRUE),
+    plotOptions = list(
+      spline = list(marker = list(enabled = FALSE, symbol = "cirlce")),
+      line = list(marker = list(enabled = FALSE, symbol = "cirlce")),
+      scatter = list(
+        marker = list(symbol = "cirlce"),
+        animation = list(duration = 100),
+        events = list(legendItemClick = JS("function () { return false; }"))
+      )
+    ),
+    legend = list(
+      # this for legendItemClick false
+      itemStyle = list(cursor = "default"),
+      # itemStyle = list(color = "#666666"),
+      itemHiddenStyle = list(color = "#666666")
+      # itemHoverStyle = list(color = "#666666")
+    )
   )
+)
 
-sidebar <- purrr::partial(
-  sidebar, 
-  bg = "#FDFDFD",
-  fg = "#36454F",
-  width = 300
-  )
-
-card <- function(...) bslib::card(..., style = "background-color: #FDFDFD;")
-
+# app options -------------------------------------------------------------
 metric <- Metrics::rmse
 
 ker <- function (u, kerntype = c("Gaussian", "Epanechnikov", "Quartic", 
@@ -79,26 +88,7 @@ NadarayaWatsonkernel <- function (x, y, h, gridpoint){
   return(list(gridpoint = gridpoint, mh = mh))
 }
 
-options(
-  highcharter.theme = hc_theme_hcrt(
-    colors = colors_app,
-    tooltip = list(valueDecimals = 3, shared = TRUE),
-    plotOptions = list(
-      series = list(
-        marker = list(symbol = "cirlce"),
-        animation = list(duration = 100),
-        events = list(legendItemClick = JS("function () { return false; }"))
-      )
-    ),
-    legend = list(
-      # this for legendItemClick false
-      itemStyle = list(cursor = "default"),
-      # itemStyle = list(color = "#666666"),
-      itemHiddenStyle = list(color = "#666666")
-      # itemHoverStyle = list(color = "#666666")
-    )
-  )
-)
+
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -136,7 +126,6 @@ ui <- page_fillable(
       width = 1/1,
       card(card_body(highchartOutput("chartdata")))
       ),
-    br(),
     layout_column_wrap(
       width = 1/2,
       card(card_body(highchartOutput("charterror"))), 

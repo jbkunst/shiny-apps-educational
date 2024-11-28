@@ -1,6 +1,6 @@
 run_app <- function(app = "kmeans"){
   
-  url <- "https://github.com/jbkunst/shiny-apps-edu/archive/refs/heads/master.zip"
+  url <- "https://github.com/jbkunst/shiny-apps-educational/archive/refs/heads/master.zip"
   
   filePath <- tempfile("shinyapp", fileext = ".zip")
   fileDir  <- tempfile("shinyapp")  
@@ -11,7 +11,7 @@ run_app <- function(app = "kmeans"){
   
   try(utils::unzip(filePath, exdir = fileDir))
 
-  fp <- file.path(fileDir, "shiny-apps-edu-master", app)
+  fp <- file.path(fileDir, "shiny-apps-educational-master", app)
   
   if(any(stringr::str_detect(dir(fp), "app.Rmd"))) {
     app_rmd <- stringr::str_subset(dir(fp, full.names = TRUE), "app.Rmd")

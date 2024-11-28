@@ -58,9 +58,9 @@ apps_valid <- map(apps, dir) |>
 
 apps <- apps[apps_valid]
 
-# dir(full.names = TRUE, recursive = TRUE) |> 
-#   str_subset("screenshot.png") |> 
-#   fs::file_delete()
+dir(full.names = TRUE, recursive = TRUE) |>
+  str_subset("screenshot.png") |>
+  fs::file_delete()
 
 walk(apps, function(app = "matrix-decompositions"){
   

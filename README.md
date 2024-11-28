@@ -1,20 +1,17 @@
 Shiny apps for educational purposes
 ================
 
-- <a href="#foa--tell-me-y-" id="toc-foa--tell-me-y-">FOA: ♫ Tell me
-  <em>Y</em> ♪</a>
-- <a href="#using-apps-locally" id="toc-using-apps-locally">Using apps
-  locally</a>
-- <a href="#shiny-apps" id="toc-shiny-apps">Shiny apps</a>
-  - <a href="#arma-process" id="toc-arma-process">ARMA Process</a>
-  - <a href="#bias-variance" id="toc-bias-variance">Bias Variance</a>
-  - <a href="#decision-tree" id="toc-decision-tree">Decision Tree</a>
-  - <a href="#kmeans" id="toc-kmeans">Kmeans</a>
-  - <a href="#kmeans-images" id="toc-kmeans-images">Kmeans Images</a>
-  - <a href="#logistic-regression" id="toc-logistic-regression">Logistic
-    Regression</a>
-  - <a href="#matrix-decompositions" id="toc-matrix-decompositions">Matrix
-    Decompositions</a>
+- [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
+- [Using apps locally](#using-apps-locally)
+- [Shiny apps](#shiny-apps)
+  - [ARMA Process](#arma-process)
+  - [Bias Variance](#bias-variance)
+  - [Binary Predictions Metrics](#binary-predictions-metrics)
+  - [Decision Tree](#decision-tree)
+  - [Kmeans](#kmeans)
+  - [Kmeans Images](#kmeans-images)
+  - [Logistic Regression](#logistic-regression)
+  - [Matrix Decompositions](#matrix-decompositions)
 
 ## FOA: ♫ Tell me *Y* ♪
 
@@ -61,6 +58,13 @@ the live version in
 See the live version in
 [shinyapps.io](https://jbkunst.shinyapps.io/bias-variance). Go to
 [index](#shiny-apps-for-educational-purposes).
+
+### Binary Predictions Metrics
+
+![](binary-predictions-metrics/screenshot.png) Source code
+[here](/binary-predictions-metrics). See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/binary-predictions-metrics).
+Go to [index](#shiny-apps-for-educational-purposes).
 
 ### Decision Tree
 

@@ -5,27 +5,19 @@ library(tidyverse)
 library(highcharter)
 library(markdown)
 
-# parameters & options ----------------------------------------------------
-primary_color <- "#262162"
-colors_app    <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
-# scales::show_col(hc_theme_smpl()$color)
+# theme options -----------------------------------------------------------
+apptheme <- bs_theme()
 
-apptheme <- bs_theme(
-  bg = "#F5F5F5",
-  fg = "#36454F", 
-  primary = primary_color, 
-  base_font =  font_google("IBM Plex Sans")
+sidebar <- purrr::partial(bslib::sidebar, width = 300)
+
+options(
+  highcharter.theme = hc_theme(
+    chart = list(style = list(fontFamily =  "system-ui")),
+    colors = unname(bs_get_variables(apptheme, c("primary", "danger", "success",  "warning", "info", "secondary")))
+    )
   )
 
-sidebar <- purrr::partial(
-  sidebar, 
-  bg = "#FDFDFD",
-  fg = "#36454F",
-  width = 300
-  )
-
-card <- function(...) bslib::card(..., style = "background-color: #FDFDFD;")
-
+# app options -------------------------------------------------------------
 LAG_MAX  <- 10
 STR_OBS  <- 20
 NOBS     <- 5000
@@ -33,8 +25,6 @@ AR       <- 0.0
 MA       <- 0.20
 SEED     <- 123
 DURATION <- 100 # needs to be <= than min refresh interval
-
-options(highcharter.theme = hc_theme_hcrt(colors = colors_app))
 
 # start chart
 set.seed(SEED)
@@ -44,14 +34,14 @@ ts_aux <- arima.sim(model = list(ar = AR, ma = MA), n = STR_OBS)
 teoACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = FALSE))
 smpACF <- as.numeric(acf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
 
-plot(smpACF, ylim = c(-1, 1))
-lines(teoACF)
+# plot(smpACF, ylim = c(-1, 1))
+# lines(teoACF)
 
 teoPACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = TRUE))
 smpPACF <- as.numeric(pacf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
 
-plot(smpPACF, ylim = c(-1, 1))
-lines(teoPACF)
+# plot(smpPACF, ylim = c(-1, 1))
+# lines(teoPACF)
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -71,7 +61,6 @@ ui <- page_fillable(
       width = 1/1,
       card(card_header(uiOutput("model", inline = TRUE)), card_body(highchartOutput("ts")))
       ),
-    br(),
     layout_column_wrap(
       width = 1/2,
       card(card_header("ACF"), card_body(highchartOutput("acf"))), 
@@ -130,12 +119,12 @@ server <- function(input, output, session) {
       marker = list(enabled = FALSE),
       animation = list(duration = DURATION),
       tooltip = list(valueDecimals = 3)
-    ) %>%
+    ) |>
       hc_navigator(
         enabled = TRUE,
         series = list(type = "line"),
         xAxis = list(labels = list(enabled = FALSE))
-      ) %>%
+      ) |>
       hc_yAxis_multiples(
         # default axis
         list(title = list(text = "")),
@@ -178,8 +167,8 @@ server <- function(input, output, session) {
     
     smpACF <- as.numeric(acf(head(ts, STR_OBS), lag.max = LAG_MAX, plot = FALSE)$acf)
     
-    highchartProxy("acf") %>%
-      hcpxy_update_series(id = "tacf", data = teoACF) %>%
+    highchartProxy("acf") |>
+      hcpxy_update_series(id = "tacf", data = teoACF) |>
       hcpxy_update_series(id = "sacf", data = smpACF)
     
     teoPACF <- as.numeric(
@@ -195,8 +184,8 @@ server <- function(input, output, session) {
     
     smpPACF <- as.numeric(pacf(head(ts, STR_OBS), lag.max = LAG_MAX, plot = FALSE)$acf)
     
-    highchartProxy("pacf") %>%
-      hcpxy_update_series(id = "tpacf", data = teoPACF) %>%
+    highchartProxy("pacf") |>
+      hcpxy_update_series(id = "tpacf", data = teoPACF) |>
       hcpxy_update_series(id = "spacf", data = smpPACF)
     
   })
@@ -218,10 +207,10 @@ server <- function(input, output, session) {
     
     smpACF <- as.numeric(acf(head(ts, value_to_add), lag.max = LAG_MAX, plot = FALSE)$acf)
     
-    highchartProxy("acf") %>%
+    highchartProxy("acf") |>
       hcpxy_update_series(id = "sacf", data = smpACF)
     
-    highchartProxy("ts") %>%
+    highchartProxy("ts") |>
       hcpxy_add_point(
         id = "ts",
         point = list(x = value_to_add, y = ts[value_to_add]),

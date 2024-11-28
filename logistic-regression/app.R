@@ -13,29 +13,16 @@ library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
 library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE)
 library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
 
-# parameters & options ----------------------------------------------------
-primary_color <- "#262162"
-# colors_app    <- c(primary_color, hc_theme_smpl()$colors[c(1, 4)])
-# scales::show_col(hc_theme_smpl()$color)
-
+# theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
+
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
-apptheme <- bs_theme(
-  bg = "#F5F5F5",
-  fg = "#36454F", 
-  primary = primary_color, 
-  base_font =  font_google("IBM Plex Sans")
-  )
+apptheme <- bs_theme()
 
-sidebar <- purrr::partial(
-  sidebar, 
-  bg = "#FDFDFD",
-  fg = "#36454F",
-  width = 300
-  )
+sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
-card <- function(...) bslib::card(..., style = "background-color: #FDFDFD;")
+primary_color <- unname(bs_get_variables(apptheme, c("primary")))
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -101,7 +88,6 @@ ui <- page_fillable(
       card(card_body(plotOutput("join_dist", width = "100%", height = "100%")), full_screen = TRUE),
       card(card_body(plotOutput("marginal_dist", width = "100%", height = "100%")), full_screen = TRUE)
       ),
-    br(),
     layout_column_wrap(
       width = 1/3,
       height = "40%",
