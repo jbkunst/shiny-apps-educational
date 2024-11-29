@@ -22,6 +22,8 @@ apptheme <- bs_theme()
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
+card <- purrr::partial(bslib::card, full_screen = TRUE)
+
 primary_color <- unname(bs_get_variables(apptheme, c("primary")))
 
 # ui ----------------------------------------------------------------------

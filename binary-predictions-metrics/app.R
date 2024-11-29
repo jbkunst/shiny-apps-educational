@@ -13,6 +13,8 @@ apptheme <- bs_theme()
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
+card <- purrr::partial(bslib::card, full_screen = TRUE)
+
 options(
   highcharter.theme = hc_theme(
     chart = list(style = list(fontFamily =  "system-ui")),
