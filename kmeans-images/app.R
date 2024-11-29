@@ -5,7 +5,8 @@ library(tidyverse)
 library(scales)
 library(jpeg)
 library(imager)
-library(threejs) # devtools::install_github("bwlewis/rthreejs")
+# library(threejs) # devtools::install_github("bwlewis/rthreejs")
+library(plotly)
 library(markdown) # htmltools::includeMarkdown
 library(shinyWidgets)
 
@@ -19,7 +20,7 @@ apptheme <- bs_theme()
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
 card <- purrr::partial(bslib::card, full_screen = TRUE)
-
+ 
 # app options -------------------------------------------------------------
 img_choices <- setNames(
   dir("www/imgs/", full.names = TRUE),
@@ -68,7 +69,7 @@ ui <- page_fillable(
         ),
       card(
         card_header(tags$small("3D Scatter plot of sample of pixels")),
-        card_body(scatterplotThreeOutput("scatterplot3d"))
+        card_body(plotlyOutput("scatterplot3d"))
         ),
       card(
         card_header("Result Image"),
@@ -80,7 +81,7 @@ ui <- page_fillable(
         ),
       card(
         card_header(tags$small("3D Scatter plot from result image")),
-        card_body(scatterplotThreeOutput("scatterplot3dresults"))
+        card_body(plotlyOutput("scatterplot3dresults"))
         )
       )
     )
@@ -120,7 +121,7 @@ server <- function(input, output, session) {
     
     image <- readJPEG(input$image_file)
     
-    message("processing image")
+    cli::cli_alert_info("processing image {input$image_file}")
     
     df_image <- map(1:3, function(i) image[,,i]) %>% 
       map(function(m) {
@@ -146,7 +147,7 @@ server <- function(input, output, session) {
   
   df_image_kmeans <- reactive({
     
-    message("running stats::kmeans")
+    cli::cli_inform("running stats::kmeans")
     
     df_image <- df_image()
     
@@ -242,26 +243,29 @@ server <- function(input, output, session) {
     
   })
   
-  output$scatterplot3d <- renderScatterplotThree({
+  output$scatterplot3d <- renderPlotly({
     
     df_image <- df_image()
     
     set.seed(123)
     
     daux <- df_image |> 
-      sample_n(500) |> 
-      mutate(across(r:b, round, digits = 3)) |> 
+      sample_n(1000) |> 
+      mutate(across(c(r,g, b), function(x) round(x, 2))) |> 
       mutate(label = sprintf("rgb (%s, %s, %s)", r, g, b))
     
-    scatterplot3js(
-      as.matrix(daux[c("r", "g", "b")]),
-      # daux[["g"]],
-      # daux[["b"]],
-      color = daux[["rgb"]],
-      labels = daux[["label"]],
-      pch = "o",
-      # stroke = "gray",
-      # renderer = c("canvas")
+    plot_ly(
+      data = daux,
+      x = ~r,
+      y = ~g,
+      z = ~b,
+      type = "scatter3d",
+      mode = "markers",
+      marker = list(
+        color = ~rgb, # Assuming `rgb` is in a format compatible with plotly, e.g., hex colors
+        symbol = "circle"
+      ),
+      text = ~label # Tooltip text
     )
     
     
@@ -331,26 +335,33 @@ server <- function(input, output, session) {
       labs(x = NULL, y = NULL)
   })
   
-  output$scatterplot3dresults <- renderScatterplotThree({
+  output$scatterplot3dresults <- renderPlotly({
     
     df_image_kmeans <- df_image_kmeans()
     
     set.seed(123)
     
     daux <- df_image_kmeans |> 
-      sample_n(500) |> 
-      mutate(across(r:b, round, digits = 3)) |> 
-      mutate(label = sprintf("rgb (%s, %s, %s)", r, g, b))
+      sample_n(1000) |> 
+      mutate(across(c(r,g, b), function(x) round(x, 2))) |> 
+      mutate(across(c(r_app, g_app, b_app), function(x) round(x, 2))) |> 
+      mutate(
+        label = sprintf("rgb (%s, %s, %s)", r, g, b),
+        label_app = sprintf("rgb (%s, %s, %s)", r_app, g_app, b_app),
+        )
     
-    scatterplot3js(
-      as.matrix(daux[c("r", "g", "b")]),
-      # daux[["g"]],
-      # daux[["b"]],
-      color = daux[["rgb_app"]],
-      labels = daux[["label"]],
-      pch = "o",
-      # stroke = "gray",
-      # renderer = c("canvas") 
+    plot_ly(
+      data = daux,
+      x = ~r,
+      y = ~g,
+      z = ~b,
+      type = "scatter3d",
+      mode = "markers",
+      marker = list(
+        color = ~rgb_app, # Assuming `rgb` is in a format compatible with plotly, e.g., hex colors
+        symbol = "circle"
+      ),
+      text = ~ glue::glue("{label_app}\n{label}")# Tooltip text
     )
     
   })

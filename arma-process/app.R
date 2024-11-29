@@ -148,11 +148,9 @@ server <- function(input, output, session) {
     
     # if ts change redraw the teo ACF
     ts <- ts()
-    
-    # message("asdasda")
-    
-    print(input$ar)
-    print(input$ma)
+        
+    cli::cli_inform(input$ar)
+    cli::cli_inform(input$ma)
     
     teoACF <- as.numeric(
       ARMAacf(

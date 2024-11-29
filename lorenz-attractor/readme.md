@@ -15,3 +15,6 @@ Some Applications:
 - Meteorology and climate modeling.
 - Chaos theory and nonlinear dynamics.
 - Visualization of complex systems.
+
+App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstat and shiny assistant. Code 
+[here](https://github.com/jbkunst/shiny-apps-educational).
