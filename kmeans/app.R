@@ -2,7 +2,7 @@
 library(shiny)
 library(bslib)
 library(tidyverse)
-library(klassets)
+library(klassets) # remotes::install_github("jbkunst/klassets")
 library(markdown)
 library(ggforce)
 library(deldir)
@@ -29,12 +29,10 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
-      # title = tags$h5("K-means"),
       title = "K-means",
       withMathJax(),
-      tags$style(type = "text/css", ".irs-grid-pol.small {height: 0px;}"),
+      # tags$style(type = "text/css", ".irs-grid-pol.small {height: 0px;}"),
       
       # "Algorithm parameters",
       sliderInput(
@@ -66,22 +64,15 @@ ui <- page_fillable(
         ),
         tags$small(htmltools::includeMarkdown("readme.md"))
       ),
-    layout_column_wrap(
-      width = 1,
-      height = "60%",
-      card(
-        card_header(uiOutput("iter")),
-        card_body(plotOutput("iter_plot"))
-        )
-      ),
-    # br(),
-    layout_column_wrap(
-      width = 1/4,
-      height = "40%",
+    
+    layout_columns(
+      col_widths = c(12, 3, 3, 3, 3),
+      row_heights = c(3, 2),
+      card(card_header(uiOutput("iter")), card_body(plotOutput("iter_plot"))),
       card(card_body(tableOutput("iter_table"))),
       card(card_body(plotOutput("wc"))),
       card(card_body(plotOutput("convergence"))),
-      card(card_body(plotOutput("elbow"))),
+      card(card_body(plotOutput("elbow")))
       )
     )
   )

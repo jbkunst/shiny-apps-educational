@@ -98,7 +98,6 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
       title = "Bias & Variance",
       sliderInput(
@@ -124,18 +123,16 @@ ui <- page_fillable(
       ),
       tags$small(htmltools::includeMarkdown("readme.md"))
     ),
-    layout_column_wrap(
-      width = 1/1,
-      card(card_body(highchartOutput("chartdata")))
-      ),
-    layout_column_wrap(
-      width = 1/2,
+    
+    layout_columns(
+      col_widths = c(12, 6, 6),
+      row_heights = c(3, 2),
+      card(card_body(highchartOutput("chartdata"))),
       card(card_body(highchartOutput("charterror"))), 
       card(card_body(highchartOutput("chartbandwidth")))
       )
     )
   )
-
 
 # server ------------------------------------------------------------------
 server <- function(input, output, session) {

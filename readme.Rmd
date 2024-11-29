@@ -58,20 +58,16 @@ apps_valid <- map(apps, dir) |>
 
 apps <- apps[apps_valid]
 
-dir(full.names = TRUE, recursive = TRUE) |>
-  str_subset("screenshot.png") |>
-  fs::file_delete()
+# dir(full.names = TRUE, recursive = TRUE) |>
+#   str_subset("screenshot.png") |>
+#   fs::file_delete()
 
 purrr::walk(apps, function(app = "matrix-decompositions"){
-  
   # app <-  "arma-process"
   # app <- "kmeans-images"
   
   cli::cli_progress_step(app)
-  
-  # message(app)
-  # cat(app)
-  
+
   fout <- fs::path(app, "screenshot", ext = "png")
   
   if(file.exists(fout)) return(TRUE)
@@ -86,7 +82,6 @@ purrr::walk(apps, function(app = "matrix-decompositions"){
   # )
   # webshot2::webshot(url = str_glue("http://127.0.0.1:{ port }/app.Rmd"), file = fout, delay = 15)
   # p$finalize()
-  
   
 })
 ```

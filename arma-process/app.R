@@ -51,7 +51,6 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
       title = "ARMA model Simulation",
       sliderInput("ar", "AR", -.9, .9, value = AR, 0.05, width = "100%"),
@@ -59,12 +58,11 @@ ui <- page_fillable(
       sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%"),
       tags$small(htmltools::includeMarkdown("readme.md"))
       ),
-    layout_column_wrap(
-      width = 1/1,
-      card(card_header(uiOutput("model", inline = TRUE)), card_body(highchartOutput("ts")))
-      ),
-    layout_column_wrap(
-      width = 1/2,
+    
+    layout_columns(
+      col_widths = c(12, 6, 6),
+      row_heights = c(3, 2),
+      card(card_header(uiOutput("model", inline = TRUE)), card_body(highchartOutput("ts"))),
       card(card_header("ACF"), card_body(highchartOutput("acf"))), 
       card(card_header("PACF"), card_body(highchartOutput("pacf")))
       )

@@ -14,15 +14,15 @@ library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE
 library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
 
 # theme options -----------------------------------------------------------
-thematic::thematic_shiny(font = "auto")
-
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
-
 apptheme <- bs_theme()
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
-card <- purrr::partial(bslib::card, full_screen = TRUE)
+card <- purrr::partial(bslib::card)
+
+thematic::thematic_shiny(font = "auto")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 primary_color <- unname(bs_get_variables(apptheme, c("primary")))
 
@@ -32,7 +32,6 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
       title = "Logistic Regression",
       withMathJax(),
@@ -84,15 +83,12 @@ ui <- page_fillable(
       ),
       tags$small(htmltools::includeMarkdown("readme.md"))
       ),
-    layout_column_wrap(
-      width = 1/2,
-      height = "60%",
-      card(card_body(plotOutput("join_dist", width = "100%", height = "100%")), full_screen = TRUE),
-      card(card_body(plotOutput("marginal_dist", width = "100%", height = "100%")), full_screen = TRUE)
-      ),
-    layout_column_wrap(
-      width = 1/3,
-      height = "40%",
+    
+    layout_columns(
+      col_widths = c(6, 6, 4, 4, 4),
+      row_heights = c(3, 2),
+      card(card_body(plotOutput("join_dist", width = "100%", height = "100%"))),
+      card(card_body(plotOutput("marginal_dist", width = "100%", height = "100%"))),
       card(card_body(plotOutput("roc_plot", width = "100%", height = "100%"))),
       card(card_body(plotOutput("bg_plot", width = "100%", height = "100%"))),
       card(card_body(tableOutput("coef_table")))
@@ -138,13 +134,10 @@ server <- function(input, output, session) {
     
     p <- ggplot()
     
-    if(input$show_model_field) {
-      
+    if (input$show_model_field) {
       p <- plot(dxy)
       
     } else {
-      
-      
       p <- klassets:::plot.klassets_response_xy(dxy)
       
     }

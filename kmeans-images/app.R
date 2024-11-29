@@ -32,7 +32,6 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
       title = "K-means on images",
       withMathJax(),
@@ -55,8 +54,10 @@ ui <- page_fillable(
       checkboxInput("show_axes", tags$small("Show image axes")),
       tags$small(htmltools::includeMarkdown("readme.md"))
       ),
-    layout_column_wrap(
-      width = 1/3,
+    
+    layout_columns(
+      col_widths = 4,
+      row_heights = 1,
       card(
         card_header("Image"),
         card_body(plotOutput("originalImage"))
@@ -68,11 +69,7 @@ ui <- page_fillable(
       card(
         card_header(tags$small("3D Scatter plot of sample of pixels")),
         card_body(scatterplotThreeOutput("scatterplot3d"))
-        )
-      ),
-    # br(),
-    layout_column_wrap(
-      width = 1/3,
+        ),
       card(
         card_header("Result Image"),
         card_body(plotOutput("resultImage"))

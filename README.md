@@ -11,6 +11,7 @@ Shiny apps for educational purposes
   - [Kmeans](#kmeans)
   - [Kmeans Images](#kmeans-images)
   - [Logistic Regression](#logistic-regression)
+  - [Lorenz Attractor](#lorenz-attractor)
   - [Matrix Decompositions](#matrix-decompositions)
 
 ## FOA: ♫ Tell me *Y* ♪
@@ -91,6 +92,13 @@ See the live version in
 ![](logistic-regression/screenshot.png) Source code
 [here](/logistic-regression). See the live version in
 [shinyapps.io](https://jbkunst.shinyapps.io/logistic-regression). Go to
+[index](#shiny-apps-for-educational-purposes).
+
+### Lorenz Attractor
+
+![](lorenz-attractor/screenshot.png) Source code
+[here](/lorenz-attractor). See the live version in
+[shinyapps.io](https://jbkunst.shinyapps.io/lorenz-attractor). Go to
 [index](#shiny-apps-for-educational-purposes).
 
 ### Matrix Decompositions

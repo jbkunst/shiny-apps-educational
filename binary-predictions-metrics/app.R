@@ -44,7 +44,6 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     fillable = TRUE,
-    border = FALSE,
     sidebar = sidebar(
       title = "Binary predicctions",
       withMathJax(),
@@ -67,8 +66,6 @@ ui <- page_fillable(
       )
     )
   )
-
-
 
 # server ------------------------------------------------------------------
 server <- function(input, output, session) {
