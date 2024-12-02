@@ -15,8 +15,10 @@ card <- purrr::partial(bslib::card, full_screen = TRUE)
 options(
   highcharter.theme = hc_theme(
     chart = list(style = list(fontFamily =  "system-ui")),
+    legend = list(itemStyle = list(fontWeight = "normal")),
     colors = unname(bs_get_variables(apptheme, c("primary", "danger", "warning", "success", "info", "secondary"))),
     tooltip = list(valueDecimals = 3, shared = TRUE),
+    xAxis = list(gridLineWidth = 1),
     plotOptions = list(
       spline = list(marker = list(enabled = FALSE, symbol = "cirlce")),
       line = list(marker = list(enabled = FALSE, symbol = "cirlce")),

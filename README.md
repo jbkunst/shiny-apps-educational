@@ -6,7 +6,6 @@ Shiny apps for educational purposes
 - [Shiny apps](#shiny-apps)
   - [ARMA Process](#arma-process)
   - [Bias Variance](#bias-variance)
-  - [Binary Predictions Metrics](#binary-predictions-metrics)
   - [Decision Tree](#decision-tree)
   - [Kmeans](#kmeans)
   - [Kmeans Images](#kmeans-images)
@@ -59,13 +58,6 @@ the live version in
 See the live version in
 [shinyapps.io](https://jbkunst.shinyapps.io/bias-variance). Go to
 [index](#shiny-apps-for-educational-purposes).
-
-### Binary Predictions Metrics
-
-![](binary-predictions-metrics/screenshot.png) Source code
-[here](/binary-predictions-metrics). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/binary-predictions-metrics).
-Go to [index](#shiny-apps-for-educational-purposes).
 
 ### Decision Tree
 

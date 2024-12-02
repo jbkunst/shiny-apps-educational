@@ -13,14 +13,10 @@ run_app <- function(app = "kmeans"){
 
   fp <- file.path(fileDir, "shiny-apps-educational-master", app)
   
-  if(any(stringr::str_detect(dir(fp), "app.Rmd"))) {
-    app_rmd <- stringr::str_subset(dir(fp, full.names = TRUE), "app.Rmd")
-    rmarkdown::run(app_rmd)
-    
-  } else {
-    # normal shiny
-    shiny::runApp(fp)
-  }
+  shiny::runApp(fp)
+  
+  # app_rmd <- stringr::str_subset(dir(fp, full.names = TRUE), "app.Rmd")
+  # rmarkdown::run(app_rmd)
   
 }
 

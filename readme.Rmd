@@ -57,10 +57,11 @@ apps_valid <- map(apps, dir) |>
   map_lgl(any)
 
 apps <- apps[apps_valid]
+apps <- setdiff(apps, c("binary-predictions-metrics"))
 
-# dir(full.names = TRUE, recursive = TRUE) |>
-#   str_subset("screenshot.png") |>
-#   fs::file_delete()
+dir(full.names = TRUE, recursive = TRUE) |>
+  str_subset("screenshot.png") |>
+  fs::file_delete()
 
 purrr::walk(apps, function(app = "matrix-decompositions"){
   # app <-  "arma-process"

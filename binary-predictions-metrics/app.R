@@ -18,9 +18,12 @@ card <- purrr::partial(bslib::card, full_screen = TRUE)
 options(
   highcharter.theme = hc_theme(
     chart = list(style = list(fontFamily =  "system-ui")),
+    legend = list(itemStyle = list(fontWeight = "normal")),
+    xAxis = list(gridLineWidth = 1),
     colors = unname(bs_get_variables(apptheme, c("primary", "danger", "success",  "warning", "info", "secondary")))
+    )
   )
-)
+
 # data --------------------------------------------------------------------
 credit_data <- modeldata::credit_data |> 
   as_tibble() |> 
