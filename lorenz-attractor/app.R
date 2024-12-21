@@ -4,6 +4,7 @@ library(bslib)
 library(plotly)
 library(ggplot2)
 library(dplyr)
+library(markdown)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
@@ -111,7 +112,8 @@ server <- function(input, output, session) {
     ggplot(df, aes(x = x, y = y, color = time)) +
       geom_path() +
       scale_color_viridis_c() +
-      labs(title = "X-Y Projection")
+      labs(title = "X-Y Projection") +
+      coord_equal()
   })
   
   output$xz_plot <- renderPlot({
@@ -119,7 +121,8 @@ server <- function(input, output, session) {
     ggplot(df, aes(x = x, y = z, color = time)) +
       geom_path() +
       scale_color_viridis_c() +
-      labs(title = "X-Z Projection")
+      labs(title = "X-Z Projection") +
+      coord_equal()
   })
   
   output$yz_plot <- renderPlot({
@@ -127,7 +130,8 @@ server <- function(input, output, session) {
     ggplot(df, aes(x = y, y = z, color = time)) +
       geom_path() +
       scale_color_viridis_c() +
-      labs(title = "Y-Z Projection") 
+      labs(title = "Y-Z Projection") +
+      coord_equal()
   })
 }
 

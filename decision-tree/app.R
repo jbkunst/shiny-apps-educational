@@ -138,10 +138,8 @@ server <- function(input, output, session) {
     
     if (input$show_model_field) {
       p <- plot(dxy)
-      
     } else {
       p <- klassets:::plot.klassets_response_xy(dxy)
-      
     }
     
     p

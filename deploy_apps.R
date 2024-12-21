@@ -12,6 +12,8 @@ apps_valid <- map(apps, dir) |>
 
 apps <- apps[apps_valid]
 
+apps <- setdiff(apps, c("binary-predictions-metrics"))
+
 if(FALSE){
   # delete all rsconnect folders
   fs::dir_ls(recurse = TRUE) |> 
