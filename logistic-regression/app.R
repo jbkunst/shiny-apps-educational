@@ -11,7 +11,7 @@ library(patchwork)
 library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
 library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE)
-library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
+# library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
