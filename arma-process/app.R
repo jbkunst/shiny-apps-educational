@@ -36,13 +36,13 @@ set.seed(SEED)
 ts_aux <- arima.sim(model = list(ar = AR, ma = MA), n = STR_OBS)
 
 teoACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = FALSE))
-smpACF <- as.numeric(acf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
+smpACF <- as.numeric(acf(ts_aux, lag.max = LAG_MAX, plot = FALSE)$acf)
 
 # plot(smpACF, ylim = c(-1, 1))
 # lines(teoACF)
 
 teoPACF <- as.numeric(ARMAacf(ar = AR, ma = MA, lag.max = LAG_MAX, pacf = TRUE))
-smpPACF <- as.numeric(pacf(ts_aux, lag.max = LAG_MAX, plot = TRUE)$acf)
+smpPACF <- as.numeric(pacf(ts_aux, lag.max = LAG_MAX, plot = FALSE)$acf)
 
 # plot(smpPACF, ylim = c(-1, 1))
 # lines(teoPACF)
@@ -159,7 +159,7 @@ server <- function(input, output, session) {
         # ar = 0.2,
         # ma = 0.2,
         ar = ifelse(!is.null(input$ar), input$ar, AR),
-        ma = ifelse(!is.null(input$ma), input$ar, MA),
+        ma = ifelse(!is.null(input$ma), input$ma, MA),
         lag.max = LAG_MAX,
         pacf = FALSE
       )
@@ -176,7 +176,7 @@ server <- function(input, output, session) {
         # ar = 0.2,
         # ma = 0.2,
         ar = ifelse(!is.null(input$ar), input$ar, AR),
-        ma = ifelse(!is.null(input$ma), input$ar, MA),
+        ma = ifelse(!is.null(input$ma), input$ma, MA),
         lag.max = LAG_MAX,
         pacf = TRUE
       )
