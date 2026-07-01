@@ -20,10 +20,10 @@ options(
     tooltip = list(valueDecimals = 3, shared = TRUE),
     xAxis = list(gridLineWidth = 1),
     plotOptions = list(
-      spline = list(marker = list(enabled = FALSE, symbol = "cirlce")),
-      line = list(marker = list(enabled = FALSE, symbol = "cirlce")),
+      spline = list(marker = list(enabled = FALSE, symbol = "circle")),
+      line = list(marker = list(enabled = FALSE, symbol = "circle")),
       scatter = list(
-        marker = list(symbol = "cirlce"),
+        marker = list(symbol = "circle"),
         animation = list(duration = 100),
         events = list(legendItemClick = JS("function () { return false; }"))
       )
@@ -112,7 +112,7 @@ ui <- page_fillable(
       ),
       sliderInput(
         "n",
-        tags$small("Number of train observations"),
+        tags$small("Number of training observations"),
         min = 50,
         max = 100,
         step = 10,
@@ -332,7 +332,7 @@ server <- function(input, output, session) {
           )
         )
       ) |>
-      # this series just for mantain order colors
+      # this series just for maintain order colors
       hc_add_series(data = c(NA), showInLegend = FALSE) |>
       hc_add_series(data = tibble(x = 0, y = derrl$train), id = "train", name =  "Train") |>
       hc_add_series(data = tibble(x = 1, y = derrl$test), id = "test", name =  "Test", 
