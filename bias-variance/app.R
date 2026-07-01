@@ -120,7 +120,7 @@ ui <- page_fillable(
       ),
       shiny::checkboxInput(
         "show_train",
-        tags$small("Show train set information"),
+        tags$small("Show test set information"),
         value = FALSE
       ),
       tags$small(htmltools::includeMarkdown("readme.md"))
