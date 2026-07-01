@@ -1,0 +1,49 @@
+cran_packages <- c(
+  "broom",
+  "bslib",
+  "callr",
+  "cli",
+  "deldir",
+  "dplyr",
+  "fs",
+  "ggforce",
+  "ggplot2",
+  "glue",
+  "here",
+  "highcharter",
+  "htmltools",
+  "imager",
+  "jpeg",
+  "knitr",
+  "magick",
+  "markdown",
+  "matrixcalc",
+  "metR",
+  "Metrics",
+  "modeldata",
+  "patchwork",
+  "plotly",
+  "purrr",
+  "remotes",
+  "rmarkdown",
+  "rsconnect",
+  "scales",
+  "shiny",
+  "shinyWidgets",
+  "stringr",
+  "thematic",
+  "tibble",
+  "tidyverse",
+  "viridisLite"
+)
+
+github_packages <- c(
+  "AllanCameron/geomtextpath",
+  "jbkunst/celavi",
+  "jbkunst/klassets",
+  "jbkunst/risk3r",
+  "rstudio/webshot2"
+)
+
+install.packages(cran_packages)
+remotes::install_github(github_packages, upgrade = "never")
