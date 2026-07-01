@@ -8,7 +8,6 @@ library(markdown)
 library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
 library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE)
-library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
@@ -70,7 +69,7 @@ ui <- page_fillable(
       ),
       sliderInput(
         "n",
-        tags$small("Number of observartions"),
+        tags$small("Number of observations"),
         min = 100,
         max = 1000,
         step = 100,
@@ -78,7 +77,7 @@ ui <- page_fillable(
       ),
       checkboxInput(
         "show_model_field", 
-        tags$small("Show model predicctions"),
+        tags$small("Show model predictions"),
         value = TRUE
       ),
       tags$small(htmltools::includeMarkdown("readme.md"))
@@ -158,6 +157,8 @@ server <- function(input, output, session) {
     
     dxy <- dxy()
     
+    # `prediction` is aligned with the first response level; `1 - prediction`
+    # plots the ROC curve using TRUE as the positive class.
     droc <- risk3r::roc_data(
       actual = as.numeric(dxy$response),
       predicted = 1 - dxy$prediction
@@ -181,6 +182,7 @@ server <- function(input, output, session) {
     
     dxy <- dxy()
     
+    # Keep the same TRUE-positive orientation used by the ROC curve.
     ksmod <- risk3r::ks(
       actual = as.numeric(dxy$response),
       predicted = 1 - dxy$prediction
