@@ -166,7 +166,7 @@ server <- function(input, output, session) {
     
     aucroc <- Metrics::auc(
       actual = as.numeric(dxy$response),
-      predicted = dxy$prediction
+      predicted = 1 - dxy$prediction
     )
     
     ggplot(droc) +
