@@ -41,6 +41,25 @@ cat(
 )
 ```
 
-Source https://en.wikipedia.org/wiki/LU_decomposition
+Quick check: multiplying the lower and upper factors gives back the original matrix.
 
+```{r, results='asis'}
+LU <- L %*% U
+LUf <- round(LU, 5)
+Af <- round(params$mat, 5)
+
+cat(
+  str_c(
+    "$$ LU = ",
+    matrix2latex(LUf),
+    " = A = ",
+    matrix2latex(Af),
+    "$$"
+  )
+)
+```
+
+Further reading:
+
+- https://en.wikipedia.org/wiki/LU_decomposition
 

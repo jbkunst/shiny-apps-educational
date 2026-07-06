@@ -1,0 +1,128 @@
+---
+title: "pca"
+output: html_document
+params:
+    mat: !r matrix(c(2, 1, 1, 2), ncol = 2)
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat = matrix(c(2, 1, 1, 2), ncol = 2))
+library(stringr)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  fig.align = "center",
+  fig.retina = 2
+)
+source(here::here("helpers.R"))
+```
+
+<h3 class="title">Principal component analysis</h3>
+
+PCA is not another decomposition in the same sense as QR, LU, or Cholesky. It is a way to use decompositions, usually eigen decomposition or SVD, to summarize information in larger data matrices.
+
+With real data, we usually center a data matrix $X$, build a covariance matrix, and then find directions that explain the most variance. The goal is to keep a compact representation of the data: fewer dimensions, but most of the important information.
+
+In this app, the generated matrix $A$ is symmetric positive-definite, so we can read it as a covariance-like matrix and ask: which directions carry most of the information?
+
+```{r, results='asis'}
+pca.mat <- eigen(params$mat, symmetric = TRUE)
+
+values <- pmax(pca.mat$values, 0)
+P <- pca.mat$vectors
+Lambda <- diag(values)
+
+Pf <- round(P, 5)
+Lambdaf <- round(Lambda, 5)
+Ptf <- round(t(P), 5)
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(Pf),
+    " \\times ",
+    matrix2latex(Lambdaf),
+    " \\times ",
+    matrix2latex(Ptf),
+    "$$"
+  )
+)
+```
+
+<h4 class="title">Explained variance</h4>
+
+```{r, fig.width=7, fig.height=3.5, fig.bg="#020204", out.width="100%"}
+explained <- values / sum(values)
+cumulative <- cumsum(explained)
+component_labels <- str_c("PC", seq_along(explained))
+components_to_80 <- which(cumulative >= 0.8)[1]
+
+bar_colors <- rep("#0F6B2E", length(explained))
+bar_colors[seq_len(components_to_80)] <- "#22B455"
+
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar))
+
+par(
+  bg = "#020204",
+  fg = "#92E5A1",
+  col.axis = "#92E5A1",
+  col.lab = "#92E5A1",
+  mar = c(4, 4, 1, 1)
+)
+
+explained_percent <- explained * 100
+y_max <- max(explained_percent) * 1.25
+
+bar_midpoints <- barplot(
+  explained_percent,
+  names.arg = component_labels,
+  ylim = c(0, y_max),
+  col = bar_colors,
+  border = "#92E5A1",
+  axes = FALSE,
+  xlab = "Principal component",
+  ylab = "Explained variance (%)"
+)
+
+axis(2, las = 1, col = "#22B455", col.axis = "#92E5A1")
+box(col = "#22B455")
+
+text(
+  x = bar_midpoints,
+  y = explained_percent,
+  labels = str_c(round(explained_percent, 1), "%"),
+  pos = 3,
+  col = "#D7FFD7",
+  cex = 0.85
+)
+```
+
+```{r, results='asis'}
+component_word <- if (components_to_80 == 1) "component" else "components"
+cumulative_percent <- round(cumulative[components_to_80] * 100, 1)
+
+cat(
+  str_c(
+    '<p class="pca-note">',
+    "The first ",
+    '<span class="pca-dominant">',
+    components_to_80,
+    "</span> ",
+    component_word,
+    " summarize about ",
+    '<span class="pca-dominant">',
+    cumulative_percent,
+    "%</span> of the total variance. ",
+    "This is the main PCA idea: keep a summarized representation of the data by preserving the strongest directions.",
+    "</p>"
+  )
+)
+```
+
+Further reading:
+
+- https://en.wikipedia.org/wiki/Principal_component_analysis
+- https://en.wikipedia.org/wiki/Singular_value_decomposition

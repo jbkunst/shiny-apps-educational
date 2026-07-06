@@ -35,17 +35,39 @@ cho.mat <- chol(params$mat)
 L <- t(cho.mat)
 Lt <- t(L)
 
+Lf <- round(L, 5)
+Ltf <- round(Lt, 5)
+
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(L),
+    matrix2latex(Lf),
     " \\times ",
-    matrix2latex(Lt),
+    matrix2latex(Ltf),
     "$$"
   )
 )
 ```
 
-Source https://en.wikipedia.org/wiki/Cholesky_decomposition
+Quick check: multiplying $L$ by its transpose gives back $A$.
 
+```{r, results='asis'}
+LLt <- L %*% Lt
+LLtf <- round(LLt, 5)
+Af <- round(params$mat, 5)
+
+cat(
+  str_c(
+    "$$ LL^{\\mathrm {T}} = ",
+    matrix2latex(LLtf),
+    " = A = ",
+    matrix2latex(Af),
+    "$$"
+  )
+)
+```
+
+Further reading:
+
+- https://en.wikipedia.org/wiki/Cholesky_decomposition
 

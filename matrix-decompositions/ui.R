@@ -15,6 +15,7 @@ page_sidebar(
         "SVD" = "svd",
         "Eigen"  = "eigen",
         "Spectral" = "spectral",
+        "PCA" = "pca",
         "\\(QR\\)" = "qr",
         "\\(LU\\)" = "lu",
         "Cholesky" = "cholesky"
@@ -72,6 +73,10 @@ page_sidebar(
         tags$p(
           "Random values use integers up to the selected maximum absolute value. ",
           "The diagonal is adjusted automatically to keep the matrix positive-definite."
+        ),
+        tags$p(
+          "For PCA, the same matrix is interpreted as a covariance-like matrix ",
+          "so we can talk about variance explained by principal components."
         )
       ),
       accordion_panel(

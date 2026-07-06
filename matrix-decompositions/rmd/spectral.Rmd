@@ -10,7 +10,12 @@ editor_options:
 ```{r, include=FALSE}
 # params <- list(mat = matrix(c(2, 1, 1, 2), ncol = 2))
 library(stringr)
-knitr::opts_chunk$set(echo = FALSE)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  fig.align = "center",
+  fig.retina = 2
+)
 source(here::here("helpers.R"))
 ```
 
@@ -44,6 +49,73 @@ cat(
 )
 ```
 
+<h4 class="title">Eigenvalue sizes</h4>
+
+```{r, fig.width=7, fig.height=3.5, fig.bg="#020204", out.width="100%"}
+lambda <- spectral.mat$values
+direction_labels <- str_c("q", seq_along(lambda))
+dominant_index <- which.max(lambda)
+
+bar_colors <- rep("#0F6B2E", length(lambda))
+bar_colors[dominant_index] <- "#22B455"
+
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar))
+
+par(
+  bg = "#020204",
+  fg = "#92E5A1",
+  col.axis = "#92E5A1",
+  col.lab = "#92E5A1",
+  mar = c(4, 4, 1, 1)
+)
+
+y_max <- max(lambda) * 1.25
+
+bar_midpoints <- barplot(
+  lambda,
+  names.arg = direction_labels,
+  ylim = c(0, y_max),
+  col = bar_colors,
+  border = "#92E5A1",
+  axes = FALSE,
+  xlab = "Eigenvector direction",
+  ylab = "Eigenvalue"
+)
+
+axis(2, las = 1, col = "#22B455", col.axis = "#92E5A1")
+box(col = "#22B455")
+
+text(
+  x = bar_midpoints,
+  y = lambda,
+  labels = round(lambda, 3),
+  pos = 3,
+  col = "#D7FFD7",
+  cex = 0.85
+)
+```
+
+```{r, results='asis'}
+dominant_label <- direction_labels[dominant_index]
+dominant_value <- round(lambda[dominant_index], 3)
+
+cat(
+  str_c(
+    '<p class="spectral-note">',
+    "The eigenvalue profile shows how much the matrix stretches each eigenvector direction. ",
+    "The tallest bar, ",
+    '<span class="spectral-dominant">',
+    dominant_label,
+    "</span>, is dominant because movement in that direction is amplified the most ",
+    "(eigenvalue = ",
+    dominant_value,
+    ").",
+    "</p>"
+  )
+)
+```
+
 Check that the eigenvectors are orthonormal:
 
 ```{r, results='asis'}
@@ -63,7 +135,7 @@ cat(
 )
 ```
 
-Sources:
+Further reading:
 
 - https://en.wikipedia.org/wiki/Spectral_theorem
 - https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix

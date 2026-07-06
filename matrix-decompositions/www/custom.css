@@ -24,3 +24,17 @@
   width: 100%;
   margin-top: 0.75rem;
 }
+
+.spectral-note,
+.pca-note {
+  color: #92E5A1;
+  border-left: 3px solid #22B455;
+  padding: 0.6rem 0.8rem;
+  background: rgba(34, 180, 85, 0.08);
+}
+
+.spectral-dominant,
+.pca-dominant {
+  color: #D7FFD7;
+  font-weight: 700;
+}

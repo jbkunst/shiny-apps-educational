@@ -43,7 +43,7 @@ cat(
 And $Q$ is an orthogonal because $Q^{\mathrm {T} }Q=QQ^{\mathrm {T} }=I$.
 
 ```{r, results='asis'}
-QtQ <- t(Qf) %*% Qf
+QtQ <- t(Q) %*% Q
 QtQf <- round(QtQ, 5)
 
 Qtf <-  round(t(Q), 5)
@@ -62,4 +62,6 @@ cat(
 ```
 
 
-Source https://en.wikipedia.org/wiki/QR_decomposition
+Further reading:
+
+- https://en.wikipedia.org/wiki/QR_decomposition

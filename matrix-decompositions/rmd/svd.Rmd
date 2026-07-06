@@ -86,7 +86,7 @@ cat(
 ```
 
 
-Sources: 
+Further reading:
 
 - https://en.wikipedia.org/wiki/Singular_value_decomposition
 - https://r-snippets.readthedocs.io/en/latest/la/svd.html

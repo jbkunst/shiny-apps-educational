@@ -18,7 +18,7 @@ source(here::here("helpers.R"))
 
 In linear algebra, eigendecomposition is the factorization of a matrix into a canonical form, whereby the matrix is represented in terms of its eigenvalues and eigenvectors. Only diagonalizable matrices can be factorized in this way. When the matrix being factorized is a normal or real symmetric matrix, the decomposition is called "spectral decomposition", derived from the spectral theorem.
 
-Decomposition have the form ${\displaystyle A=VDV^{-1}}$, where $D$ is a diagonal matrix formed from the eigenvalues of $A$, and the columns of $V$ are the corresponding eigenvectors of $A$.
+The decomposition has the form ${\displaystyle A=VDV^{-1}}$, where $D$ is a diagonal matrix formed from the eigenvalues of $A$, and the columns of $V$ are the corresponding eigenvectors of $A$.
 
 
 ```{r, results='asis'}
@@ -47,9 +47,27 @@ cat(
 )
 ```
 
+Check that multiplying by $A$ has the same effect as scaling each eigenvector by its eigenvalue:
 
+```{r, results='asis'}
+AV <- params$mat %*% V
+VD <- V %*% D
 
-Sources: 
+AVf <- round(AV, 5)
+VDf <- round(VD, 5)
+
+cat(
+  str_c(
+    "$$ AV = ",
+    matrix2latex(AVf),
+    " \\quad \\text{and} \\quad VD = ",
+    matrix2latex(VDf),
+    "$$"
+  )
+)
+```
+
+Further reading:
 
 - https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix
 - https://r-snippets.readthedocs.io/en/latest/la/svd.html

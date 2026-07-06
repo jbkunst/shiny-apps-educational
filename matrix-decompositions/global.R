@@ -15,3 +15,10 @@ theme_matrix <-  bs_theme(
   primary = "#22B455",
   base_font = font_google("IBM Plex Sans")
 )
+
+thematic::thematic_shiny(
+  bg = "#020204",
+  fg = "#92E5A1",
+  accent = "#22B455",
+  font = "auto"
+)

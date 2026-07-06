@@ -1,6 +1,6 @@
 # input <- list(
 #   nrows = sample(2:5, 1),
-#   decomposition = sample(c("svd", "eigen", "spectral", "qr", "lu", "cholesky"), 1),
+#   decomposition = sample(c("svd", "eigen", "spectral", "pca", "qr", "lu", "cholesky"), 1),
 #   matrix_kind = sample(c("dense_spd", "sparse_spd", "banded_spd", "diagonal_spd"), 1),
 #   coefficient_max = sample(1:6, 1),
 #   generate_matrix = 0
