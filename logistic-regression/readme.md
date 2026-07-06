@@ -1,5 +1,5 @@
 Inspiration from:
 - https://lisyarus.github.io/webgl/classification.html
 
-App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstats. Code 
+App made by [Joshua Kunst](https://jkunst.com) with ❤️ and ☕ using Shiny for R ✨. Code 
 [here](https://github.com/jbkunst/shiny-apps-educational).
