@@ -58,14 +58,6 @@ ui <- page_fillable(
       width = 1/2,
       height = "60%",
       card(highchartOutput("hcpoints"))
-      ),
-    layout_column_wrap(
-      width = 1/4,
-      height = "40%",
-      card(
-        # card_header(uiOutput("iter")),
-        # card_body(plotOutput("iter_plot"))
-        )
       )
     )
   )

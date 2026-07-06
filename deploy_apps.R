@@ -12,6 +12,7 @@ apps_valid <- map(apps, dir) |>
 
 apps <- apps[apps_valid]
 
+# This app is still a draft and is intentionally excluded from shinyapps.io deploys.
 apps <- setdiff(apps, c("binary-predictions-metrics"))
 
 if(FALSE){
