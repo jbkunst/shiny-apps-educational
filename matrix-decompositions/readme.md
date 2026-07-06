@@ -2,7 +2,7 @@ Some decompositions do not require a square matrix, in this app we will use squa
 
 This idea came from the @kareem_carr [tweet](https://twitter.com/kareem_carr/status/1475255675718709250) 😅
 
-App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstats. Code 
+App made by [Joshua Kunst](https://jkunst.com) with ❤️ and ☕ using Shiny for R ✨. Code 
 [here](https://github.com/jbkunst/shiny-apps-educational).
 
 <!-- ![](www/matrix.jpg) -->
