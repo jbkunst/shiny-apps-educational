@@ -4,4 +4,4 @@
 * [K-means shiny example](https://shiny.rstudio.com/gallery/kmeans-example.html).
 * [Clustering algorithms](https://nms.kcl.ac.uk/colin.cooper/teachingmaterial/CSMWAL/CSMWAL/Lectures/ClusterSlides.pdf).
 
-App made by [@jbkunst](https://twitter.com/jbkunst) with love and for fun with #rstats. Code [here](https://github.com/jbkunst/shiny-apps-educational).
+App made by [Joshua Kunst](https://jkunst.com) with ❤️, ☕, and ✨ using Shiny for R. Code [here](https://github.com/jbkunst/shiny-apps-educational).
