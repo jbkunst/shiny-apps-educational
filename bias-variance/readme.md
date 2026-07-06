@@ -1,4 +1,4 @@
-Inspiration y resources:
+Inspiration and resources:
 
 - MLU [Bias Variance tradeoff](https://mlu-explain.github.io/bias-variance/) by Jared Wilber & Brent Werness.
 - [Understanding the Bias-Variance Tradeoff](https://scott.fortmann-roe.com/docs/BiasVariance.html).
