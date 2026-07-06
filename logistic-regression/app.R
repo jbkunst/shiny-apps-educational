@@ -6,7 +6,6 @@ library(scales)
 library(markdown)
 library(broom)
 library(metR)
-library(scales)
 library(patchwork)
 library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
@@ -65,7 +64,7 @@ ui <- page_fillable(
       ),
       sliderInput(
         "n",
-        tags$small("Number of observartions"),
+        tags$small("Number of observations"),
         min = 100,
         max = 1000,
         step = 100,
@@ -78,7 +77,7 @@ ui <- page_fillable(
       ),
       checkboxInput(
         "show_model_field", 
-        tags$small("Show model predicctions"),
+        tags$small("Show model predictions"),
         value = TRUE
       ),
       tags$small(htmltools::includeMarkdown("readme.md"))
