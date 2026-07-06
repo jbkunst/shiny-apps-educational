@@ -1,82 +1,111 @@
 # input <- list(
-#   matrix = "1,2,3,2,4,6,3,3,3",
-#   nrows = 3,
-#   decomposition = "qr"
+#   nrows = sample(2:5, 1),
+#   decomposition = sample(c("svd", "eigen", "spectral", "qr", "lu", "cholesky"), 1),
+#   matrix_kind = sample(c("dense_spd", "sparse_spd", "banded_spd", "diagonal_spd"), 1),
+#   coefficient_max = sample(1:6, 1),
+#   generate_matrix = 0
 # )
 
-shinyServer(function(input, output) {
+# matrix_settings <- list(
+#   n = input$nrows,
+#   kind = input$matrix_kind,
+#   coefficient_max = input$coefficient_max
+# )
 
-  vector <- reactive({
-    
-    raw_values <- input$matrix %>% 
-      str_split("\\,") %>% 
-      unlist() %>% 
-      str_trim()
-    
-    vector <- suppressWarnings(as.numeric(raw_values))
-    
-    validate(
-      need(length(raw_values) > 0 && all(nzchar(raw_values)), "Please provide numeric matrix values separated by commas."),
-      need(!anyNA(vector), "Matrix values must be numeric and separated by commas.")
+# matrixA <- generate_spd_matrix(
+#   n = settings$n,
+#   kind = settings$kind,
+#   coefficient_max = settings$coefficient_max
+# )
+
+# matrixA
+
+function(input, output, session) {
+
+  matrixA <- reactiveVal()
+
+  matrix_settings <- reactive({
+
+    req(input$nrows, input$matrix_kind, input$coefficient_max)
+
+    matrix_settings <- list(
+      n = input$nrows,
+      kind = input$matrix_kind,
+      coefficient_max = input$coefficient_max
     )
-    
-    vector
-    
+
+    matrix_settings
+
   })
-  
-  matrixA <- reactive({
-    
-    vector <- vector()
-    expected_length <- input$nrows^2
-    
-    validate(
-      need(
-        length(vector) == expected_length,
-        str_glue("Please provide exactly {expected_length} values for a {input$nrows} x {input$nrows} matrix.")
+
+  observeEvent(matrix_settings(), {
+
+    settings <- matrix_settings()
+
+    matrixA(
+      generate_spd_matrix(
+        n = settings$n,
+        kind = settings$kind,
+        coefficient_max = settings$coefficient_max
       )
     )
-    
-    matrixA <- matrix(
-      vector, 
-      nrow = input$nrows, 
-      ncol = input$nrows, 
-      byrow = TRUE
+
+  }, ignoreInit = FALSE)
+
+  observeEvent(input$generate_matrix, {
+
+    settings <- matrix_settings()
+
+    matrixA(
+      generate_spd_matrix(
+        n = settings$n,
+        kind = settings$kind,
+        coefficient_max = settings$coefficient_max
       )
-    
-    matrixA
-    
-  })
-  
+    )
+
+  }, ignoreInit = TRUE)
+
   output$matrix_render <- renderUI({
-    
+
     matrixA <- matrixA()
-    
+    req(matrixA)
+
     tagList(
       withMathJax(),
       str_c("$$ A = ", matrix2latex(matrixA), "$$")
     )
-    
-  })  
-  
+
+  })
+
   output$decomposition_output <- renderUI({
-    
+
     matrixA <- matrixA()
-    
+    req(matrixA, input$decomposition)
+
     file <- here(str_c("rmd/", input$decomposition, ".Rmd"))
-    
-    message(file)
-    
+
     rendered <- tryCatch(
-      readLines(
-        rmarkdown::render(
+      {
+        output_dir <- tempfile("matrix-decomposition-")
+        dir.create(output_dir)
+        on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
+
+        rendered_file <- rmarkdown::render(
           input = file,
           output_format = "html_fragment",
-          output_file = "temp.html",
+          output_file = "decomposition.html",
+          output_dir = output_dir,
+          intermediates_dir = output_dir,
           quiet = TRUE,
           params = list(mat = matrixA)
-          ),
-        encoding = "UTF-8"
-        ),
+        )
+
+        readLines(
+          rendered_file,
+          encoding = "UTF-8"
+        )
+      },
       error = function(e) {
         tags$div(
           class = "text-warning",
@@ -85,13 +114,13 @@ shinyServer(function(input, output) {
         )
       }
     )
-    
+
     if (inherits(rendered, "shiny.tag")) {
       rendered
     } else {
       withMathJax(HTML(rendered))
     }
-    
+
   })
 
-})
+}

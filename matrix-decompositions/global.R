@@ -14,4 +14,4 @@ theme_matrix <-  bs_theme(
   fg = "#92E5A1",
   primary = "#22B455",
   base_font = font_google("IBM Plex Sans")
-) 
+)
