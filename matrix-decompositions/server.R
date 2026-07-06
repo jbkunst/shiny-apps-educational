@@ -8,10 +8,17 @@ shinyServer(function(input, output) {
 
   vector <- reactive({
     
-    vector <- input$matrix %>% 
+    raw_values <- input$matrix %>% 
       str_split("\\,") %>% 
       unlist() %>% 
-      as.numeric()
+      str_trim()
+    
+    vector <- suppressWarnings(as.numeric(raw_values))
+    
+    validate(
+      need(length(raw_values) > 0 && all(nzchar(raw_values)), "Please provide numeric matrix values separated by commas."),
+      need(!anyNA(vector), "Matrix values must be numeric and separated by commas.")
+    )
     
     vector
     
@@ -20,6 +27,14 @@ shinyServer(function(input, output) {
   matrixA <- reactive({
     
     vector <- vector()
+    expected_length <- input$nrows^2
+    
+    validate(
+      need(
+        length(vector) == expected_length,
+        str_glue("Please provide exactly {expected_length} values for a {input$nrows} x {input$nrows} matrix.")
+      )
+    )
     
     matrixA <- matrix(
       vector, 
@@ -34,29 +49,11 @@ shinyServer(function(input, output) {
   
   output$matrix_render <- renderUI({
     
-    vector  <- vector()
     matrixA <- matrixA()
-    
-    warning_msg <- NULL
-    
-    if(length(vector)%%input$nrows != 0) {
-      
-      warning_msg <- str_glue(
-        "Data length {length(vector)} is not a sub-multiple or multiple of the number of rows {input$nrows}. Recycling vector elements."
-      )
-
-    } else if ( length(vector) < input$nrows**2 ) {
-      
-      warning_msg <- str_glue(
-        "Only first {input$nrows**2} given values will be used."
-      )
-      
-    }
     
     tagList(
       withMathJax(),
-      str_c("$$ A = ", matrix2latex(matrixA), "$$"),
-      if(!is.null(warning_msg)) tags$small(tags$i(class = "text-warning", warning_msg))
+      str_c("$$ A = ", matrix2latex(matrixA), "$$")
     )
     
   })  
@@ -69,21 +66,31 @@ shinyServer(function(input, output) {
     
     message(file)
     
-    withMathJax(
-      HTML(
-        readLines(
-          rmarkdown::render(
-            input = file,
-            output_format = "html_fragment",
-            output_file = "temp.html",
-            quiet = TRUE,
-            params = list(mat = matrixA)
-            ),
-          encoding = "UTF-8"
-          )
+    rendered <- tryCatch(
+      readLines(
+        rmarkdown::render(
+          input = file,
+          output_format = "html_fragment",
+          output_file = "temp.html",
+          quiet = TRUE,
+          params = list(mat = matrixA)
+          ),
+        encoding = "UTF-8"
+        ),
+      error = function(e) {
+        tags$div(
+          class = "text-warning",
+          tags$strong("Cannot compute this decomposition."),
+          tags$p(conditionMessage(e))
         )
-      )
+      }
+    )
     
+    if (inherits(rendered, "shiny.tag")) {
+      rendered
+    } else {
+      withMathJax(HTML(rendered))
+    }
     
   })
 
