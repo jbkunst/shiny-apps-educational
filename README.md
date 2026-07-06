@@ -3,6 +3,7 @@ Shiny apps for educational purposes
 
 - [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
 - [Using apps locally](#using-apps-locally)
+- [Static build notes](#static-build-notes)
 - [Shiny apps](#shiny-apps)
   - [ARMA Process](#arma-process)
   - [Bias Variance](#bias-variance)
@@ -42,6 +43,16 @@ Then you can use it giving the folder name, for example:
 ``` r
 run_app("kmeans")
 ```
+
+## Static build notes
+
+A later pass can explore static builds for the apps. Suggested first candidates:
+
+- `lorenz-attractor`: small simulation code and simple outputs.
+- `arma-process`: useful to test Highcharts rendering.
+- `bias-variance`: useful to test Highcharts rendering with more reactive calculations.
+
+Apps with helper package dependencies, image processing, or runtime R Markdown rendering should be reviewed after the first proof of concept.
 
 ## Shiny apps
 
