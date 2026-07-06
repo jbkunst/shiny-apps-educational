@@ -1,0 +1,69 @@
+---
+title: "spectral"
+output: html_document
+params:
+    mat: !r matrix(c(2, 1, 1, 2), ncol = 2)
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# params <- list(mat = matrix(c(2, 1, 1, 2), ncol = 2))
+library(stringr)
+knitr::opts_chunk$set(echo = FALSE)
+source(here::here("helpers.R"))
+```
+
+<h3 class="title">Spectral decomposition</h3>
+
+The spectral decomposition is a special form of eigendecomposition for real symmetric matrices. It factors a matrix $A$ as $A = Q \Lambda Q^{\mathrm{T}}$, where $Q$ is an orthogonal matrix whose columns are eigenvectors of $A$, and $\Lambda$ is a diagonal matrix containing the corresponding eigenvalues.
+
+For symmetric positive-definite matrices, all eigenvalues are positive. This makes the decomposition especially useful for understanding how the matrix stretches space along orthogonal directions.
+
+```{r, results='asis'}
+spectral.mat <- eigen(params$mat, symmetric = TRUE)
+
+Q <- spectral.mat$vectors
+Lambda <- diag(spectral.mat$values)
+Qt <- t(Q)
+
+Qf <- round(Q, 5)
+Lambdaf <- round(Lambda, 5)
+Qtf <- round(Qt, 5)
+
+cat(
+  str_c(
+    "$$ A = ",
+    matrix2latex(Qf),
+    " \\times ",
+    matrix2latex(Lambdaf),
+    " \\times ",
+    matrix2latex(Qtf),
+    "$$"
+  )
+)
+```
+
+Check that the eigenvectors are orthonormal:
+
+```{r, results='asis'}
+QtQ <- t(Q) %*% Q
+QtQf <- round(QtQ, 5)
+
+cat(
+  str_c(
+    "$$ Q^{\\mathrm {T}}Q = ",
+    matrix2latex(Qtf),
+    " \\times ",
+    matrix2latex(Qf),
+    " = ",
+    matrix2latex(QtQf),
+    "$$"
+  )
+)
+```
+
+Sources:
+
+- https://en.wikipedia.org/wiki/Spectral_theorem
+- https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix

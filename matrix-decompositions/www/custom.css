@@ -7,3 +7,20 @@
   font-family: "matrix";
   text-transform:uppercase;
 }
+
+.label-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.info-tooltip {
+  color: var(--bs-primary);
+  cursor: help;
+}
+
+.inspiration-image {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+}
