@@ -6,5 +6,5 @@ Inspiration and resources:
 - [Kernel smoothing](https://bl.ocks.org/rpgove/073d6cb996d7de1d52935790139c4240) D3 Block by Robert Gove.
 
 
-App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstats. Code 
+App made by [Joshua Kunst](https://jkunst.com) with ❤️ and ☕ using Shiny for R ✨. Code 
 [here](https://github.com/jbkunst/shiny-apps-educational).
