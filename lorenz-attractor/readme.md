@@ -1,20 +1,20 @@
 The **Lorenz Attractor** is a set of chaotic solutions to a system of differential equations originally derived by Edward Lorenz in 1963 to model atmospheric convection. It serves as a classic example of deterministic chaos, where small differences in initial conditions can lead to vastly different outcomes.
 
-The Equations of the system is defined by three differential equations:
+The equations of the system are defined by three differential equations:
 
 $$\frac{{dx}}{{dt}} = \sigma (y - x),$$
 $$\frac{{dy}}{{dt}} = x (\rho - z) - y,$$
 $$\frac{{dz}}{{dt}} = x y - \beta z.$$
 
-Key Features are:
+Key features:
 - **Chaotic behavior:** Sensitive dependence on initial conditions.
 - **Fractal structure:** Exhibits a non-integer dimension.
 - **Aesthetic patterns:** Produces a "butterfly-shaped" trajectory.
 
-Some Applications:
+Some applications:
 - Meteorology and climate modeling.
 - Chaos theory and nonlinear dynamics.
 - Visualization of complex systems.
 
-App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstat and shiny assistant. Code 
+App made by [@jbkunst](https://twitter.com/jbkunst) with ❤️ and for fun with #rstats and Shiny assistant. Code 
 [here](https://github.com/jbkunst/shiny-apps-educational).
