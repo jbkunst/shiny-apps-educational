@@ -28,13 +28,13 @@ The ideas/purposes behind every shiny app in this repository are:
 
 ## Using apps locally
 
-There is a script `run_app.R` which contanins a helper function to
+There is a script `run_app.R` which contains a helper function to
 download the repo in a temporal folder and then you can run the apps
 
 To load that function:
 
 ``` r
-source("https://raw.githubusercontent.com/jbkunst/shiny-apps-edu/master/run_app.R")
+source("https://raw.githubusercontent.com/jbkunst/shiny-apps-educational/master/run_app.R")
 ```
 
 Then you can use it giving the folder name, for example:
