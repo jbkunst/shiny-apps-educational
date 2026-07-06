@@ -241,10 +241,10 @@ server <- function(input, output, session) {
     
     ksmod <- risk3r::ks(
       actual = as.numeric(dxy$response),
-      predicted = 1 - dxy$prediction
+      predicted = dxy$prediction
     )
     
-    ggplot(dxy, aes(1 - prediction, group = response, fill = response, color = response, label = response)) +
+    ggplot(dxy, aes(prediction, group = response, fill = response, color = response, label = response)) +
       geom_density(alpha = 0.1, linewidth = 2) +
       
       scale_color_manual(name = NULL, values = c(muted("red", 35), muted("blue", 35))) +
