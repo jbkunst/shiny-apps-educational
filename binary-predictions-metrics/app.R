@@ -48,7 +48,7 @@ ui <- page_fillable(
   layout_sidebar(
     fillable = TRUE,
     sidebar = sidebar(
-      title = "Binary predicctions",
+      title = "Binary predictions",
       withMathJax(),
       selectInput("variable", tags$small("Variable"), choices = names(credit_data)[-1]),
       checkboxInput("logscale", tags$small("Log-scale on \\(x\\)-axis")),
