@@ -11,7 +11,6 @@ editor_options:
 # params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
 library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
-source(here::here("helpers.R"))
 ```
 
 <h3 class="title">Singular value decomposition</h3>
@@ -39,11 +38,11 @@ Vtf <- round(Vt, 5)
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(Uf),
+    matrix2latex(Uf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Sf),
+    matrix2latex(Sf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Vtf),
+    matrix2latex(Vtf, markdown = TRUE),
     "$$"
   )
 )
@@ -58,11 +57,11 @@ UUtf <- round(UUt, 5)
 cat(
   str_c(
     "$$ UU^{\\mathrm {T}} = ",
-    matrix2latex(Uf),
+    matrix2latex(Uf, markdown = TRUE),
     " \\times ",
-    matrix2latex(t(Uf)),
+    matrix2latex(t(Uf), markdown = TRUE),
     " = ",
-    matrix2latex(UUtf),
+    matrix2latex(UUtf, markdown = TRUE),
     "$$"
   )
 )
@@ -75,11 +74,11 @@ VVtf <- round(VVt, 5)
 cat(
   str_c(
     "$$ VV^{\\mathrm {T}} = ",
-    matrix2latex(t(Vtf)),
+    matrix2latex(t(Vtf), markdown = TRUE),
     " \\times ",
-    matrix2latex(Vtf),
+    matrix2latex(Vtf, markdown = TRUE),
     " = ",
-    matrix2latex(VVtf),
+    matrix2latex(VVtf, markdown = TRUE),
     "$$"
   )
 )

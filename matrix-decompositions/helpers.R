@@ -1,7 +1,9 @@
-matrix2latex <- function(matr) {
+matrix2latex <- function(matr, markdown = FALSE) {
+
+  row_sep <- if (markdown) "\\\\\\\\" else "\\\\"
 
   out <- apply(matr, 1, function(r) str_c(r, collapse = " & ")) |>
-    str_c(collapse = "\\\\")
+    str_c(collapse = row_sep)
 
   out <- str_c(
     "\\begin{pmatrix}",

@@ -83,7 +83,7 @@ function(input, output, session) {
     matrixA <- matrixA()
     req(matrixA, input$decomposition)
 
-    file <- here(str_c("rmd/", input$decomposition, ".Rmd"))
+    file <- file.path(app_dir, "rmd", str_c(input$decomposition, ".Rmd"))
 
     rendered <- tryCatch(
       {
@@ -91,18 +91,20 @@ function(input, output, session) {
         dir.create(output_dir)
         on.exit(unlink(output_dir, recursive = TRUE), add = TRUE)
 
-        rendered_file <- rmarkdown::render(
+        knitted_file <- file.path(output_dir, "decomposition.md")
+        render_env <- new.env(parent = globalenv())
+        render_env$params <- list(mat = matrixA)
+
+        knitr::knit(
           input = file,
-          output_format = "html_fragment",
-          output_file = "decomposition.html",
-          output_dir = output_dir,
-          intermediates_dir = output_dir,
+          output = knitted_file,
           quiet = TRUE,
-          params = list(mat = matrixA)
+          envir = render_env
         )
 
-        readLines(
-          rendered_file,
+        markdown::markdownToHTML(
+          file = knitted_file,
+          fragment.only = TRUE,
           encoding = "UTF-8"
         )
       },

@@ -11,7 +11,6 @@ editor_options:
 # params <- list(mat =  matrix(c(4, 12, -16, 12, 37, -43, -16, -43, 98), nrow = 3))
 library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
-source(here::here("helpers.R"))
 ```
 
 <h3 class="title">Cholesky decomposition</h3>
@@ -41,9 +40,9 @@ Ltf <- round(Lt, 5)
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(Lf),
+    matrix2latex(Lf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Ltf),
+    matrix2latex(Ltf, markdown = TRUE),
     "$$"
   )
 )
@@ -59,9 +58,9 @@ Af <- round(params$mat, 5)
 cat(
   str_c(
     "$$ LL^{\\mathrm {T}} = ",
-    matrix2latex(LLtf),
+    matrix2latex(LLtf, markdown = TRUE),
     " = A = ",
-    matrix2latex(Af),
+    matrix2latex(Af, markdown = TRUE),
     "$$"
   )
 )
@@ -70,4 +69,3 @@ cat(
 Further reading:
 
 - https://en.wikipedia.org/wiki/Cholesky_decomposition
-

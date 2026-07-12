@@ -3,6 +3,10 @@
   src: url("matrix.ttf") format("truetype");
 }
 
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 .title {
   font-family: "matrix";
   text-transform:uppercase;

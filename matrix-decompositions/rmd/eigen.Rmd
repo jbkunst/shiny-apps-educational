@@ -11,7 +11,6 @@ editor_options:
 # params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
 library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
-source(here::here("helpers.R"))
 ```
 
 <h3 class="title">Eigen decomposition of a matrix</h3>
@@ -37,11 +36,11 @@ Vm1f <- round(solve(V), 5)
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(Vf),
+    matrix2latex(Vf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Df),
+    matrix2latex(Df, markdown = TRUE),
     " \\times ",
-    matrix2latex(Vm1f),
+    matrix2latex(Vm1f, markdown = TRUE),
     "$$"
   )
 )
@@ -59,9 +58,9 @@ VDf <- round(VD, 5)
 cat(
   str_c(
     "$$ AV = ",
-    matrix2latex(AVf),
+    matrix2latex(AVf, markdown = TRUE),
     " \\quad \\text{and} \\quad VD = ",
-    matrix2latex(VDf),
+    matrix2latex(VDf, markdown = TRUE),
     "$$"
   )
 )

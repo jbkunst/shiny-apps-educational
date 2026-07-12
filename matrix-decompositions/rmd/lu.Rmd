@@ -11,7 +11,6 @@ editor_options:
 # params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
 library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
-source(here::here("helpers.R"))
 ```
 
 <h3 class="title">Lower–Upper (LU) decomposition</h3>
@@ -33,9 +32,9 @@ Uf <- round(U, 5)
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(Lf),
+    matrix2latex(Lf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Uf),
+    matrix2latex(Uf, markdown = TRUE),
     "$$"
   )
 )
@@ -51,9 +50,9 @@ Af <- round(params$mat, 5)
 cat(
   str_c(
     "$$ LU = ",
-    matrix2latex(LUf),
+    matrix2latex(LUf, markdown = TRUE),
     " = A = ",
-    matrix2latex(Af),
+    matrix2latex(Af, markdown = TRUE),
     "$$"
   )
 )
@@ -62,4 +61,3 @@ cat(
 Further reading:
 
 - https://en.wikipedia.org/wiki/LU_decomposition
-

@@ -11,7 +11,6 @@ editor_options:
 # params <- list(mat = matrix(c(1, 2, 3, 4), ncol = 2))
 library(stringr)
 knitr::opts_chunk$set(echo = FALSE)
-source(here::here("helpers.R"))
 ```
     
 <h3 class="title">QR decomposition</h3>
@@ -32,9 +31,9 @@ Rf <- round(R, 5)
 cat(
   str_c(
     "$$ A = ",
-    matrix2latex(Qf),
+    matrix2latex(Qf, markdown = TRUE),
     " \\times ",
-    matrix2latex(Rf),
+    matrix2latex(Rf, markdown = TRUE),
     "$$"
   )
 )
@@ -51,11 +50,11 @@ Qtf <-  round(t(Q), 5)
 cat(
   str_c(
     "$$ Q^{\\mathrm {T} }Q = ",
-    matrix2latex(t(Qf)),
+    matrix2latex(t(Qf), markdown = TRUE),
     " \\times ",
-    matrix2latex(Qf),
+    matrix2latex(Qf, markdown = TRUE),
     " = ",
-    matrix2latex(QtQf),
+    matrix2latex(QtQf, markdown = TRUE),
     "$$"
   )
 )
