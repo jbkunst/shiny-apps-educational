@@ -1,0 +1,7 @@
+Title: Decision Tree
+Description: Simulate two-dimensional classification patterns and watch a decision tree partition the feature space.
+Categories: machine learning, classification, trees
+Tags: decision boundary, roc curve, ks statistic
+Runtime: shinylive
+URL: https://jbkunst.shinyapps.io/decision-tree
+Order: 40

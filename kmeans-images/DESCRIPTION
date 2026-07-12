@@ -1,0 +1,7 @@
+Title: K-means on Images
+Description: Compress image colors with K-means and compare the original and clustered RGB distributions.
+Categories: machine learning, clustering, images
+Tags: k-means, rgb, image compression, color palette
+Runtime: shinylive
+URL: https://jbkunst.shinyapps.io/kmeans-images
+Order: 60
