@@ -1,7 +1,5 @@
 Title: ARMA Process Simulation
-Description: Explore how autoregressive and moving-average parameters shape simulated time series, ACF, and PACF behavior.
-Categories: time series, statistics, simulation
-Tags: arma, acf, pacf, stochastic process
+Description: See how AR and MA settings change a simulated time series and its autocorrelation patterns.
+Categories: statistics, simulation, time series
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/arma-process
-Order: 10

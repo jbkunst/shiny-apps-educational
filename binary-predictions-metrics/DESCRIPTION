@@ -1,7 +1,5 @@
 Title: Binary Predictions
-Description: Explore how numeric predictors separate binary outcomes and how log scaling changes the view.
-Categories: machine learning, classification, metrics
-Tags: binary outcomes, credit data, log scale
+Description: Compare predictors for a binary outcome and see how scaling changes separation and visual interpretation.
+Categories: machine learning, classification, statistics
 Runtime: shinylive
 URL:
-Order: 30

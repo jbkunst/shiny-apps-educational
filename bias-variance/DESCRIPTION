@@ -1,7 +1,5 @@
 Title: Bias-Variance Tradeoff
-Description: Compare model flexibility, train and test error, and the bias-variance tradeoff through kernel smoothing.
+Description: Use an interactive smoother to see how model flexibility changes underfitting, overfitting, train error, and test error.
 Categories: machine learning, statistics, regression
-Tags: bias variance, kernel smoothing, train test error
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/bias-variance
-Order: 20

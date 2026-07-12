@@ -1,7 +1,5 @@
 Title: Logistic Regression
-Description: Experiment with nonlinear decision boundaries, noise, and model order in a logistic regression classifier.
+Description: Change noise, polynomial terms, and class structure to see how logistic regression shapes decision boundaries.
 Categories: machine learning, classification, regression
-Tags: logistic regression, decision boundary, roc curve, model order
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/logistic-regression
-Order: 70

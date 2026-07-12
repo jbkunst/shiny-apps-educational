@@ -1,7 +1,5 @@
 Title: Lorenz Attractor
-Description: Tune the Lorenz system parameters and inspect chaotic motion through 3D and planar projections.
-Categories: dynamical systems, simulation, visualization
-Tags: chaos, differential equations, attractor, plotly
+Description: Adjust the Lorenz parameters and watch how small changes produce chaotic 3D trajectories.
+Categories: mathematics, simulation, visualization
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/lorenz-attractor
-Order: 80

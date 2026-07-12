@@ -1,7 +1,5 @@
 Title: Matrix Decompositions
-Description: Generate structured matrices and see SVD, eigen, spectral, PCA, QR, LU, and Cholesky decompositions.
-Categories: linear algebra, mathematics, visualization
-Tags: svd, eigen, pca, qr, lu, cholesky
+Description: Create matrices and compare how common decompositions reveal structure from different angles.
+Categories: mathematics, linear algebra, visualization
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/matrix-decompositions
-Order: 90

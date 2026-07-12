@@ -1,7 +1,5 @@
 Title: K-means Step by Step
-Description: Step through K-means with simulated groups, cluster centers, assignments, and convergence diagnostics.
+Description: Move through each K-means iteration to see centers, assignments, and convergence on generated clusters.
 Categories: machine learning, clustering, simulation
-Tags: k-means, voronoi, convergence, elbow plot
 Runtime: shinylive
 URL: https://jbkunst.shinyapps.io/kmeans
-Order: 50
