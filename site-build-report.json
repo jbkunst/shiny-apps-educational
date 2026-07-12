@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-07-12T00:33:42-0400",
+  "app_count": 9,
+  "apps": [
+    {
+      "slug": "arma-process",
+      "runtime": "shinylive",
+      "launch_url": "live/arma-process/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "bias-variance",
+      "runtime": "shinylive",
+      "launch_url": "live/bias-variance/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "binary-predictions-metrics",
+      "runtime": "shinylive",
+      "launch_url": "live/binary-predictions-metrics/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "decision-tree",
+      "runtime": "shinylive",
+      "launch_url": "live/decision-tree/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "kmeans",
+      "runtime": "shinylive",
+      "launch_url": "live/kmeans/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "kmeans-images",
+      "runtime": "shinylive",
+      "launch_url": "live/kmeans-images/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "logistic-regression",
+      "runtime": "shinylive",
+      "launch_url": "live/logistic-regression/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "lorenz-attractor",
+      "runtime": "shinylive",
+      "launch_url": "live/lorenz-attractor/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    },
+    {
+      "slug": "matrix-decompositions",
+      "runtime": "shinylive",
+      "launch_url": "live/matrix-decompositions/index.html",
+      "screenshot": "existing",
+      "screenshot_message": "Existing screenshot found.",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
+    }
+  ],
+  "render": {
+    "ok": false,
+    "status": "failed",
+    "output": "Quarto command-line tools path not found!\nPlease make sure you have installed and added Quarto to your PATH or set the\nQUARTO_PATH environment variable."
+  },
+  "shinylive_exported": false,
+  "fatal_errors": []
+}

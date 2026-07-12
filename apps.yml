@@ -1,0 +1,81 @@
+- title: ARMA Process Simulation
+  description: See how AR and MA settings change a simulated time series and its autocorrelation
+    patterns.
+  image: site-assets/screenshots/arma-process.png
+  categories:
+  - statistics
+  - simulation
+  - time series
+  path: live/arma-process/index.html
+- title: Bias-Variance Tradeoff
+  description: Use an interactive smoother to see how model flexibility changes underfitting,
+    overfitting, train error, and test error.
+  image: site-assets/screenshots/bias-variance.png
+  categories:
+  - machine learning
+  - statistics
+  - regression
+  path: live/bias-variance/index.html
+- title: Binary Predictions
+  description: Compare predictors for a binary outcome and see how scaling changes
+    separation and visual interpretation.
+  image: site-assets/screenshots/binary-predictions-metrics.png
+  categories:
+  - machine learning
+  - classification
+  - statistics
+  path: live/binary-predictions-metrics/index.html
+- title: Decision Tree
+  description: Build synthetic classification data and watch a decision tree carve
+    the feature space into regions.
+  image: site-assets/screenshots/decision-tree.png
+  categories:
+  - machine learning
+  - classification
+  - simulation
+  path: live/decision-tree/index.html
+- title: K-means Step by Step
+  description: Move through each K-means iteration to see centers, assignments, and
+    convergence on generated clusters.
+  image: site-assets/screenshots/kmeans.png
+  categories:
+  - machine learning
+  - clustering
+  - simulation
+  path: live/kmeans/index.html
+- title: K-means on Images
+  description: Apply K-means to image colors and compare the original image with a
+    compressed color version.
+  image: site-assets/screenshots/kmeans-images.png
+  categories:
+  - machine learning
+  - clustering
+  - visualization
+  path: live/kmeans-images/index.html
+- title: Logistic Regression
+  description: Change noise, polynomial terms, and class structure to see how logistic
+    regression shapes decision boundaries.
+  image: site-assets/screenshots/logistic-regression.png
+  categories:
+  - machine learning
+  - classification
+  - regression
+  path: live/logistic-regression/index.html
+- title: Lorenz Attractor
+  description: Adjust the Lorenz parameters and watch how small changes produce chaotic
+    3D trajectories.
+  image: site-assets/screenshots/lorenz-attractor.png
+  categories:
+  - mathematics
+  - simulation
+  - visualization
+  path: live/lorenz-attractor/index.html
+- title: Matrix Decompositions
+  description: Create matrices and compare how common decompositions reveal structure
+    from different angles.
+  image: site-assets/screenshots/matrix-decompositions.png
+  categories:
+  - mathematics
+  - linear algebra
+  - visualization
+  path: live/matrix-decompositions/index.html
