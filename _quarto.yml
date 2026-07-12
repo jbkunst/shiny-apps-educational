@@ -1,0 +1,31 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+  resources:
+    - site-assets/
+
+website:
+  title: "Interactive Learning Apps"
+  site-url: "https://jbkunst.github.io/shiny-apps-educational/"
+  navbar:
+    pinned: true
+    left:
+      - href: index.qmd
+        text: Gallery
+    right:
+      - icon: github
+        href: "https://github.com/jbkunst/shiny-apps-educational"
+        aria-label: "GitHub repository"
+
+format:
+  html:
+    theme: cosmo
+    toc: false
+    anchor-sections: false
+    smooth-scroll: true
+    link-external-newwindow: true
+
+execute:
+  freeze: auto

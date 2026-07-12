@@ -10,3 +10,6 @@ rchessbase/data/*
 .Rproj.user
 
 .DS_Store
+/.quarto/
+/.quarto-cache/
+**/*.quarto_ipynb

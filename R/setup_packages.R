@@ -33,8 +33,13 @@ cran_packages <- c(
   "stringr",
   "thematic",
   "tibble",
+  "tinyplot",
   "tidyverse",
-  "viridisLite"
+  "viridisLite",
+  "yaml",
+  "jsonlite",
+  "shinylive",
+  "quarto"
 )
 
 github_packages <- c(

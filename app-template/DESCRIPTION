@@ -1,7 +1,5 @@
 Title: App Title
-Description: One short sentence that explains the learning goal or interaction.
+Description: A short sentence that explains what learners can explore in the app.
 Categories: statistics, simulation
-Tags: interactive, teaching
 Runtime: shinylive
 URL:
-Order: 999
