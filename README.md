@@ -1,101 +1,147 @@
-Shiny apps for educational purposes
-================
+# Shiny Educational Apps
 
-- [FOA: ♫ Tell me *Y* ♪](#foa--tell-me-y-)
-- [Using apps locally](#using-apps-locally)
-- [Shiny apps](#shiny-apps)
-  - [ARMA Process](#arma-process)
-  - [Bias Variance](#bias-variance)
-  - [Decision Tree](#decision-tree)
-  - [Kmeans](#kmeans)
-  - [Kmeans Images](#kmeans-images)
-  - [Logistic Regression](#logistic-regression)
-  - [Lorenz Attractor](#lorenz-attractor)
-  - [Matrix Decompositions](#matrix-decompositions)
+This repository contains small Shiny apps for teaching statistics, machine
+learning, probability, and mathematical ideas.
 
-## FOA: ♫ Tell me *Y* ♪
+The public entry point is the Quarto gallery generated into `docs/`. The README
+is intentionally more internal: it documents how the gallery is built, how apps
+are added, and how to decide whether an app should run with Shinylive or be
+hosted elsewhere.
 
-The ideas/purposes behind every shiny app in this repository are:
+Public site:
 
-- Being a complement for a ML, Statistics, Probability, R class. The
-  application mainly shows and exemplifies a *result* that needs to be
-  explained. By themselves, the apps are just an app.
-- Point out other resources and links that are more formal and/or
-  useful.
-- TBD.
+<https://jbkunst.github.io/shiny-apps-educational/>
 
-![](screenshots.gif)
+## Repository Structure
 
-## Using apps locally
+- `app-template/`: minimal app skeleton for new apps.
+- `<app-folder>/`: one Shiny app per top-level folder.
+- `<app-folder>/DESCRIPTION`: metadata used by the gallery builder.
+- `<app-folder>/screenshot.png`: app preview used in the gallery.
+- `R/build_site.R`: simple script that rebuilds the gallery.
+- `R/run_app.R`: helper for running an app from a fresh copy of the repo.
+- `index.qmd`: Quarto source for the gallery page.
+- `apps.yml`: generated listing data consumed by Quarto.
+- `site-assets/`: generated gallery assets before Quarto copies them to `docs/`.
+- `docs/`: generated site published by GitHub Pages.
 
-There is a script `run_app.R` which contains a helper function to
-download the repo in a temporal folder and then you can run the apps
+## App Metadata
 
-To load that function:
+Each app that should appear in the gallery needs a `DESCRIPTION` file.
 
-``` r
-source("https://raw.githubusercontent.com/jbkunst/shiny-apps-educational/master/run_app.R")
+Minimum fields:
+
+```text
+Title: App Title
+Description: A short sentence that explains what learners can explore in the app.
+Categories: statistics, simulation
+Runtime: shinylive
+URL:
 ```
 
-Then you can use it giving the folder name, for example:
+The app slug is the folder name. Do not duplicate it in metadata.
 
-``` r
+`Runtime` can be:
+
+- `shinylive`: exported to `docs/live/<app-folder>/`.
+- `server`: linked to `URL`, usually shinyapps.io or another Shiny server.
+- `publisher`: linked to `URL`, for Posit Publisher or similar hosting.
+
+If an app does not work in Shinylive, keep it in the gallery and change its
+runtime to `server` or `publisher` once a live URL exists.
+
+## Adding A New App
+
+1. Copy `app-template/` to a new top-level folder.
+2. Use a short folder name; this becomes the app slug.
+3. Build the app in `app.R`.
+4. Fill in `DESCRIPTION`.
+5. Run the app locally and check the teaching flow.
+6. Run `source("R/build_site.R")` from the repository root.
+7. Check the generated gallery in `docs/index.html`.
+8. If `Runtime: shinylive`, check `docs/live/<app-folder>/index.html`.
+9. Commit the source changes separately from generated `docs/` changes when it
+   helps review.
+
+The build script creates `screenshot.png` only when it is missing. To regenerate
+a screenshot, delete the old app screenshot and run the build again.
+
+## Rebuilding The Gallery
+
+From an interactive R session at the repository root:
+
+```r
+source("R/build_site.R")
+```
+
+The script:
+
+1. scans app folders with `DESCRIPTION`;
+2. creates missing screenshots;
+3. writes `apps.yml`;
+4. renders the Quarto site to `docs/`;
+5. exports Shinylive apps to `docs/live/`;
+6. writes `site-build-report.json`.
+
+When run interactively, it also opens the generated site and exported apps in
+Chrome if `chrome_path` is valid in `R/build_site.R`.
+
+## Publishing
+
+GitHub Pages should be configured to serve:
+
+```text
+branch: master
+folder: /docs
+```
+
+Manual publishing flow:
+
+```powershell
+git status
+git add R/build_site.R index.qmd _quarto.yml apps.yml site-assets docs site-build-report.json
+git commit -m "Update app gallery"
+git push origin master
+```
+
+For app source changes, prefer more specific commits, for example:
+
+```text
+Add DESCRIPTION for new app
+Update matrix decompositions for Shinylive
+Publish rebuilt Quarto site
+```
+
+Later, this can move to GitHub Actions so `docs/` is rebuilt by CI instead of
+being committed manually.
+
+## Analyst And AI Workflow
+
+The analyst should own the educational intent:
+
+- what concept the app teaches;
+- what interaction matters;
+- what the learner should notice;
+- whether the app is ready to publish.
+
+An AI assistant can help with mechanical and review-heavy work:
+
+- inspect all `DESCRIPTION` files for missing or noisy metadata;
+- draft short English titles and descriptions;
+- identify heavy dependencies or possible Shinylive blockers;
+- simplify app code for browser execution;
+- compare generated `apps.yml` against app folders;
+- suggest commit boundaries;
+- prepare a GitHub Actions workflow when manual publishing becomes annoying.
+
+Keep changes small and reviewable. The gallery is only useful if adding a new app
+stays simpler than maintaining a framework.
+
+## Local App Helper
+
+The helper can run an app from a fresh copy of the repository:
+
+```r
+source("https://raw.githubusercontent.com/jbkunst/shiny-apps-educational/master/R/run_app.R")
 run_app("kmeans")
 ```
-
-## Shiny apps
-
-### ARMA Process
-
-![](arma-process/screenshot.png) Source code [here](/arma-process). See
-the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/arma-process). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Bias Variance
-
-![](bias-variance/screenshot.png) Source code [here](/bias-variance).
-See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/bias-variance). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Decision Tree
-
-![](decision-tree/screenshot.png) Source code [here](/decision-tree).
-See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/decision-tree). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Kmeans
-
-![](kmeans/screenshot.png) Source code [here](/kmeans). See the live
-version in [shinyapps.io](https://jbkunst.shinyapps.io/kmeans). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Kmeans Images
-
-![](kmeans-images/screenshot.png) Source code [here](/kmeans-images).
-See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/kmeans-images). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Logistic Regression
-
-![](logistic-regression/screenshot.png) Source code
-[here](/logistic-regression). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/logistic-regression). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Lorenz Attractor
-
-![](lorenz-attractor/screenshot.png) Source code
-[here](/lorenz-attractor). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/lorenz-attractor). Go to
-[index](#shiny-apps-for-educational-purposes).
-
-### Matrix Decompositions
-
-![](matrix-decompositions/screenshot.png) Source code
-[here](/matrix-decompositions). See the live version in
-[shinyapps.io](https://jbkunst.shinyapps.io/matrix-decompositions). Go
-to [index](#shiny-apps-for-educational-purposes).
