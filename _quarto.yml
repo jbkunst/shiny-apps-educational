@@ -9,6 +9,7 @@ project:
 website:
   title: "Interactive Learning Apps"
   site-url: "https://jbkunst.github.io/shiny-apps-educational/"
+  search: false
   navbar:
     pinned: true
     left:
