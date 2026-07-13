@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-07-12T00:33:42-0400",
-  "app_count": 9,
+  "generated_at": "2026-07-13T00:42:01-0400",
+  "app_count": 8,
   "apps": [
     {
       "slug": "arma-process",
@@ -8,8 +8,8 @@
       "launch_url": "live/arma-process/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
     },
     {
       "slug": "bias-variance",
@@ -17,17 +17,8 @@
       "launch_url": "live/bias-variance/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
-    },
-    {
-      "slug": "binary-predictions-metrics",
-      "runtime": "shinylive",
-      "launch_url": "live/binary-predictions-metrics/index.html",
-      "screenshot": "existing",
-      "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
     },
     {
       "slug": "decision-tree",
@@ -35,8 +26,8 @@
       "launch_url": "live/decision-tree/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "failed",
+      "shinylive_message": "Can't find GitHub release for github::AllanCameron/geomtextpath@HEAD\n! Ensure a GitHub release exists for the package repository reference: \"HEAD\".\nℹ Alternatively, install a CRAN version of this package to use the default Wasm\n  binary repository.\nCaused by error in `gh::gh()`:\n! GitHub API error (404): Not Found\n✖ URL not found:\n  <https://api.github.com/repos/AllanCameron/geomtextpath/releases/tags/HEAD>\nℹ Read more at\n  <https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name>"
     },
     {
       "slug": "kmeans",
@@ -44,8 +35,8 @@
       "launch_url": "live/kmeans/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "failed",
+      "shinylive_message": "Can't find GitHub release for github::jbkunst/klassets@HEAD\n! Ensure a GitHub release exists for the package repository reference: \"HEAD\".\nℹ Alternatively, install a CRAN version of this package to use the default Wasm\n  binary repository.\nCaused by error in `gh::gh()`:\n! GitHub API error (404): Not Found\n✖ URL not found:\n  <https://api.github.com/repos/jbkunst/klassets/releases/tags/HEAD>\nℹ Read more at\n  <https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name>"
     },
     {
       "slug": "kmeans-images",
@@ -53,8 +44,8 @@
       "launch_url": "live/kmeans-images/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
     },
     {
       "slug": "logistic-regression",
@@ -62,8 +53,8 @@
       "launch_url": "live/logistic-regression/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "failed",
+      "shinylive_message": "Can't find GitHub release for github::AllanCameron/geomtextpath@HEAD\n! Ensure a GitHub release exists for the package repository reference: \"HEAD\".\nℹ Alternatively, install a CRAN version of this package to use the default Wasm\n  binary repository.\nCaused by error in `gh::gh()`:\n! GitHub API error (404): Not Found\n✖ URL not found:\n  <https://api.github.com/repos/AllanCameron/geomtextpath/releases/tags/HEAD>\nℹ Read more at\n  <https://docs.github.com/rest/releases/releases#get-a-release-by-tag-name>"
     },
     {
       "slug": "lorenz-attractor",
@@ -71,8 +62,8 @@
       "launch_url": "live/lorenz-attractor/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
     },
     {
       "slug": "matrix-decompositions",
@@ -80,15 +71,15 @@
       "launch_url": "live/matrix-decompositions/index.html",
       "screenshot": "existing",
       "screenshot_message": "Existing screenshot found.",
-      "shinylive": "not_requested",
-      "shinylive_message": "Runtime is not shinylive."
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
     }
   ],
   "render": {
-    "ok": false,
-    "status": "failed",
-    "output": "Quarto command-line tools path not found!\nPlease make sure you have installed and added Quarto to your PATH or set the\nQUARTO_PATH environment variable."
+    "ok": true,
+    "status": 0,
+    "output": "Quarto render completed."
   },
-  "shinylive_exported": false,
+  "shinylive_exported": true,
   "fatal_errors": []
 }
