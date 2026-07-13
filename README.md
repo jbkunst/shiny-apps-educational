@@ -17,12 +17,15 @@ Public site:
 - `app-template/`: minimal app skeleton for new apps.
 - `<app-folder>/`: one Shiny app per top-level folder.
 - `<app-folder>/DESCRIPTION`: metadata used by the gallery builder.
+- `<app-folder>/readme.md`: short "How it works" text used on GitHub and in the app UI.
+- `<app-folder>/credits.md`: visible author/signature block used in the app UI.
 - `<app-folder>/screenshot.png`: app preview used in the gallery.
 - `R/build_site.R`: simple script that rebuilds the gallery.
 - `R/run_app.R`: helper for running an app from a fresh copy of the repo.
 - `index.qmd`: Quarto source for the gallery page.
 - `apps.yml`: generated listing data consumed by Quarto.
 - `site-assets/`: generated gallery assets before Quarto copies them to `docs/`.
+- `site-build-report.json`: generated build report with Shinylive results.
 - `docs/`: generated site published by GitHub Pages.
 
 ## App Metadata
@@ -39,7 +42,15 @@ Categories: statistics, simulation
 
 The app slug is the folder name. Do not duplicate it in metadata.
 
-`Runtime` is optional. If it is missing, the build assumes:
+Optional fields:
+
+```text
+Runtime: server
+Status: draft
+```
+
+`Runtime` is only needed when the app should not be exported with Shinylive.
+If it is missing, the build assumes:
 
 ```text
 Runtime: shinylive
@@ -48,11 +59,7 @@ Runtime: shinylive
 Use `Runtime` only when the default is not correct:
 
 - `shinylive`: exported to `docs/live/<app-folder>/`.
-- `server`: linked to `https://jbkunst.shinyapps.io/<app-folder>`.
-- `publisher`: reserved for external hosting if needed later.
-
-If an app does not work in Shinylive, keep it in the gallery and change its
-runtime to `server` once it is deployed to shinyapps.io.
+- `server`: reserved for apps that need Posit Connect.
 
 Draft apps can stay in the repository without being published:
 
@@ -70,9 +77,11 @@ Status: draft
 6. Add or reuse a `credits.md` signature block.
 7. Run the app locally and check the teaching flow.
 8. Run `source("R/build_site.R")` from the repository root.
-9. Check the generated gallery in `docs/index.html`.
-10. If `Runtime: shinylive`, check `docs/live/<app-folder>/index.html`.
-11. Commit the source changes separately from generated `docs/` changes when it
+9. Check the generated gallery in the local browser opened by the script.
+10. If the app exports to Shinylive, check `docs/live/<app-folder>/index.html`.
+11. If the app cannot run in Shinylive, add `Runtime: server` and handle it in
+   the Posit Connect phase later.
+12. Commit the source changes separately from generated `docs/` changes when it
    helps review.
 
 The build script creates `screenshot.png` only when it is missing. To regenerate
@@ -114,7 +123,8 @@ The script is intentionally organized as a two-phase publishing flow.
 
 ### Setup
 
-At the start of a full build, the script deletes generated site state:
+At the start of a full build, the script deletes generated site state so the
+next run starts clean:
 
 ```text
 apps.yml
@@ -122,12 +132,13 @@ docs/
 ```
 
 Then it scans top-level app folders with `DESCRIPTION`, skips `Status: draft`,
-and prepares screenshots and site assets.
+and prepares screenshots and site assets. Quarto is rendered with `--no-clean`
+so the already-exported `docs/live/` apps are not removed by the render step.
 
 ### Phase 1: Shinylive
 
-The first publishing pass tries Shinylive for every app whose `Runtime` is
-missing or set to `shinylive`.
+The first publishing pass tries Shinylive for every public app whose `Runtime`
+is missing or set to `shinylive`.
 
 Successful Shinylive apps are written to `apps.yml` with links like:
 
@@ -135,29 +146,22 @@ Successful Shinylive apps are written to `apps.yml` with links like:
 live/<app-folder>/index.html
 ```
 
-Then Quarto renders an intermediate gallery into `docs/`. This gives a useful
-site even before every app has a server deployment.
+Then Quarto renders an intermediate gallery into `docs/`. This is already a
+useful publishable site, even before the heavier server-hosted apps are solved.
 
-Apps with `Runtime: server` or `Runtime: publisher` are skipped in this phase.
-Apps that fail Shinylive are carried forward to the server phase.
+Apps with `Runtime: server` are skipped in this phase.
+Apps that fail Shinylive are reported as server candidates.
 
-### Phase 2: Server Apps
+### Phase 2: Server Apps Later
 
-The second pass collects:
+The next planned step is to publish server candidates with Posit Connect.
+Server candidates are:
 
-- apps explicitly marked `Runtime: server` or `Runtime: publisher`;
+- apps explicitly marked `Runtime: server`;
 - apps that failed the Shinylive export.
 
-For server apps, the build derives the public URL from the folder name:
-
-```text
-https://jbkunst.shinyapps.io/<app-folder>
-```
-
-Those cards are appended to `apps.yml` and Quarto renders the final gallery
-again.
-
-If an app needs server hosting, deploy it manually with a command like:
+For now, treat this as a manual follow-up after the Shinylive catalog is built.
+The intended deploy shape is one app folder at a time, for example:
 
 ```r
 rsconnect::deployApp(
@@ -167,17 +171,22 @@ rsconnect::deployApp(
 )
 ```
 
-After the deployment succeeds, rerun the server phase or the full script and
-render the final gallery.
+After that flow is clear, the build script should record the Connect URL and
+append those cards to `apps.yml` before rendering the final gallery again.
+Until then, the committed gallery can be the Shinylive catalog.
 
-The server phase appends to `apps.yml` instead of rewriting it. This makes it
-possible to run the Shinylive phase first, publish that intermediate site, and
-later continue from the server section in the same R session after server apps
-are deployed. Do not rerun the setup section when continuing from the server
-section, because setup intentionally deletes `apps.yml` and `docs/`.
+In other words, the catalog URL is generated by the publishing process:
+Shinylive apps point to `live/<app-folder>/index.html`; server apps will point
+to the Posit Connect URL once that deployment step exists.
 
 When run interactively, the script opens the generated site in Chrome if
 `chrome_path` is valid in `R/build_site.R`.
+
+The script serves `docs/` with a small local static server on `preview_port`
+while it runs. If port `8000` is busy, change `preview_port` near the top of
+`R/build_site.R` and rerun the relevant section. Prefer the local server URL
+over opening `docs/index.html` directly, because Shinylive assets are easier to
+test through HTTP.
 
 ## Publishing
 
