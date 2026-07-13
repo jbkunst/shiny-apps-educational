@@ -3,6 +3,7 @@ library(shiny)
 library(bslib)
 library(dplyr)
 library(purrr)
+library(scales)
 library(stringr)
 library(tibble)
 library(tidyr)
@@ -10,6 +11,7 @@ library(jpeg)
 library(imager)
 library(plotly)
 library(markdown) # needed by htmltools::includeMarkdown in Shinylive
+library(shinyWidgets)
 
 # theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
@@ -48,7 +50,7 @@ ui <- page_fillable(
         choices = sample(img_choices), 
         width = "100%"
       ),
-      shinyWidgets::sliderTextInput(
+      sliderTextInput(
         "k",
         tags$span("Parameter \\(k\\) for \\(K\\)-Means"),
         grid = TRUE,
@@ -163,7 +165,7 @@ server <- function(input, output, session) {
     
     if(input$scale){
       df_image_input <- df_image_input |> 
-        mutate(across(everything(), .fns = ~ scales::rescale(.x, to = c(0, 1))))
+        mutate(across(everything(), .fns = ~ rescale(.x, to = c(0, 1))))
     }
     
     kMeans <- kmeans(df_image_input, centers = as.integer(input$k))
