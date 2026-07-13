@@ -454,10 +454,12 @@ ui <- page_fillable(
         multiple = FALSE,
         open = FALSE,
         accordion_panel(
-          "About network structures",
+          "How it works",
           tags$small(include_md("readme.md"))
         )
-      )
+      ),
+      
+      tags$small(include_md("credits.md"))
     ),
 
     layout_columns(
