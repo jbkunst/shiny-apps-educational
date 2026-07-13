@@ -87,6 +87,27 @@ Status: draft
 The build script creates `screenshot.png` only when it is missing. To regenerate
 a screenshot, delete the old app screenshot and run the build again.
 
+## Possible App Ideas
+
+The repository is also a place to turn classroom examples into small Shiny apps.
+Many future apps can start from `klassets` examples and later become full Shiny
+experiments.
+
+Current ideas:
+
+- clustering and network apps currently being explored in PRs;
+- ROC curve explorer with movable score distributions, a threshold slider, and
+  live metrics such as TPR, FPR, precision, recall, and F1;
+- classifier comparison using the `klassets` tools for logistic regression,
+  trees, random forests, KNN, and related models;
+- regression examples where different data shapes keep similar coefficients but
+  break modeling assumptions;
+- Simpson's paradox as an interactive example of grouped versus pooled
+  relationships.
+
+These ideas should stay small at first: one concept, one main interaction, and a
+clear teaching moment.
+
 ## Markdown Notes
 
 Many apps include Markdown files inside the UI with

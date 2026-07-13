@@ -14,16 +14,16 @@ library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
 
-
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
 card <- purrr::partial(bslib::card, full_screen = TRUE)
 
 thematic::thematic_shiny(font = "auto")
 
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
+theme_set(theme_minimal(base_size = 14) + theme(legend.position = "bottom"))
 
 primary_color <- unname(bs_get_variables(apptheme, c("primary")))
+
 class_palette <- c("FALSE" = "#d98f8f", "TRUE" = "#8f95d9")
 
 # ui ----------------------------------------------------------------------

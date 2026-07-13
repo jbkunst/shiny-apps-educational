@@ -8,7 +8,6 @@ library(tibble)
 library(stringr)
 library(klassets)
 library(deldir)
-library(tinyplot)
 
 # theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
@@ -119,8 +118,8 @@ plot_kmeans_tiny <- function(
   par(mar = c(2.6, 2.8, 1.2, 8), xpd = NA)
   
   plot_args <- list(
-    formula = y ~ x,
-    data = dpoints,
+    x = dpoints$x,
+    y = dpoints$y,
     type = "n",
     xlim = bnd[1:2],
     ylim = bnd[3:4],
@@ -128,15 +127,14 @@ plot_kmeans_tiny <- function(
     ylab = "",
     axes = FALSE,
     xaxs = "i",
-    yaxs = "i",
-    legend = FALSE
+    yaxs = "i"
   )
   
   if (keep_aspect) {
     plot_args$asp <- 1
   }
   
-  do.call(tinyplot::tinyplot, plot_args)
+  do.call(plot, plot_args)
   
   xat <- pretty(bnd[1:2])
   yat <- pretty(bnd[3:4])
@@ -397,9 +395,9 @@ plot_convergence_tiny <- function(daux, iter, primary_color) {
   
   par(mar = c(3.4, 3.4, 1, 1))
   
-  tinyplot::tinyplot(
-    error ~ iteration,
-    data = daux,
+  plot(
+    x = daux$iteration,
+    y = daux$error,
     type = "n",
     xlim = range(daux$iteration),
     ylim = c(0, 1),
@@ -407,8 +405,7 @@ plot_convergence_tiny <- function(daux, iter, primary_color) {
     ylab = "",
     axes = FALSE,
     xaxs = "i",
-    yaxs = "i",
-    legend = FALSE
+    yaxs = "i"
   )
   
   xat <- sort(unique(daux$iteration))
@@ -442,9 +439,9 @@ plot_elbow_tiny <- function(daux, k_selected, primary_color) {
   
   par(mar = c(3.4, 3.4, 1, 1))
   
-  tinyplot::tinyplot(
-    error ~ k,
-    data = daux,
+  plot(
+    x = daux$k,
+    y = daux$error,
     type = "n",
     xlim = range(daux$k),
     ylim = c(0, 1),
@@ -452,8 +449,7 @@ plot_elbow_tiny <- function(daux, k_selected, primary_color) {
     ylab = "",
     axes = FALSE,
     xaxs = "i",
-    yaxs = "i",
-    legend = FALSE
+    yaxs = "i"
   )
   
   xat <- sort(unique(daux$k))
@@ -583,8 +579,7 @@ server <- function(input, output, session) {
     map(1:KMAX, function(k) {
       klassets::kmeans_iterations(df = data, centers = k)
     })
-  }) |>
-    bindCache(simulated_data()$n, simulated_data()$n_groups)
+  })
   
   kmi <- reactive({
     kmi_all()[[input$k]]
@@ -665,8 +660,7 @@ server <- function(input, output, session) {
       mutate(xt = mean(x), yt = mean(y)) |>
       mutate(dt = (x - xt)^2 + (y - yt)^2) |>
       ungroup()
-  }) |>
-    bindCache(simulated_data()$n, simulated_data()$n_groups)
+  })
   
   data_elbow <- reactive({
     data_hist_all() |>
@@ -674,8 +668,7 @@ server <- function(input, output, session) {
       summarise(dc = sum(dc), dt = sum(dt), .groups = "drop") |>
       mutate(wc = 1 - dc / dt) |>
       ungroup()
-  }) |>
-    bindCache(simulated_data()$n, simulated_data()$n_groups)
+  })
   
   output$iter_plot <- renderPlot({
     d <- iter_data()

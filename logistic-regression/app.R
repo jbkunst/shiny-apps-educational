@@ -4,16 +4,10 @@ library(bslib)
 library(dplyr)
 library(ggplot2)
 library(stringr)
-library(tidyr)
 library(scales)
 library(markdown)
-library(broom)
-library(metR)
-library(patchwork)
-library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
 library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE)
-# library(celavi)       # remotes::install_github("jbkunst/celavi", force = TRUE)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
@@ -24,9 +18,11 @@ card <- purrr::partial(bslib::card)
 
 thematic::thematic_shiny(font = "auto")
 
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
+theme_set(theme_minimal(base_size = 14) + theme(legend.position = "bottom"))
 
 primary_color <- unname(bs_get_variables(apptheme, c("primary")))
+
+class_palette <- c("FALSE" = "#d98f8f", "TRUE" = "#8f95d9")
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -65,13 +61,13 @@ ui <- page_fillable(
         step = 1,
         value = 1
       ),
-      sliderInput(
+      shinyWidgets::sliderTextInput(
         "n",
         tags$small("Number of observations"),
-        min = 100,
-        max = 1000,
-        step = 100,
-        value = 1000
+        choices = c("100", "500", "1000"),
+        selected = "1000",
+        grid = TRUE,
+        force_edges = TRUE
       ),
       checkboxInput(
         "apply_stepwise", 
@@ -98,13 +94,12 @@ ui <- page_fillable(
       ),
     
     layout_columns(
-      col_widths = c(6, 6, 4, 4, 4),
+      col_widths = c(6, 6, 6, 6),
       row_heights = c(3, 2),
       card(card_body(plotOutput("join_dist", width = "100%", height = "100%"))),
-      card(card_body(plotOutput("marginal_dist", width = "100%", height = "100%"))),
+      card(card_body(plotOutput("coef_plot", width = "100%", height = "100%"))),
       card(card_body(plotOutput("roc_plot", width = "100%", height = "100%"))),
-      card(card_body(plotOutput("bg_plot", width = "100%", height = "100%"))),
-      card(card_body(tableOutput("coef_table")))
+      card(card_body(plotOutput("score_plot", width = "100%", height = "100%")))
       )
     )
   )
@@ -125,7 +120,7 @@ server <- function(input, output, session) {
   dxy <- reactive({
     
     dxy <- klassets::sim_response_xy(
-      n = input$n,
+      n = as.integer(input$n),
       x_dist = purrr::partial(runif, min = -1, max = 1),
       relationship = function(x, y) eval(parse(text = input$relationship)),
       noise = input$percent_noise/100
@@ -159,84 +154,29 @@ server <- function(input, output, session) {
     
   })
   
-  output$marginal_dist <- renderPlot({
+  output$coef_plot <- renderPlot({
     
     dxy <- dxy()
+    mod <- attr(dxy, "model")
     
-    # dxy <- dxy |>
-    #   mutate(pred = predict(mod, newdata = dxy, type = "response"))
-    
-    dg <- dxy |>
-      select(x, y, response) |> 
-      gather(key, value, -response) |>
-      mutate(key = str_glue("variable {key}")) |> 
-      mutate(response = as.logical(response))
-    
-    p <- ggplot() +
-      # data
-      geom_point(
-        data = dg,
-        aes(value, as.numeric(response), color = factor(response), shape = factor(response)),
-        size = 3,
-        alpha = 0.5,
-        position = position_jitter(height = 0.05)
-      ) +
-      
-      scale_shape_manual(name = NULL, values = c(1, 4)) +
-      scale_color_manual(name = NULL, values = c(muted("blue"), muted("red"))) +
-      
-      scale_y_continuous(
-        breaks = c(0, 1),
-        labels = c("FALSE\n(response = 0)", "TRUE\n(response = 1)")
-      ) +
-      
-      # predictions
-      
-      # geom_smooth(
-      #   color = primary_color, size = 1.2, alpha = 0.1, 
-      #   method = "loess", formula  = y ~ x
-      #   ) +
-      
-      labs(
-        x = NULL,
-        y = NULL
-      ) +
-      
-      facet_wrap(vars(key))
-    
-    if(input$show_model_field) {
-      
-      dg2 <- dxy |>
-        select(x, y, prediction) |> 
-        gather(key, value, -prediction) |>
-        mutate(key = str_glue("variable {key}"))
-      
-      p <- p + 
-        geom_smooth(
-          data = dg2,
-          aes(value, prediction),
-          method = "loess",
-          formula = y ~ x,
-          color = primary_color
-        )
-      
-    }
-    
-    p
+    risk3r::gg_model_coef(mod) +
+      labs(title = "Model coefficients", x = "Estimate", y = NULL) +
+      theme(panel.grid.minor = element_blank())
     
   })
   
   output$roc_plot <- renderPlot({
     
     dxy <- dxy()
+    actual <- as.integer(as.character(dxy$response) == "TRUE")
     
     droc <- risk3r::roc_data(
-      actual = as.numeric(dxy$response),
+      actual = actual,
       predicted = dxy$prediction
     )
     
     aucroc <- Metrics::auc(
-      actual = as.numeric(dxy$response),
+      actual = actual,
       predicted = dxy$prediction
     )
     
@@ -249,44 +189,25 @@ server <- function(input, output, session) {
     
   })
   
-  output$bg_plot <- renderPlot({
+  output$score_plot <- renderPlot({
     
-    dxy <- dxy()
-    
-    ksmod <- risk3r::ks(
-      actual = as.numeric(dxy$response),
-      predicted = 1 - dxy$prediction
-    )
-    
-    ggplot(dxy, aes(1 - prediction, group = response, fill = response, color = response, label = response)) +
-      geom_density(alpha = 0.1, linewidth = 2) +
-      
-      scale_color_manual(name = NULL, values = c(muted("red", 35), muted("blue", 35))) +
-      
-      geom_textdensity(size = 4, fontface = 1, hjust = 0.2, vjust = -0.5) +
-      scale_y_continuous(labels = NULL) +
-      scale_x_continuous(limits = c(0, 1)) + 
-      labs(x = "Probability", y = "Density") +
-      labs(title = str_glue("KS: { percent(ksmod) }")) +
-      theme(legend.position = "none")
-    
-  })
-  
-  output$coef_table <- renderTable({
-    
-    dxy <- dxy()
-    
-    mod <- attr(dxy, "model")
-    
-    dmod <- tidy(mod) |> 
+    dxy <- dxy() |>
       mutate(
-        term = str_replace_all(term, "_", "^"),
-        ` ` = symnum(p.value, corr = FALSE, na = FALSE, legend = FALSE,
-                     cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
-                     symbols = c("***", "**", "*", ".", " "))
+        response = factor(as.character(response), levels = c("FALSE", "TRUE"))
       )
     
-    dmod
+    ggplot(dxy, aes(prediction, color = response, fill = response)) +
+      geom_density(alpha = 0.25, linewidth = 1.1) +
+      scale_x_continuous(labels = percent, limits = c(0, 1)) +
+      scale_color_manual(values = class_palette, guide = "none") +
+      scale_fill_manual(values = class_palette, guide = "none") +
+      labs(
+        title = "Score distribution",
+        x = "Predicted probability",
+        y = "Density"
+      ) +
+      coord_cartesian(xlim = c(0, 1)) +
+      theme(panel.grid.minor = element_blank())
     
   })
   

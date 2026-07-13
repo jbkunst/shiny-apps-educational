@@ -222,7 +222,7 @@ shinylive_results <- shinylive_apps$app |>
   })
 
 # Useful while developing one app locally.
-# app <- "matrix-decompositions"
+# app <- "kmeans"
 # shinylive::export(app, "docs/live", subdir = app)
 # browseURL(glue("http://127.0.0.1:{preview_port}/live/{app}/index.html"), browser = chrome_path)
 
@@ -277,7 +277,6 @@ server_candidates <- bind_rows(
 ) |>
   distinct(.data$app, .keep_all = TRUE)
 
-server_ready <- character()
 server_pending <- server_candidates$app
 
 if (length(server_pending) > 0) {
@@ -290,8 +289,6 @@ if (length(server_pending) > 0) {
 } else {
   cli::cli_alert_info("No server candidates.")
 }
-
-render_server <- list(ok = NA, status = "skipped", output = "Server catalog not rendered.")
 
 # report -----------------------------------------------------------------
 cli::cli_h1("Report")
@@ -312,7 +309,6 @@ report_apps <- apps |>
     shinylive_message = shinylive_message,
     final_target = case_when(
       .data$app %in% shinylive_ok ~ "shinylive",
-      .data$app %in% server_ready ~ "server",
       .data$app %in% server_pending ~ "server_pending",
       TRUE ~ "none"
     ),
@@ -335,11 +331,9 @@ build_report <- list(
   draft_apps = draft_apps$app,
   shinylive_ok = shinylive_ok,
   shinylive_failed = shinylive_failed,
-  server_ready = server_ready,
   server_pending = server_pending,
   apps = report_apps,
-  render_shinylive = render_shinylive,
-  render_server = render_server
+  render_shinylive = render_shinylive
 )
 
 write_json(build_report, "site-build-report.json", pretty = TRUE, auto_unbox = TRUE)
