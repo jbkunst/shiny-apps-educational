@@ -258,7 +258,7 @@ cards_shinylive <- shinylive_ok |>
 # quarto index ------------------------------------------------------------
 cli::cli_h1("Quarto index")
 
-write_yaml(unname(cards_shinylive), "apps.yml")
+write_yaml(unname(cards_shinylive[sort(names(cards_shinylive))]), "apps.yml")
 
 render_shinylive <- quarto_render_catch()
 
@@ -271,23 +271,108 @@ if (interactive()) browseURL(glue("http://127.0.0.1:{preview_port}/index.html"),
 # server -----------------------------------------------------------------
 cli::cli_h1("Server")
 
+# rsconnect::connectCloudUser()
+# rsconnect::accounts()
+# rsconnect::servers()
+
 server_candidates <- bind_rows(
   server_apps,
   shinylive_apps |> filter(.data$app %in% shinylive_failed)
 ) |>
   distinct(.data$app, .keep_all = TRUE)
 
-server_pending <- server_candidates$app
-
-if (length(server_pending) > 0) {
-  cli::cli_alert_warning("Needs Posit Connect deploy: {paste(server_pending, collapse = ', ')}")
-
-  walk(server_pending, function(app = "kmeans-images") {
+server_results <- server_candidates$app |>
+  set_names() |>
+  map(function(app = "kmeans-images") {
     meta <- server_candidates |> filter(.data$app == .env$app) |> slice(1)
-    cli::cli_alert_info('Deploy manually: rsconnect::deployApp("{meta$app}", appName = "{meta$slug}", appTitle = "{meta$title}")')
+
+    cli::cli_h2(glue("Deploying server app: {meta$app}"))
+
+    tryCatch(
+      {
+        deploy_output <- capture.output({
+          rsconnect::deployApp(
+            appDir = meta$app,
+            appName = meta$slug,
+            appTitle = meta$title,
+            account = "jbkunst",
+            server = "connect.posit.cloud",
+            launch.browser = FALSE
+          )
+        }, type = "message")
+
+        deploy_url <- deploy_output |>
+          cli::ansi_strip() |>
+          str_extract("https://connect\\.posit\\.cloud/[^>\\s]+") |>
+          discard(is.na) |>
+          first()
+
+        if (is.na(deploy_url) || !nzchar(deploy_url)) {
+          stop("Deploy URL not found in rsconnect output.", call. = FALSE)
+        }
+
+        content_id <- str_extract(deploy_url, "[^/]+$")
+        app_url <- glue("https://{content_id}.share.connect.posit.cloud/")
+        image <- screenshot_generate_and_copy(meta$app, meta$slug)
+
+        if (interactive()) {
+          browseURL(app_url, browser = chrome_path)
+        }
+
+        list(
+          status = "deployed",
+          message = "Posit Connect deployment completed.",
+          deploy_url = as.character(deploy_url),
+          app_url = as.character(app_url),
+          card = list(
+            title = meta$title,
+            description = meta$description,
+            image = image,
+            categories = meta$categories[[1]],
+            path = as.character(app_url)
+          )
+        )
+      },
+      error = function(e) {
+        list(
+          status = "failed",
+          message = conditionMessage(e),
+          deploy_url = "",
+          app_url = "",
+          card = NULL
+        )
+      }
+    )
   })
-} else {
-  cli::cli_alert_info("No server candidates.")
+
+server_ok <- names(keep(server_results, ~ .x$status == "deployed"))
+server_failed <- names(discard(server_results, ~ .x$status == "deployed"))
+server_pending <- server_failed
+
+if (length(server_failed) > 0) {
+  server_failed |>
+    walk(function(app = "kmeans-images") {
+      cli::cli_alert_warning('App "{app}": {server_results[[app]]$message}')
+    })
+}
+
+cards_server <- server_ok |>
+  map(function(app = "kmeans-images") {
+    server_results[[app]]$card
+  }) |>
+  set_names(server_ok)
+
+if (length(cards_server) > 0) {
+  cards <- c(cards_shinylive, cards_server)
+  write_yaml(unname(cards[sort(names(cards))]), "apps.yml")
+
+  render_server <- quarto_render_catch()
+
+  if (!render_server$ok) stop(glue("Quarto render failed: {render_server$output}"), call. = FALSE)
+
+  if (interactive()) {
+    browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
+  }
 }
 
 # report -----------------------------------------------------------------
@@ -303,17 +388,24 @@ shinylive_message <- map_chr(apps$app, function(app = "matrix-decompositions") {
   shinylive_results[[app]]$message
 })
 
+server_url <- map_chr(apps$app, function(app = "kmeans-images") {
+  if (!app %in% names(server_results)) return("")
+  server_results[[app]]$app_url
+})
+
 report_apps <- apps |>
   mutate(
     shinylive = shinylive_status,
     shinylive_message = shinylive_message,
     final_target = case_when(
       .data$app %in% shinylive_ok ~ "shinylive",
+      .data$app %in% server_ok ~ "server",
       .data$app %in% server_pending ~ "server_pending",
       TRUE ~ "none"
     ),
     launch_url = case_when(
       .data$app %in% shinylive_ok ~ paste0("live/", .data$slug, "/index.html"),
+      .data$app %in% server_ok ~ server_url,
       TRUE ~ ""
     )
   ) |>
@@ -331,6 +423,8 @@ build_report <- list(
   draft_apps = draft_apps$app,
   shinylive_ok = shinylive_ok,
   shinylive_failed = shinylive_failed,
+  server_ok = server_ok,
+  server_failed = server_failed,
   server_pending = server_pending,
   apps = report_apps,
   render_shinylive = render_shinylive
@@ -349,8 +443,8 @@ if (commit_docs) {
     stop("git add failed.", call. = FALSE)
   }
 
-  commit_message <- glue("Publica catalogo actualizado {Sys.Date()}")
-  git_commit <- system2("git", c("commit", "-m", commit_message))
+  commit_message <- as.character(glue("Publica catalogo actualizado {Sys.Date()}"))
+  git_commit <- system2("git", c("commit", "-m", shQuote(commit_message)))
 
   if (git_commit == 0) {
     git_push <- system2("git", c("push", "origin", "master"))
