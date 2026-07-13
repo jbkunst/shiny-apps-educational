@@ -1,4 +1,3 @@
 Title: K-means Step by Step
 Description: Move through each K-means iteration to see centers, assignments, and convergence on generated clusters.
 Categories: machine learning, clustering, simulation
-Runtime: shinylive

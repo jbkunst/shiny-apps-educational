@@ -1,0 +1,4 @@
+Title: Dimensionality Reduction
+Description: Compare PCA, Isomap, t-SNE, and UMAP on synthetic high-dimensional datasets.
+Categories: machine learning, visualization, mathematics
+Status: draft

@@ -1,4 +1,3 @@
 Title: Logistic Regression
 Description: Change noise, polynomial terms, and class structure to see how logistic regression shapes decision boundaries.
 Categories: machine learning, classification, regression
-Runtime: shinylive
