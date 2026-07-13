@@ -2,8 +2,6 @@
 library(shiny)
 library(bslib)
 library(dplyr)
-library(forcats)
-library(ggplot2)
 library(purrr)
 library(scales)
 library(stringr)
@@ -18,8 +16,6 @@ library(shinyWidgets)
 # theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
 
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
-
 apptheme <- bs_theme()
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
@@ -32,10 +28,95 @@ img_choices <- setNames(
   str_to_title(gsub("\\.jpg$|\\.jpeg$|", "", dir("www/imgs/")))
 )
 
+scene_common <- list(
+  xaxis = list(title = "R", range = c(0, 1)),
+  yaxis = list(title = "G", range = c(0, 1)),
+  zaxis = list(title = "B", range = c(0, 1)),
+  aspectmode = "cube",
+  dragmode = "orbit",
+  camera = list(
+    projection = list(type = "perspective")
+  ),
+  uirevision = "camera"
+)
+
+# helpers -----------------------------------------------------------------
+
+sync_camera_js <- "
+function(el, x, options) {
+  function bindCameraSync() {
+    if (typeof window.kmeansSyncPlotlyCamera === 'function') {
+      window.kmeansSyncPlotlyCamera(el, x, options);
+      return;
+    }
+
+    requestAnimationFrame(bindCameraSync);
+  }
+
+  bindCameraSync();
+}
+"
+
+sync_plotly_camera <- function(plot, target, direction, ready_input) {
+  htmlwidgets::onRender(
+    plot,
+    sync_camera_js,
+    data = list(
+      target = target,
+      direction = direction,
+      group = "kmeans_images_rgb",
+      readyInput = ready_input
+    )
+  )
+}
+
+empty_scatter_data <- tibble(
+  r = numeric(),
+  g = numeric(),
+  b = numeric(),
+  color = character(),
+  label = character()
+)
+
+base_rgb_scatter <- function() {
+  plot_ly(
+    data = empty_scatter_data,
+    x = ~r,
+    y = ~g,
+    z = ~b,
+    type = "scatter3d",
+    mode = "markers",
+    marker = list(
+      color = ~color,
+      symbol = "circle"
+    ),
+    text = ~label
+  ) |>
+    layout(scene = scene_common, uirevision = "camera")
+}
+
+update_rgb_scatter <- function(output_id, data, color_col, label_col, session) {
+  plotlyProxy(output_id, session, deferUntilFlush = TRUE) |>
+    plotlyProxyInvoke(
+      "restyle",
+      list(
+        x = list(data$r),
+        y = list(data$g),
+        z = list(data$b),
+        text = list(as.character(data[[label_col]])),
+        "marker.color" = list(as.character(data[[color_col]]))
+      ),
+      list(0)
+    )
+}
+
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
   theme = apptheme,
   padding = 0,
+  tags$head(
+    htmltools::includeScript("www/camera-sync.js")
+  ),
   layout_sidebar(
     fillable = TRUE,
     sidebar = sidebar(
@@ -68,15 +149,11 @@ ui <- page_fillable(
       ),
     
     layout_columns(
-      col_widths = 4,
+      col_widths = 6,
       row_heights = 1,
       card(
         card_header("Image"),
         card_body(plotOutput("originalImage"))
-        ),
-      card(
-        card_header("Color distribution"),
-        card_body(plotOutput("originalColorDist"))
         ),
       card(
         card_header(tags$small("Sample of pixels")),
@@ -85,10 +162,6 @@ ui <- page_fillable(
       card(
         card_header("Result Image"),
         card_body(plotOutput("resultImage"))
-        ),
-      card(
-        card_header("Result color distribution"),
-        card_body(plotOutput("resultColorDist"))
         ),
       card(
         card_header(tags$small("Clustered pixels")),
@@ -203,61 +276,45 @@ server <- function(input, output, session) {
     
   })
   
-  output$originalColorDist <- renderPlot({
-    
-    df_image <- df_image()
-    
-    daux <- df_image %>%
-      count(rgb) |>
-      arrange(desc(n)) |> 
-      mutate(
-        rgb = fct_inorder(rgb),
-        rgb = fct_lump_n(rgb, n = 20, w = n)
-      ) |> 
-      count(rgb, wt = n) |> 
-      mutate(proportion = n/sum(n))
-    
-    cols <- daux |> 
-      mutate(
-        col = as.character(rgb),
-        col = ifelse(col == "Other", "transparent", col),
-      ) |> 
-      select(rgb, col) |> 
-      deframe()
-    
-    ggplot(daux) +
-      geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
-      scale_fill_manual(values = cols, guide = "none") +
-      scale_x_sqrt(labels = scales::percent) +
-      labs(x = NULL, y = NULL) 
-    
-  })
-  
-  output$scatterplot3d <- renderPlotly({
-    
-    df_image <- df_image()
-    
-    set.seed(123)
-    
-    daux <- df_image |> 
+  sample_pixels <- reactive({
+    df_image() |>
       sample_n(1000) |>
       mutate(across(c(r, g, b), function(x) round(x, 2))) |>
       mutate(label = sprintf("rgb (%s, %s, %s)", r, g, b))
+  })
+  
+  clustered_pixels <- reactive({
+    df_image_kmeans() |>
+      sample_n(1000) |>
+      mutate(across(c(r, g, b), function(x) round(x, 2))) |>
+      mutate(across(c(r_app, g_app, b_app), function(x) round(x, 2))) |>
+      mutate(
+        label = sprintf("rgb (%s, %s, %s)", r, g, b),
+        label_app = sprintf("rgb (%s, %s, %s)", r_app, g_app, b_app),
+        label_result = glue::glue("{label_app}\n{label}")
+      )
+  })
+  
+  output$scatterplot3d <- renderPlotly({
+    base_rgb_scatter() |>
+      sync_plotly_camera(
+        target = "scatterplot3dresults",
+        direction = "sample_to_clusters",
+        ready_input = "scatterplot3d_ready"
+      )
     
-    plot_ly(
-      data = daux,
-      x = ~r,
-      y = ~g,
-      z = ~b,
-      type = "scatter3d",
-      mode = "markers",
-      marker = list(
-        color = ~rgb,
-        symbol = "circle"
-      ),
-      text = ~label
+  })
+  
+  observe({
+    req(input$scatterplot3d_ready)
+    
+    update_rgb_scatter(
+      output_id = "scatterplot3d",
+      data = sample_pixels(),
+      color_col = "rgb",
+      label_col = "label",
+      session = session
     )
-    
   })
   
   output$resultImage <- renderPlot({
@@ -280,64 +337,26 @@ server <- function(input, output, session) {
     
   })
   
-  output$resultColorDist <- renderPlot({
-    
-    df_image_kmeans <- df_image_kmeans()
-    
-    daux <- df_image_kmeans %>%
-      count(rgb = rgb_app) |>
-      arrange(desc(n)) |> 
-      mutate(
-        rgb = fct_inorder(rgb),
-        rgb = fct_lump_n(rgb, n = 20, w = n)
-      ) |> 
-      count(rgb, wt = n) |> 
-      mutate(proportion = n/sum(n))
-    
-    cols <- daux |> 
-      mutate(
-        col = as.character(rgb),
-        col = ifelse(col == "Other", "transparent", col),
-      ) |> 
-      select(rgb, col) |> 
-      deframe()
-    
-    ggplot(daux) +
-      geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
-      scale_fill_manual(values = cols, guide = "none") +
-      scale_x_continuous(labels = scales::percent) +
-      labs(x = NULL, y = NULL)
-  })
-  
   output$scatterplot3dresults <- renderPlotly({
-    
-    df_image_kmeans <- df_image_kmeans()
-    
-    set.seed(123)
-    
-    daux <- df_image_kmeans |> 
-      sample_n(1000) |> 
-      mutate(across(c(r, g, b), function(x) round(x, 2))) |> 
-      mutate(across(c(r_app, g_app, b_app), function(x) round(x, 2))) |> 
-      mutate(
-        label = sprintf("rgb (%s, %s, %s)", r, g, b),
-        label_app = sprintf("rgb (%s, %s, %s)", r_app, g_app, b_app)
+    base_rgb_scatter() |>
+      sync_plotly_camera(
+        target = "scatterplot3d",
+        direction = "clusters_to_sample",
+        ready_input = "scatterplot3dresults_ready"
       )
     
-    plot_ly(
-      data = daux,
-      x = ~r,
-      y = ~g,
-      z = ~b,
-      type = "scatter3d",
-      mode = "markers",
-      marker = list(
-        color = ~rgb_app,
-        symbol = "circle"
-      ),
-      text = ~ glue::glue("{label_app}\n{label}")
-    )
+  })
+  
+  observe({
+    req(input$scatterplot3dresults_ready)
     
+    update_rgb_scatter(
+      output_id = "scatterplot3dresults",
+      data = clustered_pixels(),
+      color_col = "rgb_app",
+      label_col = "label_result",
+      session = session
+    )
   })
   
 }

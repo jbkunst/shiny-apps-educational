@@ -14,7 +14,9 @@ cli::cli_h1("Packages")
 # parameters -------------------------------------------------------------
 cli::cli_h1("Parameters")
 
-chrome_path <- "C:/Program Files/Google/Chrome/Application/chrome.exe"
+chrome_path  <- "C:/Program Files/Google/Chrome/Application/chrome.exe"
+preview_port <- 8000
+# server_base_url <- "https://jbkunst.shinyapps.io"
 
 # helpers ----------------------------------------------------------------
 cli::cli_h1("Helpers")
@@ -39,10 +41,76 @@ as_csv <- function(x) {
     discard(~ !nzchar(.x))
 }
 
-# site files --------------------------------------------------------------
-cli::cli_h1("Site files")
+quarto_render_catch <- function() {
+  tryCatch(
+    {
+      quarto::quarto_render(".")
+      list(ok = TRUE, status = 0, output = "Quarto render completed.")
+    },
+    error = function(e) {
+      list(ok = FALSE, status = "failed", output = conditionMessage(e))
+    }
+  )
+}
 
-dir_create(c("site-assets/screenshots", "docs"))
+screenshot_generate_and_copy <- function(app, slug) {
+  screenshot <- path(app, "screenshot.png")
+
+  if (!file_exists(screenshot)) {
+    tryCatch(
+      webshot2::appshot(app, file = screenshot, delay = 10, vwidth = 1440, vheight = 900),
+      error = function(e) cli::cli_alert_warning("{app}: screenshot failed: {conditionMessage(e)}")
+    )
+  }
+
+  image <- "site-assets/placeholder.svg"
+
+  if (file_exists(screenshot)) {
+    image <- path("site-assets", "screenshots", paste0(slug, ".png"))
+    file_copy(screenshot, image, overwrite = TRUE)
+  }
+
+  chartr("\\", "/", image)
+}
+
+shinylive_export_catch <- function(meta) {
+  cli::cli_h2(glue("Exporting Shinylive app: {meta$app}"))
+
+  tryCatch(
+    {
+      shinylive::export(
+        meta$app,
+        "docs/live",
+        subdir = meta$slug,
+        template_params = list(title = meta$title)
+      )
+
+      index_file <- path("docs/live", meta$slug, "index.html")
+
+      if (file_exists(index_file)) {
+        list(status = "exported", message = "Shinylive export completed.")
+      } else {
+        list(status = "missing_index", message = "Shinylive export completed, but index.html is missing.")
+      }
+    },
+    error = function(e) {
+      list(status = "failed", message = conditionMessage(e))
+    }
+  )
+}
+
+# setup ------------------------------------------------------------------
+cli::cli_h1("Setup")
+
+if (file_exists("apps.yml")) file_delete("apps.yml")
+if (dir_exists("docs"))      dir_delete("docs")
+
+dir_create(c("site-assets/screenshots", "docs", "docs/live"))
+writeLines("", "docs/.nojekyll", useBytes = TRUE)
+
+if (interactive()) {
+  httpuv::runStaticServer("docs", port = preview_port, browse = FALSE, background = TRUE)
+}
 
 if (!file_exists("site-assets/placeholder.svg")) {
   writeLines(
@@ -54,15 +122,14 @@ if (!file_exists("site-assets/placeholder.svg")) {
 # find apps ---------------------------------------------------------------
 cli::cli_h1("Find apps")
 
-apps <- dir() |>
+app_dirs <- dir() |>
   keep(~ file_exists(path(.x, "DESCRIPTION"))) |>
   discard(~ .x %in% c("app-template", "docs")) |>
   discard(~ startsWith(.x, "."))
 
-apps
+app_dirs
 
-apps <- map_dfr(apps, function(app = "arma-process") {
-  
+apps <- map_dfr(app_dirs, function(app = "arma-process") {
   desc <- read.dcf(path(app, "DESCRIPTION"))
   desc <- as.list(desc[1, , drop = TRUE])
 
@@ -72,9 +139,9 @@ apps <- map_dfr(apps, function(app = "arma-process") {
     description = value(desc, "Description"),
     slug = app,
     categories = list(as_csv(value(desc, "Categories"))),
+    # Si no tiene `Runtime` default is shinylive
     runtime = str_to_lower(value(desc, "Runtime", "shinylive")),
-    status = str_to_lower(value(desc, "Status")),
-    url = value(desc, "URL")
+    status = str_to_lower(value(desc, "Status"))
   )
 })
 
@@ -85,209 +152,236 @@ draft_apps <- apps |>
 
 if (nrow(draft_apps) > 0) {
   cli::cli_alert_info("Draft apps skipped: {paste(draft_apps$app, collapse = ', ')}")
-}
-
-apps <- apps |>
+  apps <- apps |>
   filter(.data$status != "draft")
+}
 
 if (nrow(apps) == 0) {
   stop("No app DESCRIPTION files found.", call. = FALSE)
 }
 
-# cards ------------------------------------------------------------------
-cli::cli_h1("Cards")
+metadata_errors <- apps |>
+  mutate(
+    missing = pmap_chr(
+      list(.data$title, .data$description, .data$categories, .data$runtime),
+      function(title, description, categories, runtime) {
+        missing <- c(
+          if (!nzchar(title)) "Title",
+          if (!nzchar(description)) "Description",
+          if (length(categories) == 0) "Categories",
+          if (!runtime %in% c("shinylive", "publisher", "server")) "Runtime"
+        )
 
-app_results <- purrr::map(apps$app, function(app = "matrix-decompositions") {
-  meta <- apps |> filter(.data$app == .env$app) |> slice(1)
-  slug <- meta$slug
-
-  cli::cli_progress_step(app)
-
-  missing <- c(
-    if (!nzchar(meta$title)) "Title",
-    if (!nzchar(meta$description)) "Description",
-    if (length(meta$categories[[1]]) == 0) "Categories",
-    if (!meta$runtime %in% c("shinylive", "publisher", "server")) "Runtime"
-  )
-
-  if (length(missing) > 0) {
-    return(list(
-      card = NULL,
-      report = NULL,
-      errors = glue("{app}: missing {paste(missing, collapse = ', ')}")
-    ))
-  }
-
-  screenshot         <- path(app, "screenshot.png")
-  screenshot_status  <- if (file_exists(screenshot)) "existing" else "missing"
-  screenshot_message <- if (file_exists(screenshot)) "Existing screenshot found." else "No screenshot found."
-
-  if (!file_exists(screenshot)) {
-    screenshot_result <- tryCatch(
-      {
-        webshot2::appshot(app, file = screenshot, delay = 10, vwidth = 1440, vheight = 900)
-
-        if (file_exists(screenshot)) {
-          list(status = "created", message = "Screenshot created.")
-        } else {
-          list(status = "failed", message = "Screenshot file was not created.")
-        }
-      },
-      error = function(e) list(status = "failed", message = conditionMessage(e))
+        paste(missing, collapse = ", ")
+      }
     )
+  ) |>
+  filter(nzchar(.data$missing))
 
-    screenshot_status <- screenshot_result$status
-    screenshot_message <- screenshot_result$message
-  }
-
-  image <- "site-assets/placeholder.svg"
-
-  if (file_exists(screenshot)) {
-    image <- path("site-assets", "screenshots", paste0(slug, ".png"))
-    file_copy(screenshot, image, overwrite = TRUE)
-  }
-
-  launch_url <- case_when(
-    meta$runtime == "shinylive" ~ glue("live/{slug}/index.html"),
-    meta$runtime %in% c("publisher", "server") && nzchar(meta$url) ~ meta$url,
-    TRUE ~ ""
+if (nrow(metadata_errors) > 0) {
+  stop(
+    paste(glue("{metadata_errors$app}: missing {metadata_errors$missing}"), collapse = "\n"),
+    call. = FALSE
   )
-
-  app_errors <- character()
-
-  if (!nzchar(launch_url)) {
-    app_errors <- c(app_errors, glue("{app}: no launch URL available"))
-  }
-
-  list(
-    card = list(
-      title = meta$title,
-      description = meta$description,
-      image = chartr("\\", "/", image),
-      categories = meta$categories[[1]],
-      path = as.character(launch_url)
-    ),
-    report = list(
-      slug = slug,
-      runtime = meta$runtime,
-      launch_url = as.character(launch_url),
-      screenshot = screenshot_status,
-      screenshot_message = screenshot_message,
-      shinylive = "not_requested",
-      shinylive_message = "Runtime is not shinylive."
-    ),
-    errors = app_errors
-  )
-})
-
-# Split the per-app results into the two outputs used later.
-app_results <- set_names(app_results, apps$slug)
-cards       <- app_results |> map("card") |> compact()
-report_apps <- app_results |> map("report") |> compact()
-errors      <- unlist(map(app_results, "errors"), use.names = FALSE)
-
-write_yaml(unname(cards), "apps.yml")
-
-# render -----------------------------------------------------------------
-cli::cli_h1("Render")
-
-render_result <- tryCatch(
-  {
-    quarto::quarto_render(".")
-    list(ok = TRUE, status = 0, output = "Quarto render completed.")
-  },
-  error = function(e) {
-    list(ok = FALSE, status = "failed", output = conditionMessage(e))
-  }
-)
-
-if (!render_result$ok) {
-  stop(glue("Quarto render failed: {render_result$output}"), call. = FALSE)
-}
-
-writeLines("", "docs/.nojekyll", useBytes = TRUE)
-
-local_url <- NULL
-
-if (interactive()) {
-  local_server <- httpuv::runStaticServer("docs", host = "127.0.0.1", background = TRUE, browse = FALSE)
-  local_url <- glue("http://{local_server$getHost()}:{local_server$getPort()}")
-  browseURL(glue("{local_url}/index.html"), browser = chrome_path)
 }
 
 # shinylive ---------------------------------------------------------------
 cli::cli_h1("Shinylive")
 
-shinylive_exported <- FALSE
+shinylive_apps <- apps |>
+  filter(.data$runtime == "shinylive")
 
-if (dir_exists("docs/live")) dir_delete("docs/live")
-dir_create("docs/live")
+server_apps <- apps |>
+  filter(.data$runtime %in% c("publisher", "server"))
 
-# Export Shinylive apps after Quarto renders, because docs/ is the output dir.
-shinylive_results <- apps |>
-  filter(.data$runtime == "shinylive") |>
-  pull(.data$app) |>
-  set_names() |>
-  purrr::map(function(app = "matrix-decompositions") {
-
-    cli::cli_h2(glue("Exporting Shinylive app: {app}"))
-
-    meta <- apps |> filter(.data$app == .env$app) |> slice(1)
-    slug <- meta$slug
-
-    export_result <- tryCatch(
-      {
-        shinylive::export(app, "docs/live", subdir = slug, template_params = list(title = meta$title))
-        index_file <- path("docs/live", slug, "index.html")
-        ok <- file_exists(index_file)
-
-        if (ok) {
-          list(status = "exported", message = "Shinylive export completed.")
-        } else {
-          list(status = "missing_index", message = "Shinylive export completed, but index.html is missing.")
-        }
-      },
-      error = function(e) {
-        list(status = "failed", message = conditionMessage(e))
-      }
-    )
-
-    if (interactive() && export_result$status == "exported") {
-      browseURL(glue("{local_url}/live/{slug}/index.html"), browser = chrome_path)
-    }
-
-    export_result
-
-  })
-
-# Merge Shinylive export results back into the build report entries.
-for (slug in names(shinylive_results)) {
-  if (!is.null(report_apps[[slug]])) {
-    report_apps[[slug]]$shinylive <- shinylive_results[[slug]]$status
-    report_apps[[slug]]$shinylive_message <- shinylive_results[[slug]]$message
-  }
+if (nrow(server_apps) > 0) {
+  cli::cli_alert_info("Server apps skipped by Shinylive: {paste(server_apps$app, collapse = ', ')}")
 }
 
-shinylive_exported <- length(shinylive_results) > 0
+shinylive_results <- shinylive_apps$app |>
+  set_names() |>
+  map(function(app = "matrix-decompositions") {
+    meta <- shinylive_apps |> filter(.data$app == .env$app) |> slice(1)
+    result <- shinylive_export_catch(meta)
+
+    if (interactive() && result$status == "exported") {
+      browseURL(glue("http://127.0.0.1:{preview_port}/live/{meta$slug}/index.html"), browser = chrome_path)
+    }
+
+    result
+  })
+
+# Useful while developing one app locally.
+# app <- "matrix-decompositions"
+# shinylive::export(app, "docs/live", subdir = app)
+# browseURL(glue("http://127.0.0.1:{preview_port}/live/{app}/index.html"), browser = chrome_path)
+
+shinylive_ok     <- names(keep(shinylive_results,    ~ .x$status == "exported"))
+shinylive_failed <- names(discard(shinylive_results, ~ .x$status == "exported"))
+
+if (length(shinylive_failed) > 0) {
+  shinylive_failed |>
+    walk(function(app) {
+      msg <- shinylive_results[[app]]$message |>
+        cli::ansi_strip() |>
+        str_extract("Can't find GitHub release for [^\\n]+")
+
+      cli::cli_alert_info('App "{app}": {msg}')
+    })
+}
+
+cards_shinylive <- shinylive_ok |>
+  map(function(app = "matrix-decompositions") {
+    meta <- shinylive_apps |> filter(.data$app == .env$app) |> slice(1)
+    image <- screenshot_generate_and_copy(meta$app, meta$slug)
+
+    list(
+      title = meta$title,
+      description = meta$description,
+      image = image,
+      categories = meta$categories[[1]],
+      path = as.character(glue("live/{meta$slug}/index.html"))
+    )
+  }) |>
+  set_names(shinylive_ok)
+
+render_shinylive <- list(ok = NA, status = "skipped", output = "No Shinylive catalog rendered.")
+
+if (length(cards_shinylive) > 0) {
+  
+  write_yaml(unname(cards_shinylive), "apps.yml")
+
+  render_shinylive <- quarto_render_catch()
+
+  if (!render_shinylive$ok) stop(glue("Quarto render failed: {render_shinylive$output}"), call. = FALSE)
+
+  if (interactive()) browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
+}
+
+# server -----------------------------------------------------------------
+cli::cli_h1("Server")
+
+server_candidates <- bind_rows(
+  server_apps,
+  shinylive_apps |> filter(.data$app %in% shinylive_failed)
+) |>
+  distinct(.data$app, .keep_all = TRUE)
+
+if (nrow(server_candidates) > 0) {
+  cli::cli_alert_info("Server candidates: {paste(server_candidates$app, collapse = ', ')}")
+}
+
+server_ready <- server_candidates |>
+  filter(nzchar(.data$url))
+
+server_pending <- server_candidates |>
+  filter(!nzchar(.data$url))
+
+if (nrow(server_pending) > 0) {
+  cli::cli_alert_warning("Needs server deploy URL: {paste(server_pending$app, collapse = ', ')}")
+
+  walk(server_pending$app, function(app = "kmeans-images") {
+    meta <- server_pending |> filter(.data$app == .env$app) |> slice(1)
+    cli::cli_alert_info('Deploy manually: rsconnect::deployApp("{meta$app}", appName = "{meta$slug}", appTitle = "{meta$title}")')
+  })
+}
+
+cards_server <- server_ready$app |>
+  map(function(app = "kmeans-images") {
+    meta <- server_ready |> filter(.data$app == .env$app) |> slice(1)
+    image <- screenshot_generate_and_copy(meta$app, meta$slug)
+
+    list(
+      title = meta$title,
+      description = meta$description,
+      image = image,
+      categories = meta$categories[[1]],
+      path = meta$url
+    )
+  }) |>
+  set_names(server_ready$app)
+
+cards_server <- compact(cards_server)
+
+if (length(cards_server) > 0) {
+  if (file_exists("apps.yml")) {
+    cat("\n", file = "apps.yml", append = TRUE)
+    cat(as.yaml(unname(cards_server)), file = "apps.yml", append = TRUE)
+  } else {
+    write_yaml(unname(cards_server), "apps.yml")
+  }
+} else {
+  cli::cli_alert_info("No server cards to write.")
+}
+
+render_server <- NULL
+
+if (length(cards_server) > 0) {
+  cli::cli_h2("Rendering final catalog")
+  render_server <- quarto_render_catch()
+
+  if (!render_server$ok) {
+    stop(glue("Quarto render failed: {render_server$output}"), call. = FALSE)
+  }
+
+  if (interactive()) {
+    browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
+  }
+}
 
 # report -----------------------------------------------------------------
 cli::cli_h1("Report")
 
+shinylive_status <- map_chr(apps$app, function(app = "matrix-decompositions") {
+  if (!app %in% names(shinylive_results)) return("not_requested")
+  shinylive_results[[app]]$status
+})
+
+shinylive_message <- map_chr(apps$app, function(app = "matrix-decompositions") {
+  if (!app %in% names(shinylive_results)) return("Runtime is not shinylive.")
+  shinylive_results[[app]]$message
+})
+
+report_apps <- apps |>
+  mutate(
+    shinylive = shinylive_status,
+    shinylive_message = shinylive_message,
+    final_target = case_when(
+      .data$app %in% shinylive_ok ~ "shinylive",
+      .data$app %in% server_ready$app ~ "server",
+      .data$app %in% server_pending$app ~ "server_pending",
+      TRUE ~ "none"
+    ),
+    launch_url = case_when(
+      .data$app %in% shinylive_ok ~ paste0("live/", .data$slug, "/index.html"),
+      nzchar(.data$url) ~ .data$url,
+      TRUE ~ ""
+    )
+  ) |>
+  select(
+    .data$slug,
+    .data$runtime,
+    .data$final_target,
+    .data$launch_url,
+    .data$shinylive,
+    .data$shinylive_message
+  )
+
 build_report <- list(
   generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
   app_count = nrow(apps),
-  apps = unname(report_apps),
-  render = render_result,
-  shinylive_exported = shinylive_exported,
-  fatal_errors = errors
+  draft_apps = draft_apps$app,
+  shinylive_ok = shinylive_ok,
+  shinylive_failed = shinylive_failed,
+  server_ready = server_ready$app,
+  server_pending = server_pending$app,
+  apps = report_apps,
+  render_shinylive = render_shinylive,
+  render_server = render_server
 )
 
 write_json(build_report, "site-build-report.json", pretty = TRUE, auto_unbox = TRUE)
 write_json(build_report, "docs/build-report.json", pretty = TRUE, auto_unbox = TRUE)
-
-if (length(errors) > 0) {
-  stop(paste(errors, collapse = "\n"), call. = FALSE)
-}
 
 # done -------------------------------------------------------------------
 cli::cli_h1("Done")

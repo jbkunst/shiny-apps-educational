@@ -35,20 +35,30 @@ Minimum fields:
 Title: App Title
 Description: A short sentence that explains what learners can explore in the app.
 Categories: statistics, simulation
-Runtime: shinylive
-URL:
 ```
 
 The app slug is the folder name. Do not duplicate it in metadata.
 
-`Runtime` can be:
+`Runtime` is optional. If it is missing, the build assumes:
+
+```text
+Runtime: shinylive
+```
+
+Use `Runtime` only when the default is not correct:
 
 - `shinylive`: exported to `docs/live/<app-folder>/`.
-- `server`: linked to `URL`, usually shinyapps.io or another Shiny server.
-- `publisher`: linked to `URL`, for Posit Publisher or similar hosting.
+- `server`: linked to `https://jbkunst.shinyapps.io/<app-folder>`.
+- `publisher`: reserved for external hosting if needed later.
 
 If an app does not work in Shinylive, keep it in the gallery and change its
-runtime to `server` or `publisher` once a live URL exists.
+runtime to `server` once it is deployed to shinyapps.io.
+
+Draft apps can stay in the repository without being published:
+
+```text
+Status: draft
+```
 
 ## Adding A New App
 
@@ -100,17 +110,74 @@ From an interactive R session at the repository root:
 source("R/build_site.R")
 ```
 
-The script:
+The script is intentionally organized as a two-phase publishing flow.
 
-1. scans app folders with `DESCRIPTION`;
-2. creates missing screenshots;
-3. writes `apps.yml`;
-4. renders the Quarto site to `docs/`;
-5. exports Shinylive apps to `docs/live/`;
-6. writes `site-build-report.json`.
+### Setup
 
-When run interactively, it also opens the generated site and exported apps in
-Chrome if `chrome_path` is valid in `R/build_site.R`.
+At the start of a full build, the script deletes generated site state:
+
+```text
+apps.yml
+docs/
+```
+
+Then it scans top-level app folders with `DESCRIPTION`, skips `Status: draft`,
+and prepares screenshots and site assets.
+
+### Phase 1: Shinylive
+
+The first publishing pass tries Shinylive for every app whose `Runtime` is
+missing or set to `shinylive`.
+
+Successful Shinylive apps are written to `apps.yml` with links like:
+
+```text
+live/<app-folder>/index.html
+```
+
+Then Quarto renders an intermediate gallery into `docs/`. This gives a useful
+site even before every app has a server deployment.
+
+Apps with `Runtime: server` or `Runtime: publisher` are skipped in this phase.
+Apps that fail Shinylive are carried forward to the server phase.
+
+### Phase 2: Server Apps
+
+The second pass collects:
+
+- apps explicitly marked `Runtime: server` or `Runtime: publisher`;
+- apps that failed the Shinylive export.
+
+For server apps, the build derives the public URL from the folder name:
+
+```text
+https://jbkunst.shinyapps.io/<app-folder>
+```
+
+Those cards are appended to `apps.yml` and Quarto renders the final gallery
+again.
+
+If an app needs server hosting, deploy it manually with a command like:
+
+```r
+rsconnect::deployApp(
+  "kmeans-images",
+  appName = "kmeans-images",
+  appTitle = "K-means on Images"
+)
+```
+
+After the deployment succeeds, rerun the server phase or the full script and
+render the final gallery.
+
+The server phase appends to `apps.yml` instead of rewriting it. This makes it
+possible to run the Shinylive phase first, publish that intermediate site, and
+later continue from the server section in the same R session after server apps
+are deployed. Do not rerun the setup section when continuing from the server
+section, because setup intentionally deletes `apps.yml` and `docs/`.
+
+When run interactively, the script opens the generated site in Chrome if
+`chrome_path` is valid in `R/build_site.R`.
 
 ## Publishing
 
