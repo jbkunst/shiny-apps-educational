@@ -70,7 +70,7 @@ ui <- page_fillable(
       accordion(
         open = FALSE,
         accordion_panel(
-          "Lorenz notes",
+          "How it works",
           tags$small(htmltools::includeMarkdown("readme.md"))
         )
       ),
