@@ -23,9 +23,11 @@ sidebar <- purrr::partial(bslib::sidebar, width = 300)
 card <- purrr::partial(bslib::card, full_screen = TRUE)
  
 # app options -------------------------------------------------------------
+img_files <- dir("www/imgs/", full.names = TRUE)
+
 img_choices <- setNames(
-  dir("www/imgs/", full.names = TRUE),
-  str_to_title(gsub("\\.jpg$|\\.jpeg$|", "", dir("www/imgs/")))
+  img_files,
+  str_to_title(tools::file_path_sans_ext(basename(img_files)))
 )
 
 scene_common <- list(
@@ -277,15 +279,19 @@ server <- function(input, output, session) {
   })
   
   sample_pixels <- reactive({
-    df_image() |>
-      sample_n(1000) |>
+    pixels <- df_image()
+    
+    pixels |>
+      slice_sample(n = min(1000, nrow(pixels))) |>
       mutate(across(c(r, g, b), function(x) round(x, 2))) |>
       mutate(label = sprintf("rgb (%s, %s, %s)", r, g, b))
   })
   
   clustered_pixels <- reactive({
-    df_image_kmeans() |>
-      sample_n(1000) |>
+    pixels <- df_image_kmeans()
+    
+    pixels |>
+      slice_sample(n = min(1000, nrow(pixels))) |>
       mutate(across(c(r, g, b), function(x) round(x, 2))) |>
       mutate(across(c(r_app, g_app, b_app), function(x) round(x, 2))) |>
       mutate(
