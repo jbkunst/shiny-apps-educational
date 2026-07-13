@@ -9,10 +9,16 @@ library(yaml)
 library(jsonlite)
 library(cli)
 
+cli::cli_h1("Packages")
+
 # parameters -------------------------------------------------------------
+cli::cli_h1("Parameters")
+
 chrome_path <- "C:/Program Files/Google/Chrome/Application/chrome.exe"
 
 # helpers ----------------------------------------------------------------
+cli::cli_h1("Helpers")
+
 value <- function(desc, name, default = "") {
   x <- desc[[name]]
   if (is.null(x) || is.na(x) || !nzchar(x)) x <- default
@@ -33,17 +39,9 @@ as_csv <- function(x) {
     discard(~ !nzchar(.x))
 }
 
-set_html_title <- function(file, title) {
-  html <- readLines(file, encoding = "UTF-8", warn = FALSE)
-  html <- str_replace(
-    html,
-    "<title>.*</title>",
-    glue("<title>{htmltools::htmlEscape(title)}</title>")
-  )
-  writeLines(html, file, useBytes = TRUE)
-}
-
 # site files --------------------------------------------------------------
+cli::cli_h1("Site files")
+
 dir_create(c("site-assets/screenshots", "docs"))
 
 if (!file_exists("site-assets/placeholder.svg")) {
@@ -54,6 +52,8 @@ if (!file_exists("site-assets/placeholder.svg")) {
 }
 
 # find apps ---------------------------------------------------------------
+cli::cli_h1("Find apps")
+
 apps <- dir() |>
   keep(~ file_exists(path(.x, "DESCRIPTION"))) |>
   discard(~ .x %in% c("app-template", "docs")) |>
@@ -84,6 +84,8 @@ if (nrow(apps) == 0) {
 }
 
 # cards ------------------------------------------------------------------
+cli::cli_h1("Cards")
+
 app_results <- purrr::map(apps$app, function(app = "matrix-decompositions") {
   meta <- apps |> filter(.data$app == .env$app) |> slice(1)
   slug <- meta$slug
@@ -176,6 +178,8 @@ errors      <- unlist(map(app_results, "errors"), use.names = FALSE)
 write_yaml(unname(cards), "apps.yml")
 
 # render -----------------------------------------------------------------
+cli::cli_h1("Render")
+
 render_result <- tryCatch(
   {
     quarto::quarto_render(".")
@@ -201,6 +205,8 @@ if (interactive()) {
 }
 
 # shinylive ---------------------------------------------------------------
+cli::cli_h1("Shinylive")
+
 shinylive_exported <- FALSE
 
 if (dir_exists("docs/live")) dir_delete("docs/live")
@@ -220,12 +226,11 @@ shinylive_results <- apps |>
 
     export_result <- tryCatch(
       {
-        shinylive::export(app, "docs/live", subdir = slug)
+        shinylive::export(app, "docs/live", subdir = slug, template_params = list(title = meta$title))
         index_file <- path("docs/live", slug, "index.html")
         ok <- file_exists(index_file)
 
         if (ok) {
-          set_html_title(index_file, meta$title)
           list(status = "exported", message = "Shinylive export completed.")
         } else {
           list(status = "missing_index", message = "Shinylive export completed, but index.html is missing.")
@@ -255,6 +260,8 @@ for (slug in names(shinylive_results)) {
 shinylive_exported <- length(shinylive_results) > 0
 
 # report -----------------------------------------------------------------
+cli::cli_h1("Report")
+
 build_report <- list(
   generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
   app_count = nrow(apps),
@@ -272,6 +279,8 @@ if (length(errors) > 0) {
 }
 
 # done -------------------------------------------------------------------
+cli::cli_h1("Done")
+
 message("Wrote apps.yml")
 message("Wrote site-build-report.json")
 message("Rendered Quarto site to docs/")
