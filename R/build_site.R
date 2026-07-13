@@ -255,18 +255,18 @@ cards_shinylive <- shinylive_ok |>
   }) |>
   set_names(shinylive_ok)
 
-render_shinylive <- list(ok = NA, status = "skipped", output = "No Shinylive catalog rendered.")
+# quarto index ------------------------------------------------------------
+cli::cli_h1("Quarto index")
 
-if (length(cards_shinylive) > 0) {
-  
-  write_yaml(unname(cards_shinylive), "apps.yml")
+write_yaml(unname(cards_shinylive), "apps.yml")
 
-  render_shinylive <- quarto_render_catch()
+render_shinylive <- quarto_render_catch()
 
-  if (!render_shinylive$ok) stop(glue("Quarto render failed: {render_shinylive$output}"), call. = FALSE)
+if (!render_shinylive$ok) stop(glue("Quarto render failed: {render_shinylive$output}"), call. = FALSE)
 
-  if (interactive()) browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
-}
+invisible(system2("git", c("update-index", "--refresh")))
+
+if (interactive()) browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
 
 # server -----------------------------------------------------------------
 cli::cli_h1("Server")
@@ -331,7 +331,6 @@ report_apps <- apps |>
   )
 
 build_report <- list(
-  generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"),
   app_count = nrow(apps),
   draft_apps = draft_apps$app,
   shinylive_ok = shinylive_ok,
