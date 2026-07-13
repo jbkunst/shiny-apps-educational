@@ -73,11 +73,22 @@ apps <- map_dfr(apps, function(app = "arma-process") {
     slug = app,
     categories = list(as_csv(value(desc, "Categories"))),
     runtime = str_to_lower(value(desc, "Runtime", "shinylive")),
+    status = str_to_lower(value(desc, "Status")),
     url = value(desc, "URL")
   )
 })
 
 apps
+
+draft_apps <- apps |>
+  filter(.data$status == "draft")
+
+if (nrow(draft_apps) > 0) {
+  cli::cli_alert_info("Draft apps skipped: {paste(draft_apps$app, collapse = ', ')}")
+}
+
+apps <- apps |>
+  filter(.data$status != "draft")
 
 if (nrow(apps) == 0) {
   stop("No app DESCRIPTION files found.", call. = FALSE)
