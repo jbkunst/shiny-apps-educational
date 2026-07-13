@@ -1,5 +1,4 @@
 Title: K-means on Images
 Description: Apply K-means to image colors and compare the original image with a compressed color version.
 Categories: machine learning, clustering, visualization
-Runtime: shinylive
-URL: https://jbkunst.shinyapps.io/kmeans-images
+Runtime: server

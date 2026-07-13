@@ -2,4 +2,3 @@ Title: Lorenz Attractor
 Description: Adjust the Lorenz parameters and watch how small changes produce chaotic 3D trajectories.
 Categories: mathematics, simulation, visualization
 Runtime: shinylive
-URL: https://jbkunst.shinyapps.io/lorenz-attractor

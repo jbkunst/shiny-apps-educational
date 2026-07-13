@@ -2,4 +2,3 @@ Title: Decision Tree
 Description: Build synthetic classification data and watch a decision tree carve the feature space into regions.
 Categories: machine learning, classification, simulation
 Runtime: shinylive
-URL: https://jbkunst.shinyapps.io/decision-tree

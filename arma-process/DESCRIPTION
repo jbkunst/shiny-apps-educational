@@ -2,4 +2,3 @@ Title: ARMA Process Simulation
 Description: See how AR and MA settings change a simulated time series and its autocorrelation patterns.
 Categories: statistics, simulation, time series
 Runtime: shinylive
-URL: https://jbkunst.shinyapps.io/arma-process

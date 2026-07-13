@@ -2,4 +2,3 @@ Title: Bias-Variance Tradeoff
 Description: Use an interactive smoother to see how model flexibility changes underfitting, overfitting, train error, and test error.
 Categories: machine learning, statistics, regression
 Runtime: shinylive
-URL: https://jbkunst.shinyapps.io/bias-variance
