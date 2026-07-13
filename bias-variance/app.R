@@ -158,23 +158,19 @@ ui <- page_fillable(
 # server ------------------------------------------------------------------
 server <- function(input, output, session) {
   
-  # input <- list(n = 100, bandwidth = 10)
+  n_obs <- reactive(input$n) |>
+    debounce(600)
 
-  controls <- reactive({
-    list(
-      n = input$n,
-      bandwidth = input$bandwidth
-    )
-  }) |>
+  bandwidth <- reactive(input$bandwidth) |>
     debounce(600)
   
   dxy <- reactive({
 
-    controls <- controls()
+    n <- n_obs()
     
     set.seed(1234)
     
-    s <- seq(1:controls$n) / controls$n
+    s <- seq(1:n) / n
     d <- max(diff(s))
     
     # dxy <- tibble(x = c(s, s) + runif(2*input$n, -d/2 + d/2)) |> 
@@ -183,9 +179,9 @@ server <- function(input, output, session) {
         x = scales::rescale(x, to = c(0, 100)),
         # e = rnorm(input$n * 2, sd = 10),
         y = x + 10 * sin(x / 5) + 20 * sin(x / 20) ,
-        y = y + rnorm(controls$n * 2, sd = 10),
+        y = y + rnorm(n * 2, sd = 10),
         across(c(x, y), ~ round(.x, 3)),
-        s = ifelse(1:(2 * controls$n) <= controls$n, "test", "train")
+        s = ifelse(1:(2 * n) <= n, "test", "train")
       )
     
     # ggplot(dxy, aes(x, y, color = s)) +
@@ -199,7 +195,7 @@ server <- function(input, output, session) {
   dpred <- reactive({
     
     dxy <- dxy()
-    controls <- controls()
+    bw <- bandwidth()
     
     dxy_test <- dxy |>
       filter(s == "train")
@@ -207,7 +203,7 @@ server <- function(input, output, session) {
     nwk <- NadarayaWatsonkernel(
       dxy_test$x, 
       dxy_test$y,
-      h = controls$bandwidth,
+      h = bw,
       gridpoint = dxy_test$x
       # gridpoint = seq(0, 100, length.out = 100)
     )
@@ -325,7 +321,7 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(controls(), {
+  observeEvent(list(n_obs(), bandwidth()), {
     
     dpred <- dpred()
     dxy   <- dxy()
@@ -371,7 +367,7 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(controls(), {
+  observeEvent(list(n_obs(), bandwidth()), {
     
     derr <- derr()
     
@@ -387,7 +383,7 @@ server <- function(input, output, session) {
     
     # isolate, so works only one time
     derr_bw <- isolate(derr_bw())
-    bw      <- isolate(controls()$bandwidth)
+    bw      <- isolate(bandwidth())
     
     derr_bwg <- derr_bw |> 
       rename(x = bw, y = error) |> 
@@ -431,10 +427,10 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(controls(), {
+  observeEvent(n_obs(), {
     
     derr_bw <- derr_bw()
-    bw      <- controls()$bandwidth
+    bw      <- bandwidth()
     
     derr_bwg <- derr_bw |> 
       rename(x = bw, y = error) |> 
@@ -447,6 +443,15 @@ server <- function(input, output, session) {
       hcpxy_update_series(id = "train", data = list_parse2(derr_bwg$train)) |> 
       hcpxy_update_series(id = "test", data = list_parse2(derr_bwg$test))
     
+  })
+
+  observeEvent(bandwidth(), {
+
+    bw <- bandwidth()
+
+    highchartProxy("chartbandwidth") |>
+      hcpxy_update_series(id = "bandwidth", data = list(list(x = bw, y = 0), list(x = bw, y = 20)))
+
   })
   
   observeEvent(input$show_train, {
