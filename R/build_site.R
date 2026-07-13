@@ -44,7 +44,7 @@ as_csv <- function(x) {
 quarto_render_catch <- function() {
   tryCatch(
     {
-      quarto::quarto_render(".")
+      quarto::quarto_render(".", quarto_args = "--no-clean")
       list(ok = TRUE, status = 0, output = "Quarto render completed.")
     },
     error = function(e) {
