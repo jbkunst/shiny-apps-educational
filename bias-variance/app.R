@@ -1,7 +1,8 @@
 # packages ----------------------------------------------------------------
 library(shiny)
 library(bslib)
-library(tidyverse)
+library(dplyr)
+library(tibble)
 library(highcharter)
 library(markdown)
 

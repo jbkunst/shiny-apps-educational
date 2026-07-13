@@ -1,7 +1,11 @@
 # packages ----------------------------------------------------------------
 library(shiny)
 library(bslib)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(stringr)
+library(tidyr)
 library(klassets) # remotes::install_github("jbkunst/klassets")
 library(markdown)
 library(ggforce)

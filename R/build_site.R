@@ -1,5 +1,8 @@
 # packages ---------------------------------------------------------------
-library(tidyverse)
+library(dplyr)
+library(purrr)
+library(stringr)
+library(tibble)
 library(fs)
 library(glue)
 library(yaml)

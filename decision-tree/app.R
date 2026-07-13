@@ -1,7 +1,10 @@
 # packages ----------------------------------------------------------------
 library(shiny)
 library(bslib)
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
 library(scales)
 library(markdown)
 
