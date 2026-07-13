@@ -2,24 +2,17 @@
 library(shiny)
 library(bslib)
 library(dplyr)
-library(forcats)
-library(ggplot2)
 library(purrr)
 library(stringr)
 library(tibble)
 library(tidyr)
-library(scales)
 library(jpeg)
 library(imager)
-# library(threejs) # devtools::install_github("bwlewis/rthreejs")
 library(plotly)
-library(markdown) # htmltools::includeMarkdown
-library(shinyWidgets)
+library(markdown) # needed by htmltools::includeMarkdown in Shinylive
 
 # theme options -----------------------------------------------------------
 thematic::thematic_shiny(font = "auto")
-
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 apptheme <- bs_theme()
 
@@ -31,6 +24,13 @@ card <- purrr::partial(bslib::card, full_screen = TRUE)
 img_choices <- setNames(
   dir("www/imgs/", full.names = TRUE),
   str_to_title(gsub("\\.jpg$|\\.jpeg$|", "", dir("www/imgs/")))
+)
+
+scene_common <- list(
+  xaxis = list(title = "R", range = c(0, 1)),
+  yaxis = list(title = "G", range = c(0, 1)),
+  zaxis = list(title = "B", range = c(0, 1)),
+  aspectmode = "cube"
 )
 
 # ui ----------------------------------------------------------------------
@@ -53,28 +53,30 @@ ui <- page_fillable(
         tags$span("Parameter \\(k\\) for \\(K\\)-Means"),
         grid = TRUE,
         force_edges = TRUE,
-        selected = 6,
-        choices = c(1:10, 20, 50, 100, 500)
+        selected = 5,
+        choices = c(1:5, 10, 20, 50, 100, 500)
       ),
       checkboxInput("use_xy", tags$small("Use pixel position for clustering \\((r_i, g_i, b_i, x_i, y_i)\\)")),
       checkboxInput("scale", tags$small("Scale to \\([0, 1]\\) all columns before kmeans")),
-      checkboxInput("show_axes", tags$small("Show image axes")),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
       ),
     
     layout_columns(
-      col_widths = 4,
+      col_widths = 6,
       row_heights = 1,
       card(
         card_header("Image"),
         card_body(plotOutput("originalImage"))
         ),
       card(
-        card_header("Color distribution"),
-        card_body(plotOutput("originalColorDist"))
-        ),
-      card(
-        card_header(tags$small("3D Scatter plot of sample of pixels")),
+        card_header(tags$small("Sample of pixels")),
         card_body(plotlyOutput("scatterplot3d"))
         ),
       card(
@@ -82,11 +84,7 @@ ui <- page_fillable(
         card_body(plotOutput("resultImage"))
         ),
       card(
-        card_header("Result color distribution"),
-        card_body(plotOutput("resultColorDist"))
-        ),
-      card(
-        card_header(tags$small("3D Scatter plot from result image")),
+        card_header(tags$small("Clustered pixels")),
         card_body(plotlyOutput("scatterplot3dresults"))
         )
       )
@@ -100,16 +98,14 @@ server <- function(input, output, session) {
   #   image_file = "imgs/chess.jpg",
   #   k = 4,
   #   use_xy = FALSE,
-  #   scale = FALSE,
-  #   show_axes = FALSE
+  #   scale = FALSE
   #   ); input
   # 
   # input <- list(
   #   image_file = sample(img_choices, 1),
   #   k = sample(1:10, size = 1),
   #   use_xy = TRUE,
-  #   scale = FALSE,
-  #   show_axes = FALSE
+  #   scale = FALSE
   #   ); input
   
   image <- reactive({
@@ -194,58 +190,9 @@ server <- function(input, output, session) {
   })
   
   output$originalImage <- renderPlot({
-    
-    # df_image <- df_image()
-    # 
-    # plot(
-    #   df_image$x,
-    #   df_image$y,
-    #   col = df_image$rgb,
-    #   asp = 1,
-    #   pch = ".",
-    #   ylab = "",
-    #   xlab = "",
-    #   xaxt = "n",
-    #   yaxt = "n",
-    #   axes = TRUE
-    # )
-    
     image <- image()
     
-    plot(image, axes = input$show_axes)
-    
-  })
-  
-  output$originalColorDist <- renderPlot({
-    
-    df_image <- df_image()
-    
-    daux <- df_image %>%
-      count(rgb) |>
-      arrange(desc(n)) |> 
-      mutate(
-        rgb = fct_inorder(rgb),
-        rgb = fct_lump_n(rgb, n = 20, w = n)
-      ) |> 
-      count(rgb, wt = n) |> 
-      mutate(proportion = n/sum(n))
-    
-    cols <- daux |> 
-      mutate(
-        col = as.character(rgb),
-        col = ifelse(col == "Other", "transparent", col),
-      ) |> 
-      select(rgb, col) |> 
-      deframe()
-    
-    cols
-    
-    ggplot(daux) +
-      geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
-      scale_fill_manual(values = cols, guide = "none") +
-      # scale_x_continuous(labels = scales::percent) +
-      scale_x_sqrt(labels = scales::percent) +
-      labs(x = NULL, y = NULL) 
+    plot(image, axes = FALSE)
     
   })
   
@@ -268,12 +215,12 @@ server <- function(input, output, session) {
       type = "scatter3d",
       mode = "markers",
       marker = list(
-        color = ~rgb, # Assuming `rgb` is in a format compatible with plotly, e.g., hex colors
+        color = ~rgb,
         symbol = "circle"
       ),
-      text = ~label # Tooltip text
-    )
-    
+      text = ~label
+    ) |>
+      layout(scene = scene_common)
     
   })
   
@@ -293,52 +240,8 @@ server <- function(input, output, session) {
     image_result[,,,2] <- daux |> select(x, y, g_app) |> spread(y, g_app) |> select(-x) |> as.matrix()
     image_result[,,,3] <- daux |> select(x, y, b_app) |> spread(y, b_app) |> select(-x) |> as.matrix()
     
-    plot(image_result, axes = input$show_axes)
+    plot(image_result, axes = FALSE)
     
-    # plot(
-    #   df_image_kmeans$x,
-    #   df_image_kmeans$y,
-    #   col = df_image_kmeans$rgb_app,
-    #   asp = 1,
-    #   pch = ".",
-    #   ylab = "",
-    #   xlab = "",
-    #   xaxt = "n",
-    #   yaxt = "n",
-    #   input$show_axes
-    # )
-    
-  })
-  
-  output$resultColorDist <- renderPlot({
-    
-    df_image_kmeans <- df_image_kmeans()
-    
-    daux <- df_image_kmeans %>%
-      count(rgb = rgb_app) |>
-      arrange(desc(n)) |> 
-      mutate(
-        rgb = fct_inorder(rgb),
-        rgb = fct_lump_n(rgb, n = 20, w = n)
-      ) |> 
-      count(rgb, wt = n) |> 
-      mutate(proportion = n/sum(n))
-    
-    cols <- daux |> 
-      mutate(
-        col = as.character(rgb),
-        col = ifelse(col == "Other", "transparent", col),
-      ) |> 
-      select(rgb, col) |> 
-      deframe()
-    
-    cols
-    
-    ggplot(daux) +
-      geom_bar(aes(y = fct_rev(rgb), x = proportion, fill = rgb), color = "grey90", stat = "identity") +
-      scale_fill_manual(values = cols, guide = "none") +
-      scale_x_continuous(labels = scales::percent) +
-      labs(x = NULL, y = NULL)
   })
   
   output$scatterplot3dresults <- renderPlotly({
@@ -354,7 +257,7 @@ server <- function(input, output, session) {
       mutate(
         label = sprintf("rgb (%s, %s, %s)", r, g, b),
         label_app = sprintf("rgb (%s, %s, %s)", r_app, g_app, b_app),
-        )
+      )
     
     plot_ly(
       data = daux,
@@ -364,11 +267,12 @@ server <- function(input, output, session) {
       type = "scatter3d",
       mode = "markers",
       marker = list(
-        color = ~rgb_app, # Assuming `rgb` is in a format compatible with plotly, e.g., hex colors
+        color = ~rgb_app,
         symbol = "circle"
       ),
-      text = ~ glue::glue("{label_app}\n{label}")# Tooltip text
-    )
+      text = ~ glue::glue("{label_app}\n{label}")
+    ) |>
+      layout(scene = scene_common)
     
   })
   

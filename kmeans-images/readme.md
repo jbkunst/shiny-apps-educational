@@ -1,7 +1,7 @@
-Every image is made of pixels. Each pixel has a color, and every color has an RGB representation 
-(a 3-coordinate point), so we can group colors into clusters and see what happens.
-A pixel also has a position, so it can be represented as a 5-tuple of values.
-The idea behind this app is taken from [dsparks' kmeans palette](https://gist.github.com/dsparks/3980277). I added features like a 3D scatterplot and migrated the code to a Shiny app.
+Every image is a grid of pixels. Each pixel has an RGB color, so it can be represented as a point in color space.
 
-App made by [Joshua Kunst](https://jkunst.com) with ❤️ and ☕ using Shiny for R ✨. Code 
-[here](https://github.com/jbkunst/shiny-apps-educational).
+This app applies K-means to the pixels and rebuilds the image from the cluster centers. A small value of \\(k\\) creates a stronger compression effect; a larger value keeps more color detail.
+
+When pixel position is enabled, each pixel is clustered with both color and location: \\((r_i, g_i, b_i, x_i, y_i)\\). This makes nearby pixels more likely to share the same cluster.
+
+The idea is inspired by [dsparks' kmeans palette](https://gist.github.com/dsparks/3980277). This version adds 3D scatterplots and an interactive Shiny workflow.
