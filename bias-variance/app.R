@@ -42,55 +42,32 @@ options(
 # app options -------------------------------------------------------------
 metric <- Metrics::rmse
 
-ker <- function (u, kerntype = c("Gaussian", "Epanechnikov", "Quartic", 
-                                 "Triweight", "Triangular", "Uniform")) {
-  kerntype = match.arg(kerntype)
-  if (kerntype == "Gaussian") {
-    result = 1/(sqrt(2 * pi)) * exp(-0.5 * (u^2))
-  }
-  else {
-    lenu = length(u)
-    result = vector(, lenu)
-    for (j in 1:lenu) {
-      if (abs(u[j]) <= 1) {
-        if (kerntype == "Epanechnikov") {
-          result[j] = 3/4 * (1 - u[j]^2)
-        }
-        if (kerntype == "Quartic") {
-          result[j] = 15/16 * ((1 - u[j]^2)^2)
-        }
-        if (kerntype == "Triweight") {
-          result[j] = 35/32 * ((1 - u[j]^2)^3)
-        }
-        if (kerntype == "Triangular") {
-          result[j] = (1 - abs(u[j]))
-        }
-        if (kerntype == "Uniform") {
-          result[j] = 1/2
-        }
-      }
-      else {
-        result[j] = 0
-      }
-    }
-  }
-  return(result)
-}
+# Previous loop version, kept for comparison.
+# NadarayaWatsonkernel <- function(x, y, h, gridpoint) {
+#   n <- length(y)
+#   mh <- vector(, length(gridpoint))
+#
+#   for (j in seq_along(gridpoint)) {
+#     suma <- sumb <- vector(, n)
+#
+#     for (i in seq_len(n)) {
+#       k <- dnorm((gridpoint[j] - x[i]) / h)
+#       suma[i] <- k * y[i]
+#       sumb[i] <- k
+#     }
+#
+#     mh[j] <- sum(suma) / sum(sumb)
+#   }
+#
+#   list(gridpoint = gridpoint, mh = mh)
+# }
 
-NadarayaWatsonkernel <- function (x, y, h, gridpoint){
-  
-  n = length(y)
-  mh = vector(, length(gridpoint))
-  for (j in 1:length(gridpoint)) {
-    suma = sumb = vector(, n)
-    for (i in 1:n) {
-      suma[i] = ker((gridpoint[j] - x[i]) / h) * y[i]
-      sumb[i] = ker((gridpoint[j] - x[i]) / h)
-    }
-    mh[j] = sum(suma) / sum(sumb)
-  }
-  
-  return(list(gridpoint = gridpoint, mh = mh))
+NadarayaWatsonkernel <- function(x, y, h, gridpoint) {
+
+  w <- outer(gridpoint, x, function(g, xi) dnorm((g - xi) / h))
+  mh <- as.vector(w %*% y / rowSums(w))
+
+  list(gridpoint = gridpoint, mh = mh)
 }
 
 # ui ----------------------------------------------------------------------
