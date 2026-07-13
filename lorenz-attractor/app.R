@@ -5,6 +5,7 @@ library(plotly)
 library(ggplot2)
 library(dplyr)
 library(markdown)
+library(shinyWidgets)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
@@ -47,17 +48,33 @@ ui <- page_fillable(
     sidebar = sidebar(
       title = "Lorenz System Parameters",
       withMathJax(),
-      sliderInput("sigma", "\\( \\sigma \\) (sigma):", 
-                  min = 1, max = 20, value = 10, step = 0.1),
-      sliderInput("rho", "\\( \\rho \\) (rho):", 
-                  min = 1, max = 50, value = 28, step = 0.1),
-      sliderInput("beta", "\\( \\beta \\) (beta):", 
-                  min = 0.1, max = 10, value = 8/3, step = 0.1),
-      numericInput("n_points", "Number of points:", 
-                   value = 1000, min = 100, max = 5000),
-      numericInput("dt", "Time step (dt):", 
-                   value = 0.01, min = 0.001, max = 0.1, step = 0.001),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      sliderInput("sigma", "\\( \\sigma \\) (sigma):", min = 1, max = 20, value = 10, step = 0.1),
+      sliderInput("rho", "\\( \\rho \\) (rho):", min = 1, max = 50, value = 28, step = 0.1),
+      sliderInput("beta", "\\( \\beta \\) (beta):", min = 0.1, max = 10, value = 8/3, step = 0.1),
+      shinyWidgets::sliderTextInput(
+        "n_points",
+        "Number of points:",
+        choices = c(100, 250, 500, 1000, 2000, 5000),
+        selected = 1000,
+        grid = TRUE,
+        force_edges = TRUE
+      ),
+      shinyWidgets::sliderTextInput(
+        "dt",
+        "Time step (dt):",
+        choices = c("0.001", "0.002", "0.005", "0.01", "0.02", "0.05"),
+        selected = "0.01",
+        grid = TRUE,
+        force_edges = TRUE
+      ),
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "Lorenz notes",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
     ),
     layout_columns(
       col_widths = c(12, 4, 4, 4),
@@ -90,8 +107,8 @@ server <- function(input, output, session) {
       sigma = input$sigma,
       rho = input$rho,
       beta = input$beta,
-      n = input$n_points,
-      dt = input$dt
+      n = as.numeric(input$n_points),
+      dt = as.numeric(input$dt)
     )
   })
   
