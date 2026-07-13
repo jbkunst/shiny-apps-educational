@@ -61,23 +61,8 @@ page_sidebar(
     accordion(
       open = FALSE,
       accordion_panel(
-        "Matrix assumptions",
-        tags$p(
-          "Some decompositions do not require a square matrix. In this app, ",
-          "we use square real-valued matrices for simplicity."
-        ),
-        tags$p(
-          "Generated matrices are symmetric positive-definite, so the ",
-          "decompositions work reliably."
-        ),
-        tags$p(
-          "Random values use integers up to the selected maximum absolute value. ",
-          "The diagonal is adjusted automatically to keep the matrix positive-definite."
-        ),
-        tags$p(
-          "For PCA, the same matrix is interpreted as a covariance-like matrix ",
-          "so we can talk about variance explained by principal components."
-        )
+        "How it works",
+        tags$small(htmltools::includeMarkdown("readme.md"))
       ),
       accordion_panel(
         "Inspiration",
@@ -96,7 +81,7 @@ page_sidebar(
         )
       )
     ),
-    includeMarkdown("readme.md")
+    tags$small(htmltools::includeMarkdown("credits.md"))
   ),
   htmlOutput("decomposition_output")
 )
