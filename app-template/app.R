@@ -15,7 +15,15 @@ ui <- page_fillable(
   padding = 0,
   layout_sidebar(
     sidebar = sidebar(
-      title = "App title"
+      title = "App title",
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
     ),
     card(
       card_header("Main view"),

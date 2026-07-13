@@ -56,15 +56,41 @@ runtime to `server` or `publisher` once a live URL exists.
 2. Use a short folder name; this becomes the app slug.
 3. Build the app in `app.R`.
 4. Fill in `DESCRIPTION`.
-5. Run the app locally and check the teaching flow.
-6. Run `source("R/build_site.R")` from the repository root.
-7. Check the generated gallery in `docs/index.html`.
-8. If `Runtime: shinylive`, check `docs/live/<app-folder>/index.html`.
-9. Commit the source changes separately from generated `docs/` changes when it
+5. Add a short `readme.md` that explains how the app works.
+6. Add or reuse a `credits.md` signature block.
+7. Run the app locally and check the teaching flow.
+8. Run `source("R/build_site.R")` from the repository root.
+9. Check the generated gallery in `docs/index.html`.
+10. If `Runtime: shinylive`, check `docs/live/<app-folder>/index.html`.
+11. Commit the source changes separately from generated `docs/` changes when it
    helps review.
 
 The build script creates `screenshot.png` only when it is missing. To regenerate
 a screenshot, delete the old app screenshot and run the build again.
+
+## Markdown Notes
+
+Many apps include Markdown files inside the UI with
+`htmltools::includeMarkdown()`. Keep reusable app text in `readme.md` and visible
+signature text in `credits.md` when that makes the app easier to maintain.
+
+Each app should have a `readme.md` focused on the app's "How it works" content.
+This file should be useful on GitHub and also included inside the Shiny UI with
+`htmltools::includeMarkdown("readme.md")`.
+
+In the app UI, place the `readme.md` content inside a closed accordion before
+the credits. If the app needs several explanatory blocks, create one accordion
+section per block, but keep the credits visible and outside the accordion.
+
+For MathJax inside included Markdown, write inline math with double backslashes:
+
+```md
+\\(k\\)
+\\((r_i, g_i, b_i, x_i, y_i)\\)
+```
+
+The Markdown renderer consumes a single backslash, so writing `\(k\)` in the
+source may produce plain `(k)` in the generated HTML instead of MathJax input.
 
 ## Rebuilding The Gallery
 
