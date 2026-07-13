@@ -54,10 +54,18 @@ ui <- page_fillable(
     fillable = TRUE,
     sidebar = sidebar(
       title = "ARMA model Simulation",
-      sliderInput("ar", "AR", -.9, .9, value = AR, 0.05, width = "100%"),
-      sliderInput("ma", "MA", -.9, .9, value = MA, 0.05, width = "100%"),
+      withMathJax(),
+      sliderInput("ar", "AR", -.9, .9, value = AR, 0.1, width = "100%"),
+      sliderInput("ma", "MA", -.9, .9, value = MA, 0.1, width = "100%"),
       sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%"),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
       ),
     
     layout_columns(
@@ -188,36 +196,59 @@ server <- function(input, output, session) {
       hcpxy_update_series(id = "spacf", data = smpPACF)
     
   })
-  
+
   observe({
-    
+
     interval <- max(as.numeric(input$interval), 0.25)
-    
+
     invalidateLater(1000 * interval, session)
-    
-    # animation <- ifelse(interval < 0.5, FALSE, TRUE)
+
     animation <- TRUE
-    
+
     value_to_add <- isolate(value()) + 1
-    # value_to_add <- 11
     value(value_to_add)
-    
-    ts <- ts()
-    
-    smpACF <- as.numeric(acf(head(ts, value_to_add), lag.max = LAG_MAX, plot = FALSE)$acf)
-    
+
+    serie_actual <- head(ts(), value_to_add)
+
+    smpACF <- as.numeric(
+      acf(
+        serie_actual,
+        lag.max = LAG_MAX,
+        plot = FALSE
+      )$acf
+    )
+
+    smpPACF <- as.numeric(
+      pacf(
+        serie_actual,
+        lag.max = LAG_MAX,
+        plot = FALSE
+      )$acf
+    )
+
     highchartProxy("acf") |>
-      hcpxy_update_series(id = "sacf", data = smpACF)
-    
+      hcpxy_update_series(
+        id = "sacf",
+        data = smpACF
+      )
+
+    highchartProxy("pacf") |>
+      hcpxy_update_series(
+        id = "spacf",
+        data = smpPACF
+      )
+
     highchartProxy("ts") |>
       hcpxy_add_point(
         id = "ts",
-        point = list(x = value_to_add, y = ts[value_to_add]),
+        point = list(
+          x = value_to_add,
+          y = ts()[value_to_add]
+        ),
         animation = animation
       )
-    
   })
-  
+
   output$acf <- renderHighchart({
     
     highchart() |>
