@@ -8,12 +8,12 @@ library(tidyr)
 library(scales)
 library(markdown)
 
-library(geomtextpath) # remotes::install_github("AllanCameron/geomtextpath")
 library(risk3r)       # remotes::install_github("jbkunst/risk3r", force = TRUE)
 library(klassets)     # remotes::install_github("jbkunst/klassets", force = TRUE)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
+
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 
@@ -24,6 +24,7 @@ thematic::thematic_shiny(font = "auto")
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 primary_color <- unname(bs_get_variables(apptheme, c("primary")))
+class_palette <- c("FALSE" = "#d98f8f", "TRUE" = "#8f95d9")
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -70,30 +71,45 @@ ui <- page_fillable(
         step = 0.05,
         value = .1
       ),
-      sliderInput(
+      checkboxInput(
+        "show_tree_values",
+        tags$small("Show split p-values"),
+        value = FALSE
+      ),
+      shinyWidgets::sliderTextInput(
         "n",
         tags$small("Number of observations"),
-        min = 100,
-        max = 1000,
-        step = 100,
-        value = 1000
+        choices = c("100", "500", "1000"),
+        selected = "1000",
+        grid = TRUE,
+        force_edges = TRUE
       ),
       checkboxInput(
         "show_model_field", 
         tags$small("Show model predictions"),
         value = TRUE
       ),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        ),
+        accordion_panel(
+          "Inspiration and resources",
+          tags$small(htmltools::includeMarkdown("resources.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
       ),
     
     layout_columns(
-      col_widths = c(6, 6, 4, 4, 4),
+      col_widths = c(6, 6, 6, 6),
       row_heights = c(3, 2),
       card(card_body(plotOutput("join_dist", width = "100%", height = "100%"))),
       card(card_body(plotOutput("tree_plot", width = "100%", height = "100%"))),
       card(card_body(plotOutput("roc_plot", width = "100%", height = "100%"))),
-      card(card_body(plotOutput("bg_plot", width = "100%", height = "100%"))),
-      card(card_body(tableOutput("cross_table")))
+      card(card_body(plotOutput("confusion_plot", width = "100%", height = "100%")))
       )
     )
   )
@@ -108,7 +124,8 @@ server <- function(input, output, session) {
   #   show_xy_rel = TRUE,
   #   percent_noise = 10,
   #   depth = 8,
-  #   alpha = 0.05
+  #   alpha = 0.05,
+  #   show_tree_values = FALSE
   # ); input
   
   dxy <- reactive({
@@ -116,7 +133,7 @@ server <- function(input, output, session) {
     set.seed(1234)
     
     dxy <- klassets::sim_response_xy(
-      n = input$n,
+      n = as.integer(input$n),
       x_dist = purrr::partial(runif, min = -1, max = 1),
       relationship = function(x, y) eval(parse(text = input$relationship)),
       noise = input$percent_noise/100
@@ -152,7 +169,14 @@ server <- function(input, output, session) {
     
     dxy <- dxy()
     
-    plot(attr(dxy, "model"))
+    tree_colors <- unname(class_palette[sort(unique(as.character(dxy$response)))])
+    
+    plot(
+      attr(dxy, "model"),
+      terminal_panel = partykit::node_barplot,
+      tp_args = list(fill = tree_colors, col = tree_colors, id = FALSE),
+      ip_args = list(id = FALSE, pval = input$show_tree_values, fill = "white")
+    )
     
   })
   
@@ -181,31 +205,7 @@ server <- function(input, output, session) {
     
   })
   
-  output$bg_plot <- renderPlot({
-    
-    dxy <- dxy()
-    
-    # Keep the same TRUE-positive orientation used by the ROC curve.
-    ksmod <- risk3r::ks(
-      actual = as.numeric(dxy$response),
-      predicted = 1 - dxy$prediction
-    )
-    
-    ggplot(dxy, aes(1 - prediction, group = response, fill = response, color = response, label = response)) +
-      geom_density(alpha = 0.1, linewidth = 2) +
-      
-      scale_color_manual(name = NULL, values = c(muted("red", 35), muted("blue", 35))) +
-      
-      geom_textdensity(size = 4, fontface = 1, hjust = 0.2, vjust = -0.5) +
-      scale_y_continuous(labels = NULL) +
-      scale_x_continuous(limits = c(0, 1)) + 
-      labs(x = "Probability", y = "Density") +
-      labs(title = str_glue("KS: { percent(ksmod) }")) +
-      theme(legend.position = "none")
-    
-  })
-  
-  output$cross_table <- renderTable({
+  output$confusion_plot <- renderPlot({
     
     dxy <- dxy()
     
@@ -216,18 +216,38 @@ server <- function(input, output, session) {
       alpha = input$alpha
     )
     
-    dxy2 |> 
-      count(response, prediction) |> 
+    class_levels <- sort(unique(c(as.character(dxy2$response), as.character(dxy2$prediction))))
+    class_colors <- class_palette[class_levels]
+    class_symbols <- setNames(c("x", "o")[seq_along(class_levels)], class_levels)
+    response_labels <- str_glue("{class_symbols[rev(class_levels)]}  {rev(class_levels)}")
+    
+    dcm <- dxy2 |> 
       mutate(
-        p = percent(n/sum(n)),
-        n = comma(n),
-        lbl = str_glue("{n} ({p})"),
-        prediction = str_glue("pred: {prediction}"),
-        response  = str_glue("response: {response}")
-        ) |> 
-      select(-n, -p) |> 
-      spread(prediction, lbl) |> 
-      rename(` ` = response)
+        response = factor(as.character(response), levels = rev(class_levels)),
+        prediction = factor(as.character(prediction), levels = class_levels)
+      ) |>
+      count(response, prediction, name = "n") |> 
+      complete(response, prediction, fill = list(n = 0)) |>
+      mutate(
+        p = n / sum(n),
+        lbl = str_glue("{comma(n)}\n{percent(p)}"),
+        x = as.integer(prediction),
+        y = as.integer(response)
+      )
+    
+    ggplot(dcm, aes(x, y)) +
+      geom_tile(aes(fill = prediction, alpha = p), color = "white", linewidth = 1.5, width = 0.96, height = 0.96) +
+      geom_text(aes(label = lbl), fontface = "bold", lineheight = 0.9, size = 4.5) +
+      scale_fill_manual(values = class_colors, name = "Predicted") +
+      scale_alpha(range = c(0.2, 0.75), guide = "none") +
+      scale_x_continuous(breaks = seq_along(class_levels), labels = class_levels) +
+      scale_y_continuous(breaks = seq_along(rev(class_levels)), labels = response_labels) +
+      coord_equal() +
+      labs(title = "Confusion matrix", x = "Predicted response", y = "Observed response") +
+      theme(
+        panel.grid = element_blank(),
+        legend.position = "bottom"
+      )
     
   })
   
