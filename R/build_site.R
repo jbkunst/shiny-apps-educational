@@ -16,7 +16,17 @@ cli::cli_h1("Parameters")
 
 chrome_path  <- "C:/Program Files/Google/Chrome/Application/chrome.exe"
 preview_port <- 8000
-# server_base_url <- "https://jbkunst.shinyapps.io"
+commit_docs  <- FALSE
+
+generated_paths <- c("docs", "apps.yml", "site-assets", "site-build-report.json")
+
+if (!commit_docs) {
+  on.exit({
+    cli::cli_h1("Restore generated site")
+    system2("git", c("restore", "--", generated_paths))
+    system2("git", c("clean", "-fd", "--", "docs", "site-assets"))
+  }, add = TRUE)
+}
 
 # helpers ----------------------------------------------------------------
 cli::cli_h1("Helpers")
@@ -169,7 +179,7 @@ metadata_errors <- apps |>
           if (!nzchar(title)) "Title",
           if (!nzchar(description)) "Description",
           if (length(categories) == 0) "Categories",
-          if (!runtime %in% c("shinylive", "publisher", "server")) "Runtime"
+          if (!runtime %in% c("shinylive", "server")) "Runtime"
         )
 
         paste(missing, collapse = ", ")
@@ -192,7 +202,7 @@ shinylive_apps <- apps |>
   filter(.data$runtime == "shinylive")
 
 server_apps <- apps |>
-  filter(.data$runtime %in% c("publisher", "server"))
+  filter(.data$runtime == "server")
 
 if (nrow(server_apps) > 0) {
   cli::cli_alert_info("Server apps skipped by Shinylive: {paste(server_apps$app, collapse = ', ')}")
@@ -267,67 +277,21 @@ server_candidates <- bind_rows(
 ) |>
   distinct(.data$app, .keep_all = TRUE)
 
-if (nrow(server_candidates) > 0) {
-  cli::cli_alert_info("Server candidates: {paste(server_candidates$app, collapse = ', ')}")
-}
+server_ready <- character()
+server_pending <- server_candidates$app
 
-server_ready <- server_candidates |>
-  filter(nzchar(.data$url))
+if (length(server_pending) > 0) {
+  cli::cli_alert_warning("Needs Posit Connect deploy: {paste(server_pending, collapse = ', ')}")
 
-server_pending <- server_candidates |>
-  filter(!nzchar(.data$url))
-
-if (nrow(server_pending) > 0) {
-  cli::cli_alert_warning("Needs server deploy URL: {paste(server_pending$app, collapse = ', ')}")
-
-  walk(server_pending$app, function(app = "kmeans-images") {
-    meta <- server_pending |> filter(.data$app == .env$app) |> slice(1)
+  walk(server_pending, function(app = "kmeans-images") {
+    meta <- server_candidates |> filter(.data$app == .env$app) |> slice(1)
     cli::cli_alert_info('Deploy manually: rsconnect::deployApp("{meta$app}", appName = "{meta$slug}", appTitle = "{meta$title}")')
   })
-}
-
-cards_server <- server_ready$app |>
-  map(function(app = "kmeans-images") {
-    meta <- server_ready |> filter(.data$app == .env$app) |> slice(1)
-    image <- screenshot_generate_and_copy(meta$app, meta$slug)
-
-    list(
-      title = meta$title,
-      description = meta$description,
-      image = image,
-      categories = meta$categories[[1]],
-      path = meta$url
-    )
-  }) |>
-  set_names(server_ready$app)
-
-cards_server <- compact(cards_server)
-
-if (length(cards_server) > 0) {
-  if (file_exists("apps.yml")) {
-    cat("\n", file = "apps.yml", append = TRUE)
-    cat(as.yaml(unname(cards_server)), file = "apps.yml", append = TRUE)
-  } else {
-    write_yaml(unname(cards_server), "apps.yml")
-  }
 } else {
-  cli::cli_alert_info("No server cards to write.")
+  cli::cli_alert_info("No server candidates.")
 }
 
-render_server <- NULL
-
-if (length(cards_server) > 0) {
-  cli::cli_h2("Rendering final catalog")
-  render_server <- quarto_render_catch()
-
-  if (!render_server$ok) {
-    stop(glue("Quarto render failed: {render_server$output}"), call. = FALSE)
-  }
-
-  if (interactive()) {
-    browseURL(glue("http://127.0.0.1:{preview_port}/index.html"), browser = chrome_path)
-  }
-}
+render_server <- list(ok = NA, status = "skipped", output = "Server catalog not rendered.")
 
 # report -----------------------------------------------------------------
 cli::cli_h1("Report")
@@ -348,13 +312,12 @@ report_apps <- apps |>
     shinylive_message = shinylive_message,
     final_target = case_when(
       .data$app %in% shinylive_ok ~ "shinylive",
-      .data$app %in% server_ready$app ~ "server",
-      .data$app %in% server_pending$app ~ "server_pending",
+      .data$app %in% server_ready ~ "server",
+      .data$app %in% server_pending ~ "server_pending",
       TRUE ~ "none"
     ),
     launch_url = case_when(
       .data$app %in% shinylive_ok ~ paste0("live/", .data$slug, "/index.html"),
-      nzchar(.data$url) ~ .data$url,
       TRUE ~ ""
     )
   ) |>
@@ -373,8 +336,8 @@ build_report <- list(
   draft_apps = draft_apps$app,
   shinylive_ok = shinylive_ok,
   shinylive_failed = shinylive_failed,
-  server_ready = server_ready$app,
-  server_pending = server_pending$app,
+  server_ready = server_ready,
+  server_pending = server_pending,
   apps = report_apps,
   render_shinylive = render_shinylive,
   render_server = render_server
@@ -382,6 +345,32 @@ build_report <- list(
 
 write_json(build_report, "site-build-report.json", pretty = TRUE, auto_unbox = TRUE)
 write_json(build_report, "docs/build-report.json", pretty = TRUE, auto_unbox = TRUE)
+
+# commit -----------------------------------------------------------------
+cli::cli_h1("Commit")
+
+if (commit_docs) {
+  git_add <- system2("git", c("add", "--", generated_paths))
+
+  if (git_add != 0) {
+    stop("git add failed.", call. = FALSE)
+  }
+
+  commit_message <- glue("Publica catalogo actualizado {Sys.Date()}")
+  git_commit <- system2("git", c("commit", "-m", commit_message))
+
+  if (git_commit == 0) {
+    git_push <- system2("git", c("push", "origin", "master"))
+
+    if (git_push != 0) {
+      stop("git push failed.", call. = FALSE)
+    }
+  } else {
+    cli::cli_alert_warning("No generated site commit created. Maybe there were no changes.")
+  }
+} else {
+  cli::cli_alert_info("commit_docs is FALSE; generated site files will be restored on exit.")
+}
 
 # done -------------------------------------------------------------------
 cli::cli_h1("Done")
