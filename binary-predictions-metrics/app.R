@@ -52,7 +52,14 @@ ui <- page_fillable(
       withMathJax(),
       selectInput("variable", tags$small("Variable"), choices = names(credit_data)[-1]),
       checkboxInput("logscale", tags$small("Log-scale on \\(x\\)-axis")),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
       ),
     layout_column_wrap(
       width = 1/2,

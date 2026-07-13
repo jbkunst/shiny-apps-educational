@@ -1,9 +1,5 @@
-Resources and inspiration:
+This app compares how a numeric variable separates good and bad credit outcomes.
 
+Each point is one observation. The vertical jitter only separates overlapping points, so the horizontal position is the value to read.
 
-- [K-means Cluster Analysis](https://uc-r.github.io/kmeans_clustering) by UC Business Analytics R Programming Guide.
-- [K-means shiny example](https://shiny.rstudio.com/gallery/kmeans-example.html).
-- [Clustering algorithms](https://nms.kcl.ac.uk/colin.cooper/teachingmaterial/CSMWAL/CSMWAL/Lectures/ClusterSlides.pdf).
-
-App made by [Joshua Kunst](https://jkunst.com) with ❤️ and ☕ using Shiny for R ✨. Code 
-[here](https://github.com/jbkunst/shiny-apps-educational).
+Use the log scale when a variable is highly skewed. A useful variable shows less overlap between the two outcome groups.

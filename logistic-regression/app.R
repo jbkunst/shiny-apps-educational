@@ -83,7 +83,18 @@ ui <- page_fillable(
         tags$small("Show model predictions"),
         value = TRUE
       ),
-      tags$small(htmltools::includeMarkdown("readme.md"))
+      accordion(
+        open = FALSE,
+        accordion_panel(
+          "How it works",
+          tags$small(htmltools::includeMarkdown("readme.md"))
+        ),
+        accordion_panel(
+          "Inspiration and resources",
+          tags$small(htmltools::includeMarkdown("resources.md"))
+        )
+      ),
+      tags$small(htmltools::includeMarkdown("credits.md"))
       ),
     
     layout_columns(

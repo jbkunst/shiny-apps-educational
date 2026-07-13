@@ -530,12 +530,16 @@ ui <- page_fillable(
           actionButton("button", "Generate", class = "btn-primary btn-sm")
         ),
         accordion_panel(
-          "About K-means",
-          tags$small(include_md("details.md"))
+          "How it works",
+          tags$small(include_md("readme.md"))
+        ),
+        accordion_panel(
+          "Inspiration and resources",
+          tags$small(include_md("resources.md"))
         )
       ),
       
-      tags$small(include_md("readme.md"))
+      tags$small(include_md("credits.md"))
     ),
     
     layout_columns(
