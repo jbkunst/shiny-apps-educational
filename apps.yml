@@ -16,6 +16,33 @@
   - statistics
   - regression
   path: live/bias-variance/index.html
+- title: Decision Tree
+  description: Build synthetic classification data and watch a decision tree carve
+    the feature space into regions.
+  image: site-assets/screenshots/decision-tree.png
+  categories:
+  - machine learning
+  - classification
+  - simulation
+  path: live/decision-tree/index.html
+- title: K-means Step by Step
+  description: Move through each K-means iteration to see centers, assignments, and
+    convergence on generated clusters.
+  image: site-assets/screenshots/kmeans.png
+  categories:
+  - machine learning
+  - clustering
+  - simulation
+  path: live/kmeans/index.html
+- title: Logistic Regression
+  description: Change noise, polynomial terms, and class structure to see how logistic
+    regression shapes decision boundaries.
+  image: site-assets/screenshots/logistic-regression.png
+  categories:
+  - machine learning
+  - classification
+  - regression
+  path: live/logistic-regression/index.html
 - title: Lorenz Attractor
   description: Adjust the Lorenz parameters and watch how small changes produce chaotic
     3D trajectories.
