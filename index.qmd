@@ -1,5 +1,8 @@
 ---
-title: "Interactive Learning Apps"
+title: "Visual Data Lab"
+description: "Interactive experiments in data, statistics, and machine learning."
+open-graph: true
+twitter-card: true
 page-layout: full
 listing:
   - id: apps-list
@@ -18,10 +21,10 @@ listing:
 
 :::{.catalog-hero}
 :::{.catalog-kicker}
-Small tools, big ideas
+Interactive experiments in data, statistics, and machine learning.
 :::
 
-Visual Shiny experiments for statistics, machine learning, probability, and mathematical thinking.
+Explore data, models, and algorithms through interactive visualizations.
 :::
 
 :::{#apps-list}

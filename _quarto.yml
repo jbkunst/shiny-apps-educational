@@ -7,7 +7,8 @@ project:
     - site-assets/
 
 website:
-  title: "Interactive Learning Apps"
+  title: "Visual Data Lab"
+  description: "Interactive experiments in data, statistics, and machine learning."
   site-url: "https://jbkunst.github.io/shiny-apps-educational/"
   search: false
   navbar:

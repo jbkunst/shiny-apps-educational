@@ -1,7 +1,9 @@
-# Shiny Educational Apps
+# Visual Data Lab
 
-This repository contains small Shiny apps for teaching statistics, machine
-learning, probability, and mathematical ideas.
+Interactive experiments in data, statistics, and machine learning.
+
+Visual Data Lab contains small Shiny experiments for exploring statistics,
+machine learning, probability, and mathematical ideas.
 
 The public entry point is the Quarto gallery generated into `docs/`. The README
 is intentionally more internal: it documents how the gallery is built, how apps
@@ -87,11 +89,11 @@ Status: draft
 The build script creates `screenshot.png` only when it is missing. To regenerate
 a screenshot, delete the old app screenshot and run the build again.
 
-## Possible App Ideas
+## Possible Experiment Ideas
 
-The repository is also a place to turn classroom examples into small Shiny apps.
-Many future apps can start from `klassets` examples and later become full Shiny
-experiments.
+The repository is also a place to turn classroom examples into interactive
+experiments. Many future apps can start from `klassets` examples and later
+become full Shiny experiments.
 
 Current ideas:
 
