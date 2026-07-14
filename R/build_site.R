@@ -362,6 +362,7 @@ cards_server <- server_ok |>
   }) |>
   set_names(server_ok)
 
+# quarto index II --------------------------------------------------------
 if (length(cards_server) > 0) {
   cards <- c(cards_shinylive, cards_server)
   write_yaml(unname(cards[sort(names(cards))]), "apps.yml")
