@@ -9,7 +9,7 @@ project:
 website:
   title: "Visual Data Lab"
   description: "Interactive experiments in data, statistics, and machine learning."
-  site-url: "https://jbkunst.github.io/shiny-apps-educational/"
+  site-url: "https://jbkunst.github.io/visual-data-lab/"
   search: false
   navbar:
     pinned: true
@@ -18,7 +18,7 @@ website:
         text: Gallery
     right:
       - icon: github
-        href: "https://github.com/jbkunst/shiny-apps-educational"
+        href: "https://github.com/jbkunst/visual-data-lab"
         aria-label: "GitHub repository"
 
 format:

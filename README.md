@@ -12,7 +12,7 @@ hosted elsewhere.
 
 Public site:
 
-<https://jbkunst.github.io/shiny-apps-educational/>
+<https://jbkunst.github.io/visual-data-lab/>
 
 ## Repository Structure
 
@@ -267,6 +267,6 @@ stays simpler than maintaining a framework.
 The helper can run an app from a fresh copy of the repository:
 
 ```r
-source("https://raw.githubusercontent.com/jbkunst/shiny-apps-educational/master/R/run_app.R")
+source("https://raw.githubusercontent.com/jbkunst/visual-data-lab/master/R/run_app.R")
 run_app("kmeans")
 ```
