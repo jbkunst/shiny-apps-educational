@@ -16,7 +16,7 @@ cli::cli_h1("Parameters")
 
 chrome_path  <- "C:/Program Files/Google/Chrome/Application/chrome.exe"
 preview_port <- 8000
-commit_docs  <- FALSE
+commit_docs  <- TRUE
 
 generated_paths <- c("docs", "apps.yml", "site-assets", "site-build-report.json")
 
