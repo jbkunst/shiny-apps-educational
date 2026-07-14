@@ -21,10 +21,8 @@ listing:
 
 :::{.catalog-hero}
 :::{.catalog-kicker}
-Interactive experiments in data, statistics, and machine learning.
-:::
-
 Explore data, models, and algorithms through interactive visualizations.
+:::
 :::
 
 :::{#apps-list}
