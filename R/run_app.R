@@ -1,23 +1,23 @@
-run_app <- function(app = "kmeans"){
-  
-  url <- "https://github.com/jbkunst/shiny-apps-educational/archive/refs/heads/master.zip"
-  
+run_app <- function(app = "kmeans") {
+  project_name <- "Visual Data Lab"
+  repo_slug <- "shiny-apps-educational"
+  url <- paste0("https://github.com/jbkunst/", repo_slug, "/archive/refs/heads/master.zip")
+
   filePath <- tempfile("shinyapp", fileext = ".zip")
-  fileDir  <- tempfile("shinyapp")  
-  
-  cli::cli_inform("Downloading {url}")
-  
+  fileDir  <- tempfile("shinyapp")
+
+  cli::cli_inform("Downloading {project_name} app '{app}' from {url}")
+
   download.file(url, filePath)
-  
+
   try(utils::unzip(filePath, exdir = fileDir))
 
-  fp <- file.path(fileDir, "shiny-apps-educational-master", app)
-  
+  fp <- file.path(fileDir, paste0(repo_slug, "-master"), app)
+
   shiny::runApp(fp)
-  
+
   # app_rmd <- stringr::str_subset(dir(fp, full.names = TRUE), "app.Rmd")
   # rmarkdown::run(app_rmd)
-  
 }
 
 # run_app("kmeans")
