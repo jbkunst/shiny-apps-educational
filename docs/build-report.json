@@ -1,6 +1,6 @@
 {
   "app_count": 8,
-  "draft_apps": "binary-predictions-metrics",
+  "draft_apps": ["binary-predictions-metrics", "dimensionality-reduction", "network-structures"],
   "shinylive_ok": ["arma-process", "bias-variance", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions"],
   "shinylive_failed": [],
   "server_ok": "kmeans-images",
