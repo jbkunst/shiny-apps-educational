@@ -1,9 +1,9 @@
 {
-  "app_count": 8,
-  "draft_apps": ["binary-predictions-metrics", "dimensionality-reduction", "network-structures"],
+  "app_count": 9,
+  "draft_apps": ["binary-predictions-metrics", "network-structures"],
   "shinylive_ok": ["arma-process", "bias-variance", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions"],
   "shinylive_failed": [],
-  "server_ok": "kmeans-images",
+  "server_ok": ["dimensionality-reduction", "kmeans-images"],
   "server_failed": [],
   "server_pending": [],
   "apps": [
@@ -30,6 +30,14 @@
       "launch_url": "live/decision-tree/index.html",
       "shinylive": "exported",
       "shinylive_message": "Shinylive export completed."
+    },
+    {
+      "slug": "dimensionality-reduction",
+      "runtime": "server",
+      "final_target": "server",
+      "launch_url": "https://019f6494-e867-660f-b0cc-bc63b0fc2d06.share.connect.posit.cloud/",
+      "shinylive": "not_requested",
+      "shinylive_message": "Runtime is not shinylive."
     },
     {
       "slug": "kmeans",

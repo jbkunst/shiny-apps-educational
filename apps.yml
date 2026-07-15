@@ -25,6 +25,15 @@
   - classification
   - simulation
   path: live/decision-tree/index.html
+- title: Dimensionality Reduction
+  description: Compare PCA, Isomap, t-SNE, and UMAP on simulated and real high-dimensional
+    datasets.
+  image: site-assets/screenshots/dimensionality-reduction.png
+  categories:
+  - machine learning
+  - visualization
+  - mathematics
+  path: https://019f6494-e867-660f-b0cc-bc63b0fc2d06.share.connect.posit.cloud/
 - title: K-means Step by Step
   description: Move through each K-means iteration to see centers, assignments, and
     convergence on generated clusters.
