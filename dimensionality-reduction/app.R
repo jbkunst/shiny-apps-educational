@@ -21,11 +21,11 @@ card <- purrr::partial(bslib::card, full_screen = TRUE)
 
 # app options -------------------------------------------------------------
 n_choices <- c("100", "200", "500", "700", "1000")
-real_n_choices <- c("400", "1000", "2000")
+real_n_choices <- c("500", "1000", "2000")
 mammoth_n_choices <- c("1000", "2000", "5000", "10000")
-dimension_choices <- c("2", "3", "5", "8", "12", "20")
+dimension_choices <- c("3", "5", "8", "12", "20")
 noise_choices <- c("0", "0.05", "0.10", "0.20", "0.40", "0.60")
-neighbor_choices <- c("0", "3", "5", "8", "12", "20")
+neighbor_choices <- c("1", "3", "5", "8", "12", "20")
 
 real_datasets <- c("mnist", "fashion_mnist", "mammoth")
 
@@ -33,12 +33,6 @@ real_dataset_files <- c(
   mnist = "mnist.rds",
   fashion_mnist = "fashion-mnist.rds",
   mammoth = "mammoth.rds"
-)
-
-real_dataset_dimensions <- c(
-  mnist = 784,
-  fashion_mnist = 784,
-  mammoth = 3
 )
 
 dataset_choices <- list(
@@ -56,34 +50,18 @@ dataset_choices <- list(
 )
 
 DATASET_HELP <- c(
-  mnist = paste(
-    "Handwritten digits from MNIST.",
-    "Each image is represented by pixel intensities and colored by digit."
-  ),
-  fashion_mnist = paste(
-    "Fashion-MNIST images.",
-    "Each image is represented by pixel intensities and colored by clothing category."
-  ),
-  mammoth = paste(
-    "A 3D mammoth point cloud from the Understanding UMAP project.",
-    "Color identifies the provided region label."
-  ),
-  gaussian = paste(
-    "Three Gaussian groups. This is the easy reference case:",
-    "the classes are real and roughly linearly separated."
-  ),
-  moons = paste(
-    "Two curved groups. The classes are real, but their shape is nonlinear."
-  ),
-  circles = paste(
-    "Two concentric groups. The classes are real, although one surrounds the other."
-  ),
-  swiss_roll = paste(
-    "A rolled two-dimensional surface inside a higher-dimensional space.",
-    "Color shows position along the roll; it is not a class."
-  )
+  mnist = "Handwritten digits from MNIST. Each image has 784 pixel features and is colored by digit.",
+  fashion_mnist = "Fashion-MNIST images. Each image has 784 pixel features and is colored by clothing category.",
+  mammoth = "A 3D mammoth point cloud from the Understanding UMAP project. Color identifies the provided region label.",
+  gaussian = "Three Gaussian groups. This is the easy reference case: the classes are real and roughly linearly separated.",
+  moons = "Two curved groups. The classes are real, but their shape is nonlinear.",
+  circles = "Two concentric groups. The classes are real, although one surrounds the other.",
+  swiss_roll = "A rolled two-dimensional surface inside a higher-dimensional space. Color shows position along the roll; it is not a class."
 )
 
+# helpers -----------------------------------------------------------------
+
+# Scale columns while guarding against zero variance.
 safe_scale <- function(x) {
   x <- as.matrix(x)
   center <- colMeans(x)
@@ -95,6 +73,7 @@ safe_scale <- function(x) {
   sweep(x, 2, spread, FUN = "/")
 }
 
+# Center all columns and scale by one shared spread.
 scale_together <- function(x) {
   x <- as.matrix(x)
   x <- sweep(x, 2, colMeans(x), FUN = "-")
@@ -107,11 +86,13 @@ scale_together <- function(x) {
   x / spread
 }
 
+# Convert a 28 x 28 image row into display orientation.
 image_matrix_28 <- function(pixels) {
   image <- matrix(as.numeric(pixels), nrow = 28, ncol = 28, byrow = TRUE)
   t(apply(image, 2, rev))
 }
 
+# Simulate the low-dimensional shapes before optional expansion.
 generate_latent_data <- function(type, n, noise) {
   if (type == "gaussian") {
     group <- sample(1:3, size = n, replace = TRUE)
@@ -200,6 +181,7 @@ generate_latent_data <- function(type, n, noise) {
   )
 }
 
+# Project latent coordinates into a noisy observed feature space.
 expand_dimensions <- function(latent, dimensions, noise) {
   latent <- safe_scale(latent)
   latent_dimensions <- ncol(latent)
@@ -225,6 +207,7 @@ expand_dimensions <- function(latent, dimensions, noise) {
   round(safe_scale(observed), 3)
 }
 
+# Load real data or generate simulated observations plus metadata.
 generate_data <- function(type, n, dimensions, noise, seed) {
   set.seed(seed)
   n <- as.integer(n)
@@ -287,11 +270,13 @@ generate_data <- function(type, n, dimensions, noise, seed) {
   )
 }
 
+# Return the first two principal components.
 run_pca <- function(x) {
   fit <- stats::prcomp(x, center = FALSE, scale. = FALSE)
   fit$x[, 1:2, drop = FALSE]
 }
 
+# Reduce very wide inputs before running Isomap.
 isomap_input <- function(x, max_dimensions = 20) {
   x <- as.matrix(x)
 
@@ -309,6 +294,7 @@ isomap_input <- function(x, max_dimensions = 20) {
   fit$x[, seq_len(min(max_dimensions, ncol(fit$x))), drop = FALSE]
 }
 
+# Assign each row to its closest landmark row.
 nearest_landmark <- function(x, landmarks) {
   nearest <- integer(nrow(x))
   landmark_norm <- rowSums(landmarks^2)
@@ -328,6 +314,7 @@ nearest_landmark <- function(x, landmarks) {
   nearest
 }
 
+# Run Isomap, retrying neighbor sizes until the graph connects.
 run_isomap_exact <- function(x) {
   n <- nrow(x)
   first_k <- max(5, min(15, round(sqrt(n))))
@@ -364,7 +351,8 @@ run_isomap_exact <- function(x) {
   stop("Isomap could not build a connected neighborhood graph.")
 }
 
-run_isomap <- function(x, seed, landmark_n = 400) {
+# Approximate Isomap with landmarks for larger datasets.
+run_isomap <- function(x, seed, landmark_n = 250) {
   set.seed(seed)
 
   x <- isomap_input(x)
@@ -389,6 +377,7 @@ run_isomap <- function(x, seed, landmark_n = 400) {
   embedding + 0.05 * local_offset
 }
 
+# Run t-SNE with lighter settings for large samples.
 run_tsne <- function(x, seed) {
   set.seed(seed)
 
@@ -406,6 +395,7 @@ run_tsne <- function(x, seed) {
   )$Y
 }
 
+# Run UMAP with reproducible, single-threaded settings.
 run_umap <- function(x, seed) {
   set.seed(seed)
 
@@ -420,6 +410,7 @@ run_umap <- function(x, seed) {
   )
 }
 
+# Attach projection coordinates to row metadata.
 projection_data <- function(coordinates, metadata) {
   coordinates <- unname(as.matrix(coordinates))
 
@@ -432,6 +423,7 @@ projection_data <- function(coordinates, metadata) {
   )
 }
 
+# Assign a stable viridis color to each class label.
 class_palette <- function(group) {
   levels <- levels(factor(group))
   palette <- viridisLite::viridis(length(levels), begin = 0.08, end = 0.82)
@@ -439,6 +431,7 @@ class_palette <- function(group) {
   unname(palette[match(as.character(group), levels)])
 }
 
+# Build rows used for selected and neighbor overlays.
 projection_highlight_data <- function(coordinates, metadata, ids) {
   data <- projection_data(coordinates, metadata)
 
@@ -467,46 +460,14 @@ projection_highlight_data <- function(coordinates, metadata, ids) {
   )
 }
 
-observed_highlight_data <- function(x, metadata, ids) {
-  x <- unname(as.matrix(x))
-  observed <- as_tibble(x, .name_repair = "minimal")
-  names(observed) <- paste0("x", seq_len(ncol(x)))
-
-  data <- bind_cols(metadata, observed)
-
-  if (length(ids) == 0) {
-    data <- data[0, ]
-  } else {
-    data <- filter(data, .data$row_id %in% ids)
-  }
-
-  if (identical(metadata$color_type[[1]], "continuous")) {
-    return(mutate(
-      data,
-      tooltip = paste0(
-        "Observation: ", row_id,
-        "<br>Position: ", round(color_value, 2)
-      )
-    ))
-  }
-
-  mutate(
-    data,
-    tooltip = paste0(
-      "Observation: ", row_id,
-      "<br>Class: ", group
-    )
-  )
-}
-
+# Find nearest rows to the selected observation in original space.
 nearest_ids <- function(x, row_id, n_neighbors) {
   if (
     is.null(row_id) ||
     length(row_id) == 0 ||
     is.na(row_id) ||
     !is.finite(row_id) ||
-    is.null(n_neighbors) ||
-    n_neighbors == 0
+    is.null(n_neighbors)
   ) {
     return(integer())
   }
@@ -519,46 +480,7 @@ nearest_ids <- function(x, row_id, n_neighbors) {
   head(setdiff(ids, row_id), n_neighbors)
 }
 
-observed_table <- function(x, metadata, selected_id, neighbor_ids) {
-  x <- unname(as.matrix(x))
-  observed <- as_tibble(x, .name_repair = "minimal")
-  names(observed) <- paste0("x", seq_len(ncol(x)))
-
-  selected <- integer()
-
-  if (
-    !is.null(selected_id) &&
-    length(selected_id) > 0 &&
-    !is.na(selected_id) &&
-    is.finite(selected_id)
-  ) {
-    selected <- as.integer(selected_id)
-  }
-
-  data <- bind_cols(
-    tibble(row_id = metadata$row_id),
-    observed
-  ) |>
-    mutate(
-      role = case_when(
-        .data$row_id %in% selected ~ "selected",
-        .data$row_id %in% neighbor_ids ~ "neighbor",
-        TRUE ~ "other"
-      )
-    ) |>
-    relocate("row_id", "role")
-
-  if (length(selected) > 0) {
-    data <- filter(data, .data$role != "other")
-  } else {
-    data <- slice_head(data, n = 20)
-  }
-
-  data |>
-    mutate(across(where(is.numeric), function(x) round(x, 3))) |>
-    mutate(row_id = as.integer(.data$row_id))
-}
-
+# Compute equal axis ranges for 3D observed data.
 equal_3d_ranges <- function(data) {
   ranges <- list(
     x = range(data$x1, na.rm = TRUE),
@@ -576,6 +498,7 @@ equal_3d_ranges <- function(data) {
   )
 }
 
+# Draw the original 2D/3D data with selected and neighbor overlays.
 observed_plot <- function(x, metadata, selected_id = NULL, neighbor_ids = integer()) {
   x <- unname(as.matrix(x))
   observed <- as_tibble(x, .name_repair = "minimal")
@@ -685,7 +608,7 @@ observed_plot <- function(x, metadata, selected_id = NULL, neighbor_ids = intege
       hoverinfo = "text",
       marker = list(
         size = if (dims == 3) 13 else 16,
-        color = "#111827",
+        color = "#D62728",
         line = list(color = "#FFFFFF", width = 2)
       ),
       showlegend = FALSE
@@ -719,6 +642,7 @@ observed_plot <- function(x, metadata, selected_id = NULL, neighbor_ids = intege
   }
 }
 
+# Draw one 2D projection map with empty traces for proxy highlights.
 projection_plot <- function(
   coordinates,
   metadata,
@@ -775,7 +699,11 @@ projection_plot <- function(
     )
   }
 
-  empty <- data[0, ]
+  empty <- data[1, ]
+  empty$axis_1 <- NA_real_
+  empty$axis_2 <- NA_real_
+  empty$row_id <- NA_integer_
+  empty$tooltip <- ""
 
   plot <- plot |>
     add_trace(
@@ -792,23 +720,6 @@ projection_plot <- function(
         size = 13,
         color = "rgba(255, 193, 7, 0.55)",
         line = list(color = "#111827", width = 1)
-      ),
-      showlegend = FALSE
-    ) |>
-    add_trace(
-      data = empty,
-      x = ~axis_1,
-      y = ~axis_2,
-      type = plot_type,
-      mode = "markers",
-      inherit = FALSE,
-      key = ~row_id,
-      text = ~tooltip,
-      hoverinfo = "text",
-      marker = list(
-        size = 16,
-        color = "#111827",
-        line = list(color = "#FFFFFF", width = 2)
       ),
       showlegend = FALSE
     )
@@ -841,34 +752,10 @@ ui <- page_fillable(
         .js-plotly-plot .scatterlayer .points circle {
           cursor: pointer;
         }
-        .fixed-slider-control { margin-bottom: 1rem; }
-        .fixed-slider-track {
-          position: relative;
-          height: 28px;
-          margin-top: 0.35rem;
-        }
-        .fixed-slider-track::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 13px;
-          height: 4px;
-          border-radius: 999px;
-          background: #dee2e6;
-        }
-        .fixed-slider-value {
-          position: absolute;
-          left: 50%;
-          top: 0;
-          transform: translateX(-50%);
-          min-width: 2.6rem;
-          padding: 0.1rem 0.45rem;
-          border-radius: 999px;
-          background: #007BC2;
-          color: #fff;
-          font-size: 0.8rem;
-          text-align: center;
+        #simulation_controls:empty,
+        #show_observed_button:empty,
+        #selected_image_panel:empty {
+          display: none;
         }
       ")
     )
@@ -891,36 +778,22 @@ ui <- page_fillable(
       uiOutput("simulation_controls"),
 
       div(
-        class = "d-flex flex-wrap gap-2",
+        class = "d-flex flex-wrap align-items-center gap-2",
         actionButton(
           "generate",
-          "Generate",
-          class = "btn-primary btn-sm"
+          "Update projections",
+          class = "btn-primary"
         ),
-        actionButton(
-          "show_observed",
-          "Show data",
-          class = "btn-outline-primary btn-sm"
-        )
+        uiOutput("show_observed_button", inline = TRUE)
       ),
 
       sliderTextInput(
         "neighbors",
-        tags$small("Neighbors to highlight"),
+        tags$small("Neighbors after click"),
         choices = neighbor_choices,
-        selected = "8",
+        selected = "5",
         grid = TRUE,
         force_edges = TRUE
-      ),
-
-      div(
-        class = "d-flex align-items-start justify-content-between gap-2",
-        uiOutput("highlight_status"),
-        actionButton(
-          "clear_highlight",
-          "Clear",
-          class = "btn-outline-secondary btn-sm"
-        )
       ),
 
       uiOutput("selected_image_panel"),
@@ -931,10 +804,6 @@ ui <- page_fillable(
         accordion_panel(
           "How it works",
           tags$small(htmltools::includeMarkdown("readme.md"))
-        ),
-        accordion_panel(
-          "Further reading",
-          tags$small(htmltools::includeMarkdown("resources.md"))
         )
       ),
       
@@ -944,22 +813,18 @@ ui <- page_fillable(
     layout_columns(
       col_widths = c(6, 6, 6, 6),
       row_heights = c(1, 1),
-
       card(
         card_header("PCA - maximum variance"),
         card_body(plotlyOutput("pca_plot", height = "100%"))
       ),
-
       card(
         card_header("Isomap - geodesic distances"),
         card_body(plotlyOutput("isomap_plot", height = "100%"))
       ),
-
       card(
         card_header("t-SNE - local neighborhoods"),
         card_body(plotlyOutput("tsne_plot", height = "100%"))
       ),
-
       card(
         card_header("UMAP - neighborhood graph"),
         card_body(plotlyOutput("umap_plot", height = "100%"))
@@ -1013,16 +878,7 @@ server <- function(input, output, session) {
 
   output$simulation_controls <- renderUI({
     if (input$dataset %in% real_datasets) {
-      dimensions <- as.character(real_dataset_dimensions[[input$dataset]])
-
-      return(tags$div(
-        class = "fixed-slider-control",
-        tags$small("Original dimensions"),
-        tags$div(
-          class = "fixed-slider-track",
-          tags$span(class = "fixed-slider-value", dimensions)
-        )
-      ))
+      return(NULL)
     }
 
     tagList(
@@ -1044,10 +900,27 @@ server <- function(input, output, session) {
       )
     )
   })
+  outputOptions(output, "simulation_controls", suspendWhenHidden = FALSE)
+
+  output$show_observed_button <- renderUI({
+    result <- results()
+
+    if (is.null(result) || ncol(result$observed) != 3) {
+      return(NULL)
+    }
+
+    actionButton(
+      "show_observed",
+      "Show data",
+      class = "btn-outline-primary btn-sm"
+    )
+  })
+  outputOptions(output, "show_observed_button", suspendWhenHidden = FALSE)
 
   results <- reactiveVal(NULL)
   selected_id <- reactiveVal(NULL)
 
+  # Recalculate data and all projections from current inputs.
   calculate_results <- function() {
     isolate(withProgress(message = "Generating projections", value = 0, {
       req(input$dataset, input$n)
@@ -1108,10 +981,7 @@ server <- function(input, output, session) {
     results(calculate_results())
   }, ignoreInit = TRUE)
 
-  observeEvent(input$clear_highlight, {
-    selected_id(NULL)
-  })
-
+  # Store the clicked row id from a Plotly click event.
   select_point <- function(click) {
     if (is.null(click$key) || length(click$key) == 0 || is.na(click$key[[1]])) {
       return(invisible(NULL))
@@ -1161,19 +1031,6 @@ server <- function(input, output, session) {
     )
   })
 
-  output$highlight_status <- renderUI({
-    id <- selected_id()
-
-    if (is.null(id)) {
-      return(tags$small(class = "text-muted", "Click a point in any map."))
-    }
-
-    tags$small(
-      class = "text-muted",
-      paste0("Observation ", id, " + ", length(neighbor_ids()), " nearest neighbors.")
-    )
-  })
-
   output$selected_image_panel <- renderUI({
     result <- results()
     id <- selected_id()
@@ -1190,6 +1047,7 @@ server <- function(input, output, session) {
       plotOutput("selected_image", height = "120px")
     )
   })
+  outputOptions(output, "selected_image_panel", suspendWhenHidden = FALSE)
 
   output$selected_image <- renderPlot({
     result <- results()
@@ -1207,7 +1065,8 @@ server <- function(input, output, session) {
     )
   }, res = 96)
 
-  update_proxy_trace <- function(output_id, data, trace_index, x, y, z = NULL) {
+  # Update one highlight trace without redrawing the whole plot.
+  update_proxy_trace <- function(output_id, data, trace_index, x, y) {
     payload <- list(
       x = list(unname(data[[x]])),
       y = list(unname(data[[y]])),
@@ -1215,14 +1074,16 @@ server <- function(input, output, session) {
       text = list(unname(data$tooltip))
     )
 
-    if (!is.null(z)) {
-      payload$z <- list(unname(data[[z]]))
+    if ("highlight_color" %in% names(data)) {
+      payload[["marker.color"]] <- list(unname(data$highlight_color))
+      payload[["marker.size"]] <- list(unname(data$highlight_size))
     }
 
     plotlyProxy(output_id, session) |>
       plotlyProxyInvoke("restyle", payload, list(trace_index))
   }
 
+  # Refresh selected and neighbor highlight traces in all maps.
   update_highlights <- function() {
     result <- results()
     req(result)
@@ -1249,18 +1110,23 @@ server <- function(input, output, session) {
         selected
       )
 
-      update_proxy_trace(
-        output_id = paste0(name, "_plot"),
-        data = neighbor_data,
-        trace_index = 1,
-        x = "axis_1",
-        y = "axis_2"
+      highlight_data <- bind_rows(
+        mutate(
+          neighbor_data,
+          highlight_color = "rgba(255, 193, 7, 0.65)",
+          highlight_size = 13
+        ),
+        mutate(
+          selected_data,
+          highlight_color = "#D62728",
+          highlight_size = 17
+        )
       )
 
       update_proxy_trace(
         output_id = paste0(name, "_plot"),
-        data = selected_data,
-        trace_index = 2,
+        data = highlight_data,
+        trace_index = 1,
         x = "axis_1",
         y = "axis_2"
       )
@@ -1273,34 +1139,17 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$show_observed, {
+    result <- results()
+    req(result, ncol(result$observed) <= 3)
+
     showModal(
       modalDialog(
-        title = "Data",
-        uiOutput("observed_body"),
+        plotlyOutput("observed_plot", height = "70vh"),
         size = "xl",
         easyClose = TRUE,
-        footer = modalButton("Close")
+        footer = NULL
       )
     )
-  })
-
-  output$observed_body <- renderUI({
-    result <- results()
-    req(result)
-
-    dimensions <- ncol(result$observed)
-
-    if (dimensions <= 3) {
-      plotlyOutput("observed_plot", height = "70vh")
-    } else {
-      tagList(
-        tags$small(
-          class = "text-muted",
-          "Selected observation and nearest neighbors in the original space. If nothing is selected, the first rows are shown."
-        ),
-        tableOutput("observed_table")
-      )
-    }
   })
 
   output$observed_plot <- renderPlotly({
@@ -1314,18 +1163,6 @@ server <- function(input, output, session) {
       neighbor_ids = neighbor_ids()
     )
   })
-
-  output$observed_table <- renderTable({
-    result <- results()
-    req(result)
-
-    observed_table(
-      x = result$observed,
-      metadata = result$metadata,
-      selected_id = selected_id(),
-      neighbor_ids = neighbor_ids()
-    )
-  }, striped = TRUE, spacing = "s")
 
   output$pca_plot <- renderPlotly({
     result <- results()
