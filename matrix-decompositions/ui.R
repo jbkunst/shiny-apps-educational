@@ -8,6 +8,7 @@ page_sidebar(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
+    tags$style(HTML(".selectize-dropdown-content{max-height:none!important;overflow-y:visible!important;}")),
     selectInput(
       "decomposition",
       tags$strong("Decomposition"),

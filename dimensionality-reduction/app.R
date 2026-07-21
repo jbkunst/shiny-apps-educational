@@ -745,9 +745,9 @@ ui <- page_fillable(
   theme = apptheme,
   padding = 0,
   tags$head(
+    tags$style(HTML(".selectize-dropdown-content{max-height:none!important;overflow-y:visible!important;}")),
     tags$style(
       htmltools::HTML("
-        .selectize-dropdown-content { max-height: none !important; }
         .js-plotly-plot .scatterlayer .points path,
         .js-plotly-plot .scatterlayer .points circle {
           cursor: pointer;

@@ -29,6 +29,9 @@ safe_divide <- function(x, y) {
   x / y
 }
 
+# development input -------------------------------------------------------
+# input <- list(mean_1 = "-1", sd_1 = "1", mean_2 = "1", sd_2 = "1", threshold = 0, n = "500", p_1 = "50")
+
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
   theme = apptheme,
@@ -47,7 +50,8 @@ ui <- page_fillable(
           choices = mean_choices,
           selected = "-1",
           grid = FALSE,
-          hide_min_max = TRUE
+          hide_min_max = TRUE,
+        dragRange = FALSE
         ),
         shinyWidgets::sliderTextInput(
           "sd_1",
@@ -55,7 +59,8 @@ ui <- page_fillable(
           choices = sd_choices,
           selected = "1",
           grid = FALSE,
-          hide_min_max = TRUE
+          hide_min_max = TRUE,
+        dragRange = FALSE
         )
       ),
 
@@ -68,7 +73,8 @@ ui <- page_fillable(
           choices = mean_choices,
           selected = "1",
           grid = FALSE,
-          hide_min_max = TRUE
+          hide_min_max = TRUE,
+        dragRange = FALSE
         ),
         shinyWidgets::sliderTextInput(
           "sd_2",
@@ -76,7 +82,8 @@ ui <- page_fillable(
           choices = sd_choices,
           selected = "1",
           grid = FALSE,
-          hide_min_max = TRUE
+          hide_min_max = TRUE,
+        dragRange = FALSE
         )
       ),
 
@@ -96,7 +103,8 @@ ui <- page_fillable(
         choices = n_choices,
         selected = "1000",
         grid = FALSE,
-        hide_min_max = TRUE
+        hide_min_max = TRUE,
+        dragRange = FALSE
       ),
 
       shinyWidgets::sliderTextInput(
@@ -106,6 +114,7 @@ ui <- page_fillable(
         selected = "50",
         grid = FALSE,
         hide_min_max = TRUE,
+        dragRange = FALSE,
         post = "%"
       )
     ),
@@ -133,12 +142,12 @@ server <- function(input, output, session) {
   data_sample <- reactive({
     set.seed(1)
 
-    n <- as.integer(input$n)
-    p_1 <- as.numeric(input$p_1) / 100
-    mean_1 <- as.numeric(input$mean_1)
-    mean_2 <- as.numeric(input$mean_2)
-    sd_1 <- as.numeric(input$sd_1)
-    sd_2 <- as.numeric(input$sd_2)
+    n <- as.integer(input$n[[1]])
+    p_1 <- as.numeric(input$p_1[[1]]) / 100
+    mean_1 <- as.numeric(input$mean_1[[1]])
+    mean_2 <- as.numeric(input$mean_2[[1]])
+    sd_1 <- as.numeric(input$sd_1[[1]])
+    sd_2 <- as.numeric(input$sd_2[[1]])
 
     n_1 <- round(n * p_1)
     n_2 <- n - n_1
@@ -156,33 +165,37 @@ server <- function(input, output, session) {
   })
 
   density_data <- reactive({
-    mean_1 <- as.numeric(input$mean_1)
-    mean_2 <- as.numeric(input$mean_2)
-    sd_1 <- as.numeric(input$sd_1)
-    sd_2 <- as.numeric(input$sd_2)
-    p_1 <- as.numeric(input$p_1) / 100
+    mean_1 <- as.numeric(input$mean_1[[1]])
+    mean_2 <- as.numeric(input$mean_2[[1]])
+    sd_1 <- as.numeric(input$sd_1[[1]])
+    sd_2 <- as.numeric(input$sd_2[[1]])
+    p_1 <- as.numeric(input$p_1[[1]]) / 100
 
-    score <- seq(
+    score_grid <- seq(
       min(mean_1 - 4 * sd_1, mean_2 - 4 * sd_2),
       max(mean_1 + 4 * sd_1, mean_2 + 4 * sd_2),
       length.out = 500
     )
 
-    tibble(
-      score = rep(score, 2),
-      density = c(
-        dnorm(score, mean_1, sd_1) * p_1,
-        dnorm(score, mean_2, sd_2) * (1 - p_1)
-      ),
-      observed = factor(rep(names(class_palette), each = length(score)), levels = names(class_palette))
+    densities <- tibble(
+      score = rep(score_grid, 2),
+      observed = factor(rep(names(class_palette), each = length(score_grid)), levels = names(class_palette))
     )
+
+    densities$density <- ifelse(
+      densities$observed == "Negative",
+      dnorm(densities$score, mean_1, sd_1) * p_1,
+      dnorm(densities$score, mean_2, sd_2) * (1 - p_1)
+    )
+
+    densities
   })
 
   roc_data <- reactive({
-    mean_1 <- as.numeric(input$mean_1)
-    mean_2 <- as.numeric(input$mean_2)
-    sd_1 <- as.numeric(input$sd_1)
-    sd_2 <- as.numeric(input$sd_2)
+    mean_1 <- as.numeric(input$mean_1[[1]])
+    mean_2 <- as.numeric(input$mean_2[[1]])
+    sd_1 <- as.numeric(input$sd_1[[1]])
+    sd_2 <- as.numeric(input$sd_2[[1]])
 
     threshold <- seq(
       max(mean_1 + 5 * sd_1, mean_2 + 5 * sd_2),
@@ -213,10 +226,10 @@ server <- function(input, output, session) {
     accuracy <- safe_divide(tp + tn, tp + tn + fp + fn)
     specificity <- safe_divide(tn, tn + fp)
     f1 <- safe_divide(2 * precision * tpr, precision + tpr)
-    mean_1 <- as.numeric(input$mean_1)
-    mean_2 <- as.numeric(input$mean_2)
-    sd_1 <- as.numeric(input$sd_1)
-    sd_2 <- as.numeric(input$sd_2)
+    mean_1 <- as.numeric(input$mean_1[[1]])
+    mean_2 <- as.numeric(input$mean_2[[1]])
+    sd_1 <- as.numeric(input$sd_1[[1]])
+    sd_2 <- as.numeric(input$sd_2[[1]])
     auc <- pnorm((mean_2 - mean_1) / sqrt(sd_1^2 + sd_2^2))
 
     tibble(
@@ -268,7 +281,7 @@ server <- function(input, output, session) {
     ggplot(roc, aes(fpr, tpr)) +
       geom_abline(slope = 1, intercept = 0, linetype = "dotted", color = "grey60") +
       geom_path(color = "#4f56b3", linewidth = 1.2) +
-      geom_point(aes(x = current_fpr, y = current_tpr), color = "#d24b4b", size = 3.5) +
+      annotate("point", x = current_fpr, y = current_tpr, color = "#d24b4b", size = 3.5) +
       coord_equal(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
       labs(x = "False positive rate", y = "True positive rate") +
       theme_minimal(base_size = 13)
