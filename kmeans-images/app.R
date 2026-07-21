@@ -183,7 +183,7 @@ server <- function(input, output, session) {
     
     # image <- readJPEG(input$image_file)
     
-    image <- load.image(here::here(input$image_file))
+    image <- load.image(input$image_file)
     image
     
   })
