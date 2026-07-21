@@ -119,25 +119,14 @@ ui <- page_fillable(
   tags$head(
     htmltools::includeScript("www/camera-sync.js")
   ),
+  tags$style(HTML(".selectize-dropdown-content{max-height:none!important;overflow-y:visible!important;}")),
   layout_sidebar(
     fillable = TRUE,
     sidebar = sidebar(
       title = "K-means on images",
       withMathJax(),
-      selectizeInput(
-        "image_file",
-        tags$span("Image"),
-        choices = sample(img_choices), 
-        width = "100%"
-      ),
-      sliderTextInput(
-        "k",
-        tags$span("Parameter \\(k\\) for \\(K\\)-Means"),
-        grid = TRUE,
-        force_edges = TRUE,
-        selected = 5,
-        choices = c(1:5, 10, 20, 50, 100, 500)
-      ),
+      selectizeInput("image_file", tags$span("Image"), sample(img_choices), width = "100%"),
+      sliderTextInput("k", tags$span("Parameter \\(k\\) for \\(K\\)-Means"), c(1:5, 10, 20, 50, 100, 500), selected = 5, grid = TRUE, force_edges = TRUE),
       checkboxInput("use_xy", tags$small("Use pixel position for clustering \\((r_i, g_i, b_i, x_i, y_i)\\)")),
       checkboxInput("scale", tags$small("Scale to \\([0, 1]\\) all columns before kmeans")),
       accordion(
