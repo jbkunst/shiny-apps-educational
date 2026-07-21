@@ -13,3 +13,4 @@ rchessbase/data/*
 /.quarto/
 /.quarto-cache/
 **/*.quarto_ipynb
+.vscode/settings.json
