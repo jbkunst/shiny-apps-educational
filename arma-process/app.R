@@ -55,8 +55,24 @@ ui <- page_fillable(
     sidebar = sidebar(
       title = "ARMA model Simulation",
       withMathJax(),
-      sliderInput("ar", "AR", -.9, .9, value = AR, 0.1, width = "100%"),
-      sliderInput("ma", "MA", -.9, .9, value = MA, 0.1, width = "100%"),
+      sliderInput(
+        "ar",
+        tags$span("AR coefficient ", HTML("\\(\\phi\\)")),
+        -.9,
+        .9,
+        value = AR,
+        0.1,
+        width = "100%"
+      ),
+      sliderInput(
+        "ma",
+        tags$span("MA coefficient ", HTML("\\(\\theta\\)")),
+        -.9,
+        .9,
+        value = MA,
+        0.1,
+        width = "100%"
+      ),
       sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%"),
       accordion(
         open = FALSE,
