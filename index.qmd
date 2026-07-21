@@ -8,7 +8,7 @@ listing:
   - id: apps-list
     contents: apps.yml
     type: grid
-    grid-columns: 4
+    grid-columns: 3
     sort-ui: false
     filter-ui: true
     categories: true

@@ -11,6 +11,8 @@ library(cli)
 
 cli::cli_h1("Packages")
 
+# httpuv::runStaticServer("docs", port = 8080, browse = FALSE, background = TRUE); browseURL("http://127.0.0.1:8080/")
+
 # parameters -------------------------------------------------------------
 cli::cli_h1("Parameters")
 
