@@ -29,7 +29,7 @@ options(
 )
 
 # app options -------------------------------------------------------------
-bandwidth_grid <- round(exp(seq(log(0.1), log(10), length.out = 25)), 2)
+bandwidth_grid <- round(exp(seq(log(0.1), log(20), length.out = 25)), 2)
 
 # ui ----------------------------------------------------------------------
 ui <- page_fillable(
@@ -50,7 +50,7 @@ ui <- page_fillable(
       shinyWidgets::sliderTextInput(
         "bandwidth",
         tags$small("Bandwidth"),
-        choices = c("0.1", "0.5", "1", "2", "5", "10"),
+        choices = c("0.1", "0.5", "1", "2", "3", "4", "5", "10", "20"),
         selected = "2",
         grid = TRUE,
         force_edges = TRUE
@@ -289,7 +289,7 @@ server <- function(input, output, session) {
 
     highchart() |>
       hc_chart(type = "line") |>
-      hc_xAxis(title = list(text = "Bandwidth"), min = 0.1, max = 10) |>
+      hc_xAxis(title = list(text = "Bandwidth"), min = 0.1, max = 20) |>
       hc_yAxis(title = list(text = "RMSE")) |>
       hc_add_series(
         data = list_parse2(errors$train),
