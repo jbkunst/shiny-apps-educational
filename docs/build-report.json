@@ -1,7 +1,7 @@
 {
   "app_count": 9,
-  "draft_apps": ["binary-predictions-metrics", "network-structures"],
-  "shinylive_ok": ["arma-process", "bias-variance", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions"],
+  "draft_apps": ["binary-predictions-metrics", "network-structures", "roc-curve"],
+  "shinylive_ok": ["arma-process", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions", "underfitting-overfitting"],
   "shinylive_failed": [],
   "server_ok": ["dimensionality-reduction", "kmeans-images"],
   "server_failed": [],
@@ -12,14 +12,6 @@
       "runtime": "shinylive",
       "final_target": "shinylive",
       "launch_url": "live/arma-process/index.html",
-      "shinylive": "exported",
-      "shinylive_message": "Shinylive export completed."
-    },
-    {
-      "slug": "bias-variance",
-      "runtime": "shinylive",
-      "final_target": "shinylive",
-      "launch_url": "live/bias-variance/index.html",
       "shinylive": "exported",
       "shinylive_message": "Shinylive export completed."
     },
@@ -76,6 +68,14 @@
       "runtime": "shinylive",
       "final_target": "shinylive",
       "launch_url": "live/matrix-decompositions/index.html",
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
+    },
+    {
+      "slug": "underfitting-overfitting",
+      "runtime": "shinylive",
+      "final_target": "shinylive",
+      "launch_url": "live/underfitting-overfitting/index.html",
       "shinylive": "exported",
       "shinylive_message": "Shinylive export completed."
     }

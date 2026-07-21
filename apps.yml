@@ -7,15 +7,6 @@
   - simulation
   - time series
   path: live/arma-process/index.html
-- title: Bias-Variance Tradeoff
-  description: Use an interactive smoother to see how model flexibility changes underfitting,
-    overfitting, train error, and test error.
-  image: site-assets/screenshots/bias-variance.png
-  categories:
-  - machine learning
-  - statistics
-  - regression
-  path: live/bias-variance/index.html
 - title: Decision Tree
   description: Build synthetic classification data and watch a decision tree carve
     the feature space into regions.
@@ -79,3 +70,12 @@
   - linear algebra
   - visualization
   path: live/matrix-decompositions/index.html
+- title: Underfitting and Overfitting
+  description: Adjust a kernel smoother and reveal test data and the true relationship
+    to explore model flexibility and generalization.
+  image: site-assets/screenshots/underfitting-overfitting.png
+  categories:
+  - machine learning
+  - statistics
+  - regression
+  path: live/underfitting-overfitting/index.html
