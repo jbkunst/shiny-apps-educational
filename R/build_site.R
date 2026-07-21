@@ -68,7 +68,7 @@ screenshot_generate_and_copy <- function(app, slug) {
 
   if (!file_exists(screenshot)) {
     tryCatch(
-      webshot2::appshot(app, file = screenshot, delay = 10, vwidth = 1440, vheight = 900),
+      webshot2::appshot(app, file = screenshot, delay = 20, vwidth = 1440, vheight = 900),
       error = function(e) cli::cli_alert_warning("{app}: screenshot failed: {conditionMessage(e)}")
     )
   }

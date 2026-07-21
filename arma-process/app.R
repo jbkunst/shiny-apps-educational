@@ -24,8 +24,8 @@ options(
 LAG_MAX  <- 10
 STR_OBS  <- 20
 NOBS     <- 5000
-AR       <- 0.0
-MA       <- 0.20
+AR       <- 0.5
+MA       <- 0.00
 SEED     <- 123
 DURATION <- 100 # needs to be <= than min refresh interval
 
@@ -55,25 +55,9 @@ ui <- page_fillable(
     sidebar = sidebar(
       title = "ARMA model Simulation",
       withMathJax(),
-      sliderInput(
-        "ar",
-        tags$span("AR coefficient ", HTML("\\(\\phi\\)")),
-        -.9,
-        .9,
-        value = AR,
-        0.1,
-        width = "100%"
-      ),
-      sliderInput(
-        "ma",
-        tags$span("MA coefficient ", HTML("\\(\\theta\\)")),
-        -.9,
-        .9,
-        value = MA,
-        0.1,
-        width = "100%"
-      ),
-      sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 1, step = 0.5, width = "100%"),
+      sliderInput("ar", tags$span("AR coefficient ", HTML("\\(\\phi\\)")), -.9, .9, AR, .1, width = "100%"),
+      sliderInput("ma", tags$span("MA coefficient ", HTML("\\(\\theta\\)")), -.9, .9, MA, .1, width = "100%"),
+      sliderInput("interval", "Refresh (secs.)", 0.5, 2, value = 0.5, step = 0.5, width = "100%"),
       accordion(
         open = FALSE,
         accordion_panel(

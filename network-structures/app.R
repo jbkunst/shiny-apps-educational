@@ -424,13 +424,12 @@ ui <- page_fillable(
 
       uiOutput("network_help"),
 
-      sliderInput(
+      radioButtons(
         "n",
         tags$small("Number of nodes"),
-        min = 20,
-        max = N_MAX,
-        value = 200,
-        step = 20
+        choices = c(10, 50, 100, 500, N_MAX),
+        selected = 100,
+        inline = TRUE
       ),
 
       uiOutput("structure_parameters"),
@@ -594,7 +593,7 @@ server <- function(input, output, session) {
 
     generated <- generate_network(
       type = input$structure,
-      n = input$n,
+      n = as.integer(input$n),
       seed = input$seed,
       mean_degree = input$mean_degree %||% 6,
       neighbours = input$neighbours %||% 2,
@@ -664,8 +663,7 @@ server <- function(input, output, session) {
       sg_drag_nodes() |>
       sg_neighbours(
         nodes = "#E9ECEF",
-        edges = "#E9ECEF",
-        on = "clickNode"
+        edges = "#E9ECEF"
       ) |>
       sg_events(
         list(list(event = "clickNode", priority = "event"))
