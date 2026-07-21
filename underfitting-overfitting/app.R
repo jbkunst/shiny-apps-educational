@@ -43,14 +43,14 @@ ui <- page_fillable(
         "n",
         tags$small("Training observations"),
         choices = c(50, 100, 250, 500, 1000),
-        selected = 500,
+        selected = 250,
         grid = TRUE,
         force_edges = TRUE
       ),
       shinyWidgets::sliderTextInput(
         "bandwidth",
         tags$small("Bandwidth"),
-        choices = c("0.1", "1", "2", "4", "6", "8", "10"),
+        choices = c("0.1", "0.5", "1", "2", "5", "10"),
         selected = "2",
         grid = TRUE,
         force_edges = TRUE
@@ -181,7 +181,8 @@ server <- function(input, output, session) {
         data = list_parse2(datasets$train),
         id = "train",
         name = "Training data",
-        zIndex = 2
+        zIndex = 2,
+        opacity = 0.5
       ) |>
       hc_add_series(
         data = list_parse2(datasets$test),
@@ -189,14 +190,16 @@ server <- function(input, output, session) {
         name = "Test data",
         visible = FALSE,
         showInLegend = FALSE,
-        zIndex = 1
+        zIndex = 1,
+        opacity = 0.5
       ) |>
       hc_add_series(
         data = list_parse2(model),
         id = "model",
         name = "Estimated model",
         type = "line",
-        zIndex = 4
+        zIndex = 4,
+        lineWidth = 10
       ) |>
       hc_add_series(
         data = list_parse2(truth),
@@ -206,7 +209,8 @@ server <- function(input, output, session) {
         dashStyle = "ShortDash",
         visible = FALSE,
         showInLegend = FALSE,
-        zIndex = 3
+        zIndex = 3,
+        lineWidth = 10
       )
   })
 
@@ -240,7 +244,7 @@ server <- function(input, output, session) {
         type = "category",
         categories = c("Train", "Test")
       ) |>
-      hc_yAxis(title = list(text = "Error"), max = 20) |>
+      hc_yAxis(title = list(text = "RMSE"), max = 10) |>
       hc_plotOptions(
         series = list(
           stacking = "normal",
