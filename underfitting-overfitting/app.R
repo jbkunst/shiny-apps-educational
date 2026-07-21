@@ -5,6 +5,7 @@ library(dplyr)
 library(tibble)
 library(highcharter)
 library(markdown)
+library(shinyWidgets)
 
 # theme options -----------------------------------------------------------
 apptheme <- bs_theme()
@@ -38,19 +39,21 @@ ui <- page_fillable(
     fillable = TRUE,
     sidebar = sidebar(
       title = "Underfitting and Overfitting",
-      selectInput(
+      shinyWidgets::sliderTextInput(
         "n",
         tags$small("Training observations"),
         choices = c(50, 100, 250, 500, 1000),
-        selected = 500
+        selected = 500,
+        grid = TRUE,
+        force_edges = TRUE
       ),
-      sliderInput(
+      shinyWidgets::sliderTextInput(
         "bandwidth",
         tags$small("Bandwidth"),
-        min = 0.1,
-        max = 10,
-        step = 0.1,
-        value = 2
+        choices = c("0.1", "1", "2", "4", "6", "8", "10"),
+        selected = "2",
+        grid = TRUE,
+        force_edges = TRUE
       ),
       tags$small("Smaller values create a more flexible model."),
       checkboxInput("show_test", tags$small("Show test data"), value = FALSE),
@@ -93,7 +96,7 @@ server <- function(input, output, session) {
   n_obs <- reactive(as.integer(input$n)) |>
     debounce(600)
 
-  bandwidth <- reactive(input$bandwidth) |>
+  bandwidth <- reactive(as.numeric(input$bandwidth)) |>
     debounce(600)
 
   dxy <- reactive({
@@ -175,6 +178,20 @@ server <- function(input, output, session) {
       hc_xAxis(title = list(text = "Variable X")) |>
       hc_yAxis(title = list(text = "Variable Y")) |>
       hc_add_series(
+        data = list_parse2(datasets$train),
+        id = "train",
+        name = "Training data",
+        zIndex = 2
+      ) |>
+      hc_add_series(
+        data = list_parse2(datasets$test),
+        id = "test",
+        name = "Test data",
+        visible = FALSE,
+        showInLegend = FALSE,
+        zIndex = 1
+      ) |>
+      hc_add_series(
         data = list_parse2(model),
         id = "model",
         name = "Estimated model",
@@ -190,20 +207,6 @@ server <- function(input, output, session) {
         visible = FALSE,
         showInLegend = FALSE,
         zIndex = 3
-      ) |>
-      hc_add_series(
-        data = list_parse2(datasets$train),
-        id = "train",
-        name = "Training data",
-        zIndex = 2
-      ) |>
-      hc_add_series(
-        data = list_parse2(datasets$test),
-        id = "test",
-        name = "Test data",
-        visible = FALSE,
-        showInLegend = FALSE,
-        zIndex = 1
       )
   })
 
@@ -232,10 +235,16 @@ server <- function(input, output, session) {
 
     highchart() |>
       hc_chart(type = "column") |>
-      hc_xAxis(type = "category", categories = c("Train", "Test")) |>
-      hc_yAxis(title = list(text = "RMSE")) |>
+      hc_xAxis(
+        title = list(text = "Dataset"),
+        type = "category",
+        categories = c("Train", "Test")
+      ) |>
+      hc_yAxis(title = list(text = "Error"), max = 20) |>
       hc_plotOptions(
         series = list(
+          stacking = "normal",
+          minPointLength = 0,
           dataLabels = list(
             enabled = TRUE,
             formatter = JS("function () { return Highcharts.numberFormat(this.y, 3); }")
@@ -279,12 +288,6 @@ server <- function(input, output, session) {
       hc_xAxis(title = list(text = "Bandwidth"), min = 0.1, max = 10) |>
       hc_yAxis(title = list(text = "RMSE")) |>
       hc_add_series(
-        data = list(list(x = bw, y = 0), list(x = bw, y = ymax)),
-        id = "bandwidth",
-        name = "Selected bandwidth",
-        enableMouseTracking = FALSE
-      ) |>
-      hc_add_series(
         data = list_parse2(errors$train),
         id = "train",
         name = "Train error",
@@ -297,6 +300,13 @@ server <- function(input, output, session) {
         visible = FALSE,
         showInLegend = FALSE,
         zIndex = 1
+      ) |>
+      hc_add_series(
+        data = list(list(x = bw, y = 0), list(x = bw, y = ymax)),
+        id = "bandwidth",
+        name = "Selected bandwidth",
+        enableMouseTracking = FALSE,
+        zIndex = 3
       )
   })
 
@@ -311,9 +321,9 @@ server <- function(input, output, session) {
     ymax <- 1.05 * max(c(errors$train$y, errors$test$y))
 
     highchartProxy("chartbandwidth") |>
-      hcpxy_update_series(id = "bandwidth", data = list(list(x = bw, y = 0), list(x = bw, y = ymax))) |>
       hcpxy_update_series(id = "train", data = list_parse2(errors$train)) |>
-      hcpxy_update_series(id = "test", data = list_parse2(errors$test))
+      hcpxy_update_series(id = "test", data = list_parse2(errors$test)) |>
+      hcpxy_update_series(id = "bandwidth", data = list(list(x = bw, y = 0), list(x = bw, y = ymax)))
   })
 
   observeEvent(bandwidth(), {
