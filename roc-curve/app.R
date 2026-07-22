@@ -4,13 +4,15 @@ library(bslib)
 library(highcharter)
 library(tibble)
 
+# theme -------------------------------------------------------------------
 apptheme <- bs_theme(primary = "#007BC2")
 
 sidebar <- purrr::partial(bslib::sidebar, width = 300)
 card <- purrr::partial(bslib::card, full_screen = TRUE)
 
 # app options -------------------------------------------------------------
-mean_choices <- c("-4", "-3", "-2", "-1", "-0.5", "0", "0.5", "1", "2", "3")
+mean_negative_choices <- c("-4", "-3", "-2", "-1", "-0.5", "0")
+mean_positive_choices <- c("0", "0.5", "1", "2", "3", "4")
 sd_choices <- c("0.5", "1", "1.5", "2")
 n_choices <- c("100", "500", "1000", "5000")
 proportion_choices <- as.character(seq(10, 90, by = 10))
@@ -21,10 +23,24 @@ class_palette <- c(
 )
 
 region_palette <- c(
-  "TN" = "rgba(217, 143, 143, 0.38)",
-  "FP" = "rgba(210, 75, 75, 0.52)",
-  "FN" = "rgba(224, 193, 111, 0.52)",
-  "TP" = "rgba(143, 149, 217, 0.38)"
+  "TN" = "#d98f8f",
+  "FP" = "#c96f6f",
+  "FN" = "#747bd0",
+  "TP" = "#8f95d9"
+)
+
+threshold_color <- "#D9A441"
+
+options(
+  highcharter.theme = hc_theme_smpl(
+    exporting = list(enabled = FALSE),
+    credits = list(enabled = FALSE),
+    plotOptions = list(
+      series = list(
+        dataLabels = list(style = list(fontWeight = "normal", textOutline = "none"))
+      )
+    )
+  )
 )
 
 # helpers -----------------------------------------------------------------
@@ -33,8 +49,8 @@ safe_divide <- function(x, y) {
   x / y
 }
 
-xy_data <- function(x, y, x_digits = 3, y_digits = 5) {
-  Map(function(.x, .y) list(round(.x, x_digits), round(.y, y_digits)), x, y)
+xy_data <- function(x, y, digits = 3) {
+  Map(function(.x, .y) list(round(.x, digits), round(.y, digits)), x, y)
 }
 
 # development input -------------------------------------------------------
@@ -49,82 +65,23 @@ ui <- page_fillable(
     sidebar = sidebar(
       title = "ROC Curve",
 
-      tags$small("Negative distribution"),
-      layout_columns(
-        col_widths = c(6, 6),
-        shinyWidgets::sliderTextInput(
-          "mean_1",
-          tags$small("Mean"),
-          choices = mean_choices,
-          selected = "-1",
-          grid = FALSE,
-          hide_min_max = TRUE,
-          dragRange = FALSE
-        ),
-        shinyWidgets::sliderTextInput(
-          "sd_1",
-          tags$small("SD"),
-          choices = sd_choices,
-          selected = "1",
-          grid = FALSE,
-          hide_min_max = TRUE,
-          dragRange = FALSE
-        )
-      ),
-
       tags$small("Positive distribution"),
       layout_columns(
         col_widths = c(6, 6),
-        shinyWidgets::sliderTextInput(
-          "mean_2",
-          tags$small("Mean"),
-          choices = mean_choices,
-          selected = "1",
-          grid = FALSE,
-          hide_min_max = TRUE,
-          dragRange = FALSE
-        ),
-        shinyWidgets::sliderTextInput(
-          "sd_2",
-          tags$small("SD"),
-          choices = sd_choices,
-          selected = "1",
-          grid = FALSE,
-          hide_min_max = TRUE,
-          dragRange = FALSE
-        )
+        shinyWidgets::sliderTextInput("mean_2", tags$small("Mean"), choices = mean_positive_choices, selected = "1", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE),
+        shinyWidgets::sliderTextInput("sd_2", tags$small("SD"), choices = sd_choices, selected = "1", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE)
       ),
 
-      sliderInput(
-        "threshold",
-        tags$small("Threshold"),
-        min = -5,
-        max = 5,
-        value = 0,
-        step = 0.1,
-        ticks = FALSE
+      tags$small("Negative distribution"),
+      layout_columns(
+        col_widths = c(6, 6),
+        shinyWidgets::sliderTextInput("mean_1", tags$small("Mean"), choices = mean_negative_choices, selected = "-1", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE),
+        shinyWidgets::sliderTextInput("sd_1", tags$small("SD"), choices = sd_choices, selected = "1", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE)
       ),
 
-      shinyWidgets::sliderTextInput(
-        "n",
-        tags$small("Number of observations"),
-        choices = n_choices,
-        selected = "1000",
-        grid = FALSE,
-        hide_min_max = TRUE,
-        dragRange = FALSE
-      ),
-
-      shinyWidgets::sliderTextInput(
-        "p_1",
-        tags$small("Negative proportion"),
-        choices = proportion_choices,
-        selected = "50",
-        grid = FALSE,
-        hide_min_max = TRUE,
-        dragRange = FALSE,
-        post = "%"
-      )
+      sliderInput("threshold", tags$small("Threshold"), min = -5, max = 5, value = 0, step = 0.1, ticks = FALSE),
+      shinyWidgets::sliderTextInput("n", tags$small("Number of observations"), choices = n_choices, selected = "1000", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE),
+      shinyWidgets::sliderTextInput("p_1", tags$small("Positive proportion"), choices = proportion_choices, selected = "50", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE, post = "%")
     ),
     layout_columns(
       col_widths = c(6, 6, 6, 6),
@@ -156,7 +113,7 @@ server <- function(input, output, session) {
     mean_2 <- as.numeric(input$mean_2[[1]])
     sd_1 <- as.numeric(input$sd_1[[1]])
     sd_2 <- as.numeric(input$sd_2[[1]])
-    p_1 <- as.numeric(input$p_1[[1]]) / 100
+    p_positive <- as.numeric(input$p_1[[1]]) / 100
     threshold <- as.numeric(input$threshold)
 
     score_grid <- seq(
@@ -174,8 +131,8 @@ server <- function(input, output, session) {
 
     densities$density <- ifelse(
       densities$observed == "Negative",
-      dnorm(densities$score, mean_1, sd_1) * p_1,
-      dnorm(densities$score, mean_2, sd_2) * (1 - p_1)
+      dnorm(densities$score, mean_1, sd_1) * (1 - p_positive),
+      dnorm(densities$score, mean_2, sd_2) * p_positive
     )
 
     densities$region <- ifelse(
@@ -212,15 +169,15 @@ server <- function(input, output, session) {
 
   confusion <- reactive({
     n <- as.integer(input$n[[1]])
-    p_1 <- as.numeric(input$p_1[[1]]) / 100
+    p_positive <- as.numeric(input$p_1[[1]]) / 100
     mean_1 <- as.numeric(input$mean_1[[1]])
     mean_2 <- as.numeric(input$mean_2[[1]])
     sd_1 <- as.numeric(input$sd_1[[1]])
     sd_2 <- as.numeric(input$sd_2[[1]])
     threshold <- as.numeric(input$threshold)
 
-    n_negative <- round(n * p_1)
-    n_positive <- n - n_negative
+    n_positive <- round(n * p_positive)
+    n_negative <- n - n_positive
 
     tn <- round(n_negative * pnorm(threshold, mean_1, sd_1))
     fp <- n_negative - tn
@@ -269,18 +226,16 @@ server <- function(input, output, session) {
     y_max <- max(density$density)
 
     hc <- highchart() |>
-      hc_chart(type = "area", animation = FALSE, spacing = c(8, 8, 8, 8)) |>
+      hc_chart(type = "area", spacing = c(8, 8, 8, 8)) |>
       hc_title(text = NULL) |>
       hc_xAxis(title = list(text = "Score")) |>
-      hc_yAxis(title = list(text = "Weighted density"), min = 0, max = y_max * 1.08) |>
+      hc_yAxis(title = list(text = ""), min = 0, max = y_max * 1.08) |>
       hc_tooltip(shared = TRUE, valueDecimals = 3) |>
       hc_plotOptions(
         area = list(marker = list(enabled = FALSE), lineWidth = 0, stacking = NULL),
         line = list(marker = list(enabled = FALSE), lineWidth = 2)
       ) |>
-      hc_legend(align = "center", verticalAlign = "bottom") |>
-      hc_exporting(enabled = FALSE) |>
-      hc_credits(enabled = FALSE)
+      hc_legend(align = "center", verticalAlign = "bottom")
 
     for (region in c("TN", "FP", "FN", "TP")) {
       region_data <- density[density$region == region, , drop = FALSE]
@@ -311,7 +266,7 @@ server <- function(input, output, session) {
         name = "Threshold",
         type = "line",
         data = xy_data(c(threshold, threshold), c(0, y_max * 1.05)),
-        color = "#111315",
+        color = threshold_color,
         dashStyle = "ShortDash",
         marker = list(enabled = FALSE),
         enableMouseTracking = FALSE,
@@ -326,7 +281,7 @@ server <- function(input, output, session) {
     current_tpr <- current$value[current$metric == "TPR"]
 
     highchart() |>
-      hc_chart(type = "line", animation = FALSE, spacing = c(8, 8, 8, 8)) |>
+      hc_chart(type = "line", spacing = c(8, 8, 8, 8)) |>
       hc_title(text = NULL) |>
       hc_xAxis(title = list(text = "False positive rate"), min = 0, max = 1) |>
       hc_yAxis(title = list(text = "True positive rate"), min = 0, max = 1) |>
@@ -351,13 +306,11 @@ server <- function(input, output, session) {
         name = "Current threshold",
         type = "scatter",
         data = xy_data(current_fpr, current_tpr),
-        color = "#d24b4b",
+        color = threshold_color,
         marker = list(radius = 6, symbol = "circle")
       ) |>
       hc_tooltip(valueDecimals = 3) |>
-      hc_legend(align = "center", verticalAlign = "bottom") |>
-      hc_exporting(enabled = FALSE) |>
-      hc_credits(enabled = FALSE)
+      hc_legend(align = "center", verticalAlign = "bottom")
   })
 
   output$confusion_chart <- renderHighchart({
@@ -372,10 +325,10 @@ server <- function(input, output, session) {
     )
 
     highchart() |>
-      hc_chart(type = "heatmap", animation = FALSE, spacing = c(8, 8, 8, 8)) |>
+      hc_chart(type = "heatmap", spacing = c(8, 8, 8, 8)) |>
       hc_title(text = NULL) |>
-      hc_xAxis(categories = c("Predicted negative", "Predicted positive"), title = list(text = NULL), opposite = TRUE) |>
-      hc_yAxis(categories = c("Observed negative", "Observed positive"), title = list(text = NULL), reversed = TRUE) |>
+      hc_xAxis(categories = c("Predicted<br>negative", "Predicted<br>positive"), title = list(text = NULL), opposite = TRUE, labels = list(useHTML = TRUE)) |>
+      hc_yAxis(categories = c("Observed<br>negative", "Observed<br>positive"), title = list(text = ""), reversed = TRUE, labels = list(useHTML = TRUE)) |>
       hc_add_series(
         name = "Confusion matrix",
         type = "heatmap",
@@ -386,9 +339,7 @@ server <- function(input, output, session) {
       ) |>
       hc_tooltip(pointFormat = "<b>{point.name}</b><br>Count: {point.value}<br>Share: {point.percent:.1f}%") |>
       hc_legend(enabled = FALSE) |>
-      hc_colorAxis(enabled = FALSE) |>
-      hc_exporting(enabled = FALSE) |>
-      hc_credits(enabled = FALSE)
+      hc_colorAxis(enabled = FALSE)
   })
 
   output$metrics_chart <- renderHighchart({
@@ -396,7 +347,7 @@ server <- function(input, output, session) {
     data$value <- round(data$value, 3)
 
     highchart() |>
-      hc_chart(type = "bar", animation = FALSE, spacing = c(8, 8, 8, 8)) |>
+      hc_chart(type = "bar", spacing = c(8, 8, 8, 8)) |>
       hc_title(text = NULL) |>
       hc_xAxis(categories = data$metric, title = list(text = NULL)) |>
       hc_yAxis(title = list(text = NULL), min = 0, max = 1) |>
@@ -407,9 +358,7 @@ server <- function(input, output, session) {
         dataLabels = list(enabled = TRUE, format = "{point.y:.3f}")
       ) |>
       hc_tooltip(valueDecimals = 3) |>
-      hc_legend(enabled = FALSE) |>
-      hc_exporting(enabled = FALSE) |>
-      hc_credits(enabled = FALSE)
+      hc_legend(enabled = FALSE)
   })
 }
 
