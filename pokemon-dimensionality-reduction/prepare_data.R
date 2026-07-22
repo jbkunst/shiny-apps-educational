@@ -20,30 +20,56 @@ pokeapi_csv <- function(file, ref = "master") {
   readr::read_csv(url, show_col_types = FALSE)
 }
 
+scale_numeric_features <- function(data) {
+  data <- as.data.frame(data)
+
+  data[] <- lapply(data, function(x) {
+    x <- as.numeric(x)
+    replacement <- stats::median(x, na.rm = TRUE)
+
+    if (!is.finite(replacement)) {
+      replacement <- 0
+    }
+
+    x[is.na(x)] <- replacement
+    x
+  })
+
+  x <- as.matrix(data)
+  center <- colMeans(x)
+  spread <- apply(x, 2, stats::sd)
+  spread[!is.finite(spread) | spread == 0] <- 1
+
+  x <- sweep(x, 2, center, FUN = "-")
+  sweep(x, 2, spread, FUN = "/")
+}
+
 pokemon_feature_matrix <- function(data) {
   numeric_features <- data |>
     dplyr::select(
       height, weight, base_experience,
-      hp, attack, defense, special_attack, special_defense, speed
+      hp, attack, defense, special_attack, special_defense, speed,
+      capture_rate, base_happiness, hatch_counter, gender_rate,
+      is_baby, is_legendary, is_mythical,
+      has_gender_differences, forms_switchable
     ) |>
-    dplyr::mutate(
-      dplyr::across(
-        dplyr::everything(),
-        ~ tidyr::replace_na(as.numeric(.x), stats::median(.x, na.rm = TRUE))
-      )
-    ) |>
-    scale()
+    scale_numeric_features()
 
   categorical_data <- data |>
     dplyr::transmute(
       type_1 = factor(type_1),
       type_2 = factor(type_2),
       egg_group_1 = factor(egg_group_1),
-      egg_group_2 = factor(egg_group_2)
+      egg_group_2 = factor(egg_group_2),
+      growth_rate = factor(growth_rate),
+      body_color = factor(body_color),
+      body_shape = factor(body_shape),
+      habitat = factor(habitat)
     )
 
   categorical_features <- stats::model.matrix(
-    ~ type_1 + type_2 + egg_group_1 + egg_group_2 - 1,
+    ~ type_1 + type_2 + egg_group_1 + egg_group_2 +
+      growth_rate + body_color + body_shape + habitat - 1,
     data = categorical_data
   )
 
@@ -114,10 +140,31 @@ prepare_pokemon_data <- function(cache_file = NULL, refresh = FALSE) {
   generations <- pokeapi_csv("generations.csv") |>
     dplyr::transmute(generation_id = id, generation = identifier)
 
+  growth_rates <- pokeapi_csv("growth_rates.csv") |>
+    dplyr::transmute(growth_rate_id = id, growth_rate = identifier)
+
+  colors <- pokeapi_csv("pokemon_colors.csv") |>
+    dplyr::transmute(color_id = id, body_color = identifier)
+
+  shapes <- pokeapi_csv("pokemon_shapes.csv") |>
+    dplyr::transmute(shape_id = id, body_shape = identifier)
+
+  habitats <- pokeapi_csv("pokemon_habitats.csv") |>
+    dplyr::transmute(habitat_id = id, habitat = identifier)
+
   species <- pokeapi_csv("pokemon_species.csv") |>
-    dplyr::select(id, generation_id) |>
+    dplyr::select(
+      id, generation_id, evolves_from_species_id, evolution_chain_id,
+      color_id, shape_id, habitat_id, gender_rate, capture_rate,
+      base_happiness, is_baby, hatch_counter, has_gender_differences,
+      growth_rate_id, forms_switchable, is_legendary, is_mythical
+    ) |>
     dplyr::rename(species_id = id) |>
-    dplyr::left_join(generations, by = "generation_id")
+    dplyr::left_join(generations, by = "generation_id") |>
+    dplyr::left_join(growth_rates, by = "growth_rate_id") |>
+    dplyr::left_join(colors, by = "color_id") |>
+    dplyr::left_join(shapes, by = "shape_id") |>
+    dplyr::left_join(habitats, by = "habitat_id")
 
   data <- pokemon |>
     dplyr::left_join(types, by = "id") |>
@@ -128,6 +175,10 @@ prepare_pokemon_data <- function(cache_file = NULL, refresh = FALSE) {
       type_2 = tidyr::replace_na(type_2, "none"),
       egg_group_1 = tidyr::replace_na(egg_group_1, "none"),
       egg_group_2 = tidyr::replace_na(egg_group_2, "none"),
+      growth_rate = tidyr::replace_na(growth_rate, "unknown"),
+      body_color = tidyr::replace_na(body_color, "unknown"),
+      body_shape = tidyr::replace_na(body_shape, "unknown"),
+      habitat = tidyr::replace_na(habitat, "unknown"),
       generation = stringr::str_to_upper(generation),
       type_color = unname(pokemon_type_colors[type_1]),
       sprite_url = paste0(
@@ -146,6 +197,7 @@ prepare_pokemon_data <- function(cache_file = NULL, refresh = FALSE) {
   result <- list(
     data = data,
     x = pokemon_feature_matrix(data),
+    feature_names = colnames(pokemon_feature_matrix(data)),
     source = "PokeAPI/pokeapi + PokeAPI/sprites"
   )
 
