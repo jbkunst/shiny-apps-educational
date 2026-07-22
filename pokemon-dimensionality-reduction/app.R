@@ -17,6 +17,12 @@ pokemon_bundle <- prepare_pokemon_data(
 pokemon <- pokemon_bundle$data
 pokemon_x <- pokemon_bundle$x
 
+# pokemon_x is already prepared for mixed data:
+# - continuous variables are standardized;
+# - binary variables stay 0/1;
+# - nominal variables are one-hot encoded;
+# - semantic blocks are normalized so dummy-heavy groups do not dominate.
+
 # theme -------------------------------------------------------------------
 apptheme <- bs_theme(
   version = 5,
@@ -52,6 +58,8 @@ run_projection <- function(
   set.seed(as.integer(seed))
 
   if (identical(method, "pca")) {
+    # PCA still centers the final mixed feature matrix. We do not scale again:
+    # doing so would undo the deliberate 0/1 treatment and block weighting.
     fit <- stats::prcomp(x, center = TRUE, scale. = FALSE)
     return(fit$x[, 1:2, drop = FALSE])
   }
@@ -73,6 +81,8 @@ run_projection <- function(
     return(fit$Y)
   }
 
+  # UMAP and t-SNE both consume the same deliberately prepared Euclidean
+  # feature space, which makes their projections comparable at the input level.
   uwot::umap(
     x,
     n_components = 2,
@@ -94,18 +104,34 @@ make_points <- function(data, xy) {
       type_2_label = if_else(type_2 == "none", "—", stringr::str_to_title(type_2)),
       generation_label = stringr::str_replace(generation, "GENERATION-", "Gen "),
       height_m = round(height / 10, 1),
-      weight_kg = round(weight / 10, 1)
+      weight_kg = round(weight / 10, 1),
+      growth_rate_label = stringr::str_to_title(stringr::str_replace_all(growth_rate, "-", " ")),
+      habitat_label = if_else(
+        habitat == "unknown",
+        "Unknown",
+        stringr::str_to_title(stringr::str_replace_all(habitat, "-", " "))
+      ),
+      special_status = case_when(
+        is_mythical == 1 ~ "Mythical",
+        is_legendary == 1 ~ "Legendary",
+        is_baby == 1 ~ "Baby",
+        TRUE ~ "—"
+      )
     ) |>
     select(
       x, y, pokemon_label, type_1_label, type_2_label,
       generation_label, type_color, height_m, weight_kg,
       hp, attack, defense, special_attack, special_defense, speed,
+      capture_rate, base_happiness, hatch_counter,
+      growth_rate_label, habitat_label, special_status,
       sprite_url, artwork_url
     ) |>
     purrr::pmap(function(
       x, y, pokemon_label, type_1_label, type_2_label,
       generation_label, type_color, height_m, weight_kg,
       hp, attack, defense, special_attack, special_defense, speed,
+      capture_rate, base_happiness, hatch_counter,
+      growth_rate_label, habitat_label, special_status,
       sprite_url, artwork_url
     ) {
       list(
@@ -125,6 +151,12 @@ make_points <- function(data, xy) {
         special_attack = special_attack,
         special_defense = special_defense,
         speed = speed,
+        capture_rate = capture_rate,
+        base_happiness = base_happiness,
+        hatch_counter = hatch_counter,
+        growth_rate = growth_rate_label,
+        habitat = habitat_label,
+        special_status = special_status,
         artwork_url = artwork_url,
         color = type_color,
         marker = list(
@@ -153,6 +185,9 @@ tooltip_html <- paste0(
   '<tr><td>HP</td><td><b>{point.hp}</b></td><td>Attack</td><td><b>{point.attack}</b></td></tr>',
   '<tr><td>Defense</td><td><b>{point.defense}</b></td><td>Speed</td><td><b>{point.speed}</b></td></tr>',
   '<tr><td>Sp. Atk</td><td><b>{point.special_attack}</b></td><td>Sp. Def</td><td><b>{point.special_defense}</b></td></tr>',
+  '<tr><td>Capture</td><td><b>{point.capture_rate}</b></td><td>Happiness</td><td><b>{point.base_happiness}</b></td></tr>',
+  '<tr><td>Growth</td><td><b>{point.growth_rate}</b></td><td>Habitat</td><td><b>{point.habitat}</b></td></tr>',
+  '<tr><td>Status</td><td><b>{point.special_status}</b></td><td>Hatch</td><td><b>{point.hatch_counter}</b></td></tr>',
   '</table>',
   '</div>'
 )
@@ -232,7 +267,7 @@ ui <- page_fillable(
       div(
         class = "pokemon-sidebar-note",
         strong(format(nrow(pokemon), big.mark = ",")),
-        " Pokémon · stats + types + egg groups"
+        " Pokémon · stats + capture + species traits"
       ),
       accordion(
         open = FALSE,
