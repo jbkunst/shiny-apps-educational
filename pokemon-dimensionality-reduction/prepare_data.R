@@ -20,7 +20,11 @@ pokeapi_csv <- function(file, ref = "master") {
   readr::read_csv(url, show_col_types = FALSE)
 }
 
-scale_numeric_features <- function(data) {
+# Continuous variables live on very different scales (kg, stats, capture rate,
+# etc.). Median-impute missing values, then standardize only these variables.
+# Binary indicators are deliberately NOT standardized: a rare 1 should not
+# acquire a huge z-score just because its prevalence is low.
+scale_continuous_features <- function(data) {
   data <- as.data.frame(data)
 
   data[] <- lapply(data, function(x) {
@@ -44,37 +48,123 @@ scale_numeric_features <- function(data) {
   sweep(x, 2, spread, FUN = "/")
 }
 
-pokemon_feature_matrix <- function(data) {
-  numeric_features <- data |>
+# Equalizing by sqrt(number of columns) stops a block from dominating the
+# Euclidean distance merely because it expands into many dummy columns.
+# The named weights are intentionally explicit so they are easy to review or
+# tune later. A weight of 1 is the neutral starting point for every block.
+weight_feature_block <- function(x, weight = 1) {
+  x <- as.matrix(x)
+
+  if (!ncol(x)) {
+    return(x)
+  }
+
+  x * (as.numeric(weight) / sqrt(ncol(x)))
+}
+
+pokemon_feature_matrix <- function(
+  data,
+  block_weights = c(
+    continuous = 1,
+    binary = 1,
+    types = 1,
+    egg_groups = 1,
+    species_traits = 1
+  )
+) {
+  required_weights <- c(
+    "continuous", "binary", "types", "egg_groups", "species_traits"
+  )
+
+  if (!all(required_weights %in% names(block_weights))) {
+    stop("block_weights must define all feature blocks.", call. = FALSE)
+  }
+
+  # gender_rate uses -1 for genderless Pokémon and otherwise stores the female
+  # proportion in eighths. Split that into a bounded continuous proportion plus
+  # a separate binary genderless flag rather than treating -1 as a real ratio.
+  feature_data <- data |>
+    dplyr::mutate(
+      female_ratio = dplyr::if_else(
+        gender_rate < 0,
+        NA_real_,
+        as.numeric(gender_rate) / 8
+      ),
+      genderless = as.numeric(gender_rate < 0)
+    )
+
+  continuous_features <- feature_data |>
     dplyr::select(
       height, weight, base_experience,
       hp, attack, defense, special_attack, special_defense, speed,
-      capture_rate, base_happiness, hatch_counter, gender_rate,
-      is_baby, is_legendary, is_mythical,
-      has_gender_differences, forms_switchable
+      capture_rate, base_happiness, hatch_counter, female_ratio
     ) |>
-    scale_numeric_features()
+    scale_continuous_features() |>
+    weight_feature_block(block_weights[["continuous"]])
 
-  categorical_data <- data |>
+  # Keep binary variables as 0/1. Standardizing a very rare flag such as
+  # is_mythical would over-amplify it in t-SNE/UMAP distance calculations.
+  binary_features <- feature_data |>
+    dplyr::transmute(
+      is_baby = as.numeric(tidyr::replace_na(is_baby, 0)),
+      is_legendary = as.numeric(tidyr::replace_na(is_legendary, 0)),
+      is_mythical = as.numeric(tidyr::replace_na(is_mythical, 0)),
+      has_gender_differences = as.numeric(
+        tidyr::replace_na(has_gender_differences, 0)
+      ),
+      forms_switchable = as.numeric(tidyr::replace_na(forms_switchable, 0)),
+      genderless = as.numeric(tidyr::replace_na(genderless, 0))
+    ) |>
+    as.matrix() |>
+    weight_feature_block(block_weights[["binary"]])
+
+  # One-hot encode nominal variables. Keep the semantic groups separate so a
+  # high-cardinality group does not automatically receive more total weight.
+  type_features <- feature_data |>
     dplyr::transmute(
       type_1 = factor(type_1),
-      type_2 = factor(type_2),
+      type_2 = factor(type_2)
+    ) |>
+    stats::model.matrix(~ type_1 + type_2 - 1, data = _) |>
+    weight_feature_block(block_weights[["types"]])
+
+  egg_group_features <- feature_data |>
+    dplyr::transmute(
       egg_group_1 = factor(egg_group_1),
-      egg_group_2 = factor(egg_group_2),
+      egg_group_2 = factor(egg_group_2)
+    ) |>
+    stats::model.matrix(~ egg_group_1 + egg_group_2 - 1, data = _) |>
+    weight_feature_block(block_weights[["egg_groups"]])
+
+  species_trait_features <- feature_data |>
+    dplyr::transmute(
       growth_rate = factor(growth_rate),
       body_color = factor(body_color),
       body_shape = factor(body_shape),
       habitat = factor(habitat)
-    )
+    ) |>
+    stats::model.matrix(
+      ~ growth_rate + body_color + body_shape + habitat - 1,
+      data = _
+    ) |>
+    weight_feature_block(block_weights[["species_traits"]])
 
-  categorical_features <- stats::model.matrix(
-    ~ type_1 + type_2 + egg_group_1 + egg_group_2 +
-      growth_rate + body_color + body_shape + habitat - 1,
-    data = categorical_data
+  features <- cbind(
+    continuous_features,
+    binary_features,
+    type_features,
+    egg_group_features,
+    species_trait_features
   )
 
-  features <- cbind(numeric_features, categorical_features)
   storage.mode(features) <- "double"
+
+  attr(features, "block_weights") <- block_weights[required_weights]
+  attr(features, "preprocessing") <- paste(
+    "continuous=z-score; binary=0/1; categorical=one-hot;",
+    "each semantic block weighted by 1/sqrt(p)"
+  )
+
   features
 }
 
@@ -194,10 +284,17 @@ prepare_pokemon_data <- function(cache_file = NULL, refresh = FALSE) {
     ) |>
     dplyr::arrange(id)
 
+  # Build once so the exact same matrix is used by PCA, t-SNE and UMAP.
+  # Centering inside PCA does not change the binary/categorical pairwise
+  # differences used by the nonlinear methods.
+  feature_matrix <- pokemon_feature_matrix(data)
+
   result <- list(
     data = data,
-    x = pokemon_feature_matrix(data),
-    feature_names = colnames(pokemon_feature_matrix(data)),
+    x = feature_matrix,
+    feature_names = colnames(feature_matrix),
+    block_weights = attr(feature_matrix, "block_weights"),
+    preprocessing = attr(feature_matrix, "preprocessing"),
     source = "PokeAPI/pokeapi + PokeAPI/sprites"
   )
 
