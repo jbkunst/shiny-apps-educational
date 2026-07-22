@@ -65,14 +65,6 @@ ui <- page_fillable(
     sidebar = sidebar(
       title = "ROC Curve",
 
-      shinyWidgets::radioGroupButtons(
-        "mode",
-        label = NULL,
-        choices = c("Theoretical", "Simulated"),
-        selected = "Theoretical",
-        justified = TRUE,
-        status = "primary"
-      ),
       tags$small("Positive distribution"),
       layout_columns(
         col_widths = c(6, 6),
@@ -89,15 +81,7 @@ ui <- page_fillable(
 
       sliderInput("threshold", tags$small("Threshold"), min = -5, max = 5, value = 0, step = 0.1, ticks = FALSE),
       shinyWidgets::sliderTextInput("n", tags$small("Number of observations"), choices = n_choices, selected = "1000", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE),
-      shinyWidgets::sliderTextInput("p_1", tags$small("Positive proportion"), choices = proportion_choices, selected = "50", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE, post = "%"),
-      accordion(
-        open = FALSE,
-        accordion_panel(
-          "How it works",
-          tags$small(htmltools::includeMarkdown("readme.md"))
-        )
-      ),
-      tags$small(htmltools::includeMarkdown("credits.md"))
+      shinyWidgets::sliderTextInput("p_1", tags$small("Positive proportion"), choices = proportion_choices, selected = "50", grid = FALSE, hide_min_max = TRUE, dragRange = FALSE, post = "%")
     ),
     layout_columns(
       col_widths = c(6, 6, 6, 6),
@@ -144,56 +128,31 @@ server <- function(input, output, session) {
     )
   })
   density_data <- reactive({
+    data <- data_sample()
     threshold <- as.numeric(input$threshold)
+    score_limits <- range(data$score)
+    padding <- diff(score_limits) * 0.05
 
-    if (input$mode == "Simulated") {
-      data <- data_sample()
-      score_limits <- range(data$score)
-      padding <- diff(score_limits) * 0.05
-      score_grid <- seq(
-        min(score_limits[[1]] - padding, threshold),
-        max(score_limits[[2]] + padding, threshold),
-        length.out = 300
-      )
-      score_grid <- sort(unique(c(score_grid, threshold)))
+    score_grid <- seq(
+      min(score_limits[[1]] - padding, threshold),
+      max(score_limits[[2]] + padding, threshold),
+      length.out = 300
+    )
+    score_grid <- sort(unique(c(score_grid, threshold)))
 
-      densities <- do.call(
-        rbind,
-        lapply(names(class_palette), function(observed) {
-          scores <- data$score[data$observed == observed]
-          estimate <- density(scores, from = min(score_grid), to = max(score_grid), n = 512)
+    densities <- do.call(
+      rbind,
+      lapply(names(class_palette), function(observed) {
+        scores <- data$score[data$observed == observed]
+        estimate <- density(scores, from = min(score_grid), to = max(score_grid), n = 512)
 
-          tibble(
-            score = score_grid,
-            observed = factor(observed, levels = names(class_palette)),
-            density = approx(estimate$x, estimate$y, xout = score_grid)$y * length(scores) / nrow(data)
-          )
-        })
-      )
-    } else {
-      mean_1 <- as.numeric(input$mean_1[[1]])
-      mean_2 <- as.numeric(input$mean_2[[1]])
-      sd_1 <- as.numeric(input$sd_1[[1]])
-      sd_2 <- as.numeric(input$sd_2[[1]])
-      p_positive <- as.numeric(input$p_1[[1]]) / 100
-
-      score_grid <- seq(
-        min(mean_1 - 4 * sd_1, mean_2 - 4 * sd_2, threshold),
-        max(mean_1 + 4 * sd_1, mean_2 + 4 * sd_2, threshold),
-        length.out = 300
-      )
-      score_grid <- sort(unique(c(score_grid, threshold)))
-
-      densities <- tibble(
-        score = rep(score_grid, 2),
-        observed = factor(rep(names(class_palette), each = length(score_grid)), levels = names(class_palette))
-      )
-      densities$density <- ifelse(
-        densities$observed == "Negative",
-        dnorm(densities$score, mean_1, sd_1) * (1 - p_positive),
-        dnorm(densities$score, mean_2, sd_2) * p_positive
-      )
-    }
+        tibble(
+          score = score_grid,
+          observed = factor(observed, levels = names(class_palette)),
+          density = approx(estimate$x, estimate$y, xout = score_grid)$y * length(scores) / nrow(data)
+        )
+      })
+    )
 
     densities$region <- ifelse(
       densities$observed == "Negative" & densities$score < threshold,
@@ -209,70 +168,33 @@ server <- function(input, output, session) {
   })
 
   roc_data <- reactive({
-    if (input$mode == "Simulated") {
-      data <- data_sample()
-      data <- data[order(data$score, decreasing = TRUE), , drop = FALSE]
-      positive <- data$observed == "Positive"
-
-      return(tibble(
-        threshold = c(Inf, data$score),
-        fpr = c(0, cumsum(!positive) / sum(!positive)),
-        tpr = c(0, cumsum(positive) / sum(positive))
-      ))
-    }
-
-    mean_1 <- as.numeric(input$mean_1[[1]])
-    mean_2 <- as.numeric(input$mean_2[[1]])
-    sd_1 <- as.numeric(input$sd_1[[1]])
-    sd_2 <- as.numeric(input$sd_2[[1]])
-    threshold <- seq(
-      max(mean_1 + 5 * sd_1, mean_2 + 5 * sd_2),
-      min(mean_1 - 5 * sd_1, mean_2 - 5 * sd_2),
-      length.out = 300
-    )
+    data <- data_sample()
+    data <- data[order(data$score, decreasing = TRUE), , drop = FALSE]
+    positive <- data$observed == "Positive"
 
     tibble(
-      threshold = threshold,
-      fpr = 1 - pnorm(threshold, mean_1, sd_1),
-      tpr = 1 - pnorm(threshold, mean_2, sd_2)
+      threshold = c(Inf, data$score),
+      fpr = c(0, cumsum(!positive) / sum(!positive)),
+      tpr = c(0, cumsum(positive) / sum(positive))
     )
   })
 
   confusion <- reactive({
-    threshold <- as.numeric(input$threshold)
+    data <- data_sample()
+    predicted_positive <- data$score >= as.numeric(input$threshold)
+    observed_positive <- data$observed == "Positive"
 
-    if (input$mode == "Simulated") {
-      data <- data_sample()
-      predicted_positive <- data$score >= threshold
-      observed_positive <- data$observed == "Positive"
-
-      tn <- sum(!predicted_positive & !observed_positive)
-      fp <- sum(predicted_positive & !observed_positive)
-      fn <- sum(!predicted_positive & observed_positive)
-      tp <- sum(predicted_positive & observed_positive)
-      n <- nrow(data)
-    } else {
-      n <- as.integer(input$n[[1]])
-      p_positive <- as.numeric(input$p_1[[1]]) / 100
-      mean_1 <- as.numeric(input$mean_1[[1]])
-      mean_2 <- as.numeric(input$mean_2[[1]])
-      sd_1 <- as.numeric(input$sd_1[[1]])
-      sd_2 <- as.numeric(input$sd_2[[1]])
-      n_positive <- round(n * p_positive)
-      n_negative <- n - n_positive
-
-      tn <- round(n_negative * pnorm(threshold, mean_1, sd_1))
-      fp <- n_negative - tn
-      fn <- round(n_positive * pnorm(threshold, mean_2, sd_2))
-      tp <- n_positive - fn
-    }
+    tn <- sum(!predicted_positive & !observed_positive)
+    fp <- sum(predicted_positive & !observed_positive)
+    fn <- sum(!predicted_positive & observed_positive)
+    tp <- sum(predicted_positive & observed_positive)
 
     tibble(
       cell = c("TN", "FP", "FN", "TP"),
       observed = c("Negative", "Negative", "Positive", "Positive"),
       predicted = c("Negative", "Positive", "Negative", "Positive"),
       value = c(tn, fp, fn, tp),
-      percent = c(tn, fp, fn, tp) / n
+      percent = c(tn, fp, fn, tp) / nrow(data)
     )
   })
 
@@ -291,16 +213,8 @@ server <- function(input, output, session) {
     specificity <- safe_divide(tn, tn + fp)
     f1 <- safe_divide(2 * precision * tpr, precision + tpr)
 
-    if (input$mode == "Simulated") {
-      roc <- roc_data()
-      auc <- sum(diff(roc$fpr) * (head(roc$tpr, -1) + tail(roc$tpr, -1)) / 2)
-    } else {
-      mean_1 <- as.numeric(input$mean_1[[1]])
-      mean_2 <- as.numeric(input$mean_2[[1]])
-      sd_1 <- as.numeric(input$sd_1[[1]])
-      sd_2 <- as.numeric(input$sd_2[[1]])
-      auc <- pnorm((mean_2 - mean_1) / sqrt(sd_1^2 + sd_2^2))
-    }
+    roc <- roc_data()
+    auc <- sum(diff(roc$fpr) * (head(roc$tpr, -1) + tail(roc$tpr, -1)) / 2)
 
     tibble(
       metric = c("TPR", "FPR", "Specificity", "Precision", "F1", "Accuracy", "AUC"),
@@ -444,7 +358,7 @@ server <- function(input, output, session) {
   })
 
   observeEvent(
-    list(input$mode, input$mean_1, input$sd_1, input$mean_2, input$sd_2, input$p_1, input$n),
+    list(input$mean_1, input$sd_1, input$mean_2, input$sd_2, input$p_1, input$n),
     {
       density <- density_data()
       y_max <- max(density$density)
