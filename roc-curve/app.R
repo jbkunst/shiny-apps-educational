@@ -263,6 +263,7 @@ server <- function(input, output, session) {
 
     hc |>
       hc_add_series(
+        id = "threshold",
         name = "Threshold",
         type = "line",
         data = xy_data(c(threshold, threshold), c(0, y_max * 1.05)),
@@ -272,7 +273,7 @@ server <- function(input, output, session) {
         enableMouseTracking = FALSE,
         zIndex = 5
       )
-  })
+  }) |> bindEvent(input$mean_1, input$sd_1, input$mean_2, input$sd_2, input$p_1, ignoreInit = FALSE)
 
   output$roc_chart <- renderHighchart({
     roc <- roc_data()
@@ -303,6 +304,7 @@ server <- function(input, output, session) {
         lineWidth = 2.5
       ) |>
       hc_add_series(
+        id = "current",
         name = "Current threshold",
         type = "scatter",
         data = xy_data(current_fpr, current_tpr),
@@ -311,7 +313,7 @@ server <- function(input, output, session) {
       ) |>
       hc_tooltip(valueDecimals = 3) |>
       hc_legend(align = "center", verticalAlign = "bottom")
-  })
+  }) |> bindEvent(input$n, input$p_1, input$mean_1, input$sd_1, input$mean_2, input$sd_2, ignoreInit = FALSE)
 
   output$confusion_chart <- renderHighchart({
     cm <- confusion()
@@ -352,6 +354,7 @@ server <- function(input, output, session) {
       hc_xAxis(categories = data$metric, title = list(text = NULL)) |>
       hc_yAxis(title = list(text = NULL), min = 0, max = 1) |>
       hc_add_series(
+        id = "metrics",
         name = "Value",
         data = as.list(data$value),
         color = "#007BC2",
@@ -359,7 +362,41 @@ server <- function(input, output, session) {
       ) |>
       hc_tooltip(valueDecimals = 3) |>
       hc_legend(enabled = FALSE)
-  })
+  }) |> bindEvent(input$n, input$p_1, input$mean_1, input$sd_1, input$mean_2, input$sd_2, ignoreInit = FALSE)
+  observeEvent(input$threshold, {
+    density <- density_data()
+    y_max <- max(density$density)
+
+    highchartProxy("distribution_chart") |>
+      hcpxy_update_point(
+        id = "threshold",
+        id_point = 0,
+        x = input$threshold,
+        y = 0
+      ) |>
+      hcpxy_update_point(
+        id = "threshold",
+        id_point = 1,
+        x = input$threshold,
+        y = y_max * 1.05
+      )
+
+    current <- metrics()
+
+    highchartProxy("roc_chart") |>
+      hcpxy_update_point(
+        id = "current",
+        id_point = 0,
+        x = current$value[current$metric == "FPR"],
+        y = current$value[current$metric == "TPR"]
+      )
+
+    highchartProxy("metrics_chart") |>
+      hcpxy_update_series(
+        id = "metrics",
+        data = round(current$value, 3)
+      )
+  }, ignoreInit = TRUE)
 }
 
 shinyApp(ui, server)
