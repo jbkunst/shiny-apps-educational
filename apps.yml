@@ -70,6 +70,15 @@
   - linear algebra
   - visualization
   path: live/matrix-decompositions/index.html
+- title: ROC Curve
+  description: Explore how score distributions, class balance, and thresholds shape
+    ROC curves and classification metrics.
+  image: site-assets/screenshots/roc-curve.png
+  categories:
+  - machine learning
+  - classification
+  - statistics
+  path: live/roc-curve/index.html
 - title: Underfitting and Overfitting
   description: Adjust a kernel smoother and reveal test data and the true relationship
     to explore model flexibility and generalization.

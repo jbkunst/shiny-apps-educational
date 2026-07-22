@@ -1,7 +1,7 @@
 {
-  "app_count": 9,
-  "draft_apps": ["binary-predictions-metrics", "network-structures", "roc-curve"],
-  "shinylive_ok": ["arma-process", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions", "underfitting-overfitting"],
+  "app_count": 10,
+  "draft_apps": ["binary-predictions-metrics", "network-structures"],
+  "shinylive_ok": ["arma-process", "decision-tree", "kmeans", "logistic-regression", "lorenz-attractor", "matrix-decompositions", "roc-curve", "underfitting-overfitting"],
   "shinylive_failed": [],
   "server_ok": ["dimensionality-reduction", "kmeans-images"],
   "server_failed": [],
@@ -68,6 +68,14 @@
       "runtime": "shinylive",
       "final_target": "shinylive",
       "launch_url": "live/matrix-decompositions/index.html",
+      "shinylive": "exported",
+      "shinylive_message": "Shinylive export completed."
+    },
+    {
+      "slug": "roc-curve",
+      "runtime": "shinylive",
+      "final_target": "shinylive",
+      "launch_url": "live/roc-curve/index.html",
       "shinylive": "exported",
       "shinylive_message": "Shinylive export completed."
     },
